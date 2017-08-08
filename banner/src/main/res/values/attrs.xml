@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BannerView">
+        <!--翻页间隔时长-->
+        <attr name="pagingIntervalTime" format="integer"/>
+        <!--翻页动画减速倍数-->
+        <attr name="decelerateMultiple" format="integer"/>
+        <!--指示器控件的ViewId-->
+        <attr name="bannerIndicator" format="reference"/>
+        <!--标题控件-->
+        <attr name="titleView" format="reference"/>
+        <!--子标题控件-->
+        <attr name="subTitleView" format="reference"/>
+        <!--翻页动画差值器-->
+        <attr name="interpolator" format="reference"/>
+    </declare-styleable>
+    <declare-styleable name="BannerIndicatorView">
+        <!--点的半径-->
+        <attr name="pointRadius" format="dimension"/>
+        <!--选中的点的半径-->
+        <attr name="selectedPointRadius" format="dimension"/>
+        <!--点与点之间的间距，默认为最小的点的直径。-->
+        <attr name="pointSpacing" format="dimension"/>
+        <!--点的颜色-->
+        <attr name="pointColor" format="color"/>
+        <!--选中时点的颜色-->
+        <attr name="selectedPointColor" format="color"/>
+        <!--点的个数，如果是配合BannerView使用的则以BannerView的页数为准。-->
+        <attr name="pointCount" format="integer"/>
+    </declare-styleable>
+</resources>

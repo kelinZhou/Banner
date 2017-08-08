@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:orientation="vertical">
+
+    <com.kelin.banner.view.BannerView
+        android:id="@+id/vp_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:bannerIndicator="@+id/biv_indicator"
+        app:titleView="@+id/tv_title"
+        app:pagingIntervalTime="3000"
+        app:decelerateMultiple="4"
+        android:background="#FFF"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  android:background="#8000"
+                  android:gravity="center_vertical"
+                  android:orientation="horizontal"
+                  android:padding="6dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:maxWidth="300dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="6dp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="我是标题！"/>
+
+        <com.kelin.banner.view.BannerIndicatorView
+            android:id="@+id/biv_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:pointRadius="3dp"
+            app:selectedPointRadius="4dp"
+            app:pointSpacing="4dp"
+            app:pointColor="#5fff"
+            app:selectedPointColor="@android:color/white"
+            android:paddingEnd="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingStart="10dp"/>
+    </LinearLayout>
+</RelativeLayout>
