@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -278,10 +277,10 @@ class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View
         pagerBox.setClipChildren(false);
         viewPager.setClipChildren(false);
         viewPager.setOffscreenPageLimit(2);
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         int margin = dp2px(showWidthDp > 0 ? showWidthDp : 12);
-        layoutParams.setMarginStart(margin);
-        layoutParams.setMarginEnd(margin);
+        lp.setMargins(margin, lp.topMargin, margin, lp.bottomMargin);
+        viewPager.setLayoutParams(lp);
         viewPager.setPageTransformer(reverseDrawingOrder, pageTransformer == null ? new CenterBigTransformer(0.9f) : pageTransformer);
     }
 
@@ -429,7 +428,6 @@ class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View
         @Override
         public void startScroll(int startX, int startY, int dx, int dy, int multiple) {
             int duration = (int) (multiple * mMultiple * mCardinal);
-            Log.i(TAG, "startScroll: " + multiple + " * " + mMultiple + " * " + mCardinal + " = " + duration);
             super.startScroll(startX, startY, dx, dy, duration);
         }
     }

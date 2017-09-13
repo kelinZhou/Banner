@@ -3,7 +3,6 @@ package com.kelin.banner.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
@@ -22,9 +21,17 @@ import com.kelin.banner.R;
 public class BannerIndicatorView extends View {
 
     /**
+     * 默认的点的颜色。
+     */
+    private static final int COLOR_DEFAULT_POINT_COLOR = 0x44FFFFFF;
+    /**
+     * 默认的被选中的点的颜色。
+     */
+    private static final int COLOR_DEFAULT_SELECTED_POINT_COLOR = 0xFFFFFFFF;
+    /**
      * 画笔
      */
-    private Paint mPaint;
+    private final Paint mPaint;
     /**
      * 用来记录点的个数。
      */
@@ -55,7 +62,13 @@ public class BannerIndicatorView extends View {
      * 点的直径。
      */
     private int mPointDiameter;
+    /**
+     * 被选中的点的直径。
+     */
     private int mSelectedPointDiameter;
+    /**
+     * 点与点之间的间距。
+     */
     private float mPointSpacing;
 
     public BannerIndicatorView(Context context) {
@@ -69,7 +82,10 @@ public class BannerIndicatorView extends View {
 
     public BannerIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setStrokeWidth(0);
 
         if (attrs != null) {
             initAttrs(context, attrs);
@@ -79,9 +95,9 @@ public class BannerIndicatorView extends View {
     private void initAttrs(Context context, AttributeSet attrs) {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicatorView);
         mPointCount = typedArray.getInt(R.styleable.BannerIndicatorView_pointCount, 0);
-        mPointColor = typedArray.getColor(R.styleable.BannerIndicatorView_pointColor, 0x44FFFFFF);
-        mSelectedPointColor = typedArray.getColor(R.styleable.BannerIndicatorView_selectedPointColor, Color.WHITE);
-        final float scale = getResources().getDisplayMetrics().densityDpi;
+        mPointColor = typedArray.getColor(R.styleable.BannerIndicatorView_pointColor, COLOR_DEFAULT_POINT_COLOR);
+        mSelectedPointColor = typedArray.getColor(R.styleable.BannerIndicatorView_selectedPointColor, COLOR_DEFAULT_SELECTED_POINT_COLOR);
+        float scale = getResources().getDisplayMetrics().densityDpi;
         int defaultPointRadius = (int) (3 * (scale / 160) + 0.5f);
         mPointRadius = typedArray.getDimension(R.styleable.BannerIndicatorView_pointRadius, defaultPointRadius);
         mPointDiameter = (int) (mPointRadius * 2);
@@ -91,16 +107,11 @@ public class BannerIndicatorView extends View {
         typedArray.recycle();
     }
 
-    private void init() {
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setStrokeWidth(0);
-    }
-
     /**
      * 设置点的个数，如果你是配合 {@link BannerView } 使用的话，这不需要进行设置。只需要调用
-     * {@link BannerView#setPointIndicatorView(BannerIndicatorView)} 方法即可。
+     * {@link BannerView#setPointIndicatorView(BannerIndicatorView)} 方法或者为{@link BannerView}
+     * 配置"app:bannerIndicator"属性即可。
+     *
      * @param pointCount 点的数量。
      * @see BannerView#setPointIndicatorView(BannerIndicatorView)
      */
@@ -110,7 +121,9 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置当前选中的位置。如果你是配合 {@link BannerView Banner} 使用的话，这不需要进行设置。只需要调用
-     * {@link BannerView#setPointIndicatorView(BannerIndicatorView)} 方法即可。
+     * {@link BannerView#setPointIndicatorView(BannerIndicatorView)} 方法或者为{@link BannerView}
+     * 配置"app:bannerIndicator"属性即可。
+     *
      * @param position 要选中的位置。
      */
     public void setCurPosition(int position) {
@@ -120,7 +133,8 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置点颜色。
-     * @param pointColor 要设置的颜色。
+     *
+     * @param pointColor 要设置的颜色，默认为{@link #COLOR_DEFAULT_POINT_COLOR}。
      */
     public void setPointColor(@ColorInt int pointColor) {
         mPointColor = pointColor;
@@ -128,7 +142,8 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置被选中的点的颜色。
-     * @param selectedPointColor 要设置的颜色。
+     *
+     * @param selectedPointColor 要设置的颜色，默认为{@link #COLOR_DEFAULT_SELECTED_POINT_COLOR}。
      */
     public void setSelectedPointColor(@ColorInt int selectedPointColor) {
         mSelectedPointColor = selectedPointColor;
@@ -136,7 +151,8 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置点的半径。
-     * @param pointRadius 要设置的点的半径的px值。
+     *
+     * @param pointRadius 要设置的点的半径的px值, 默认为3dp。
      */
     public void setPointRadius(float pointRadius) {
         mPointRadius = pointRadius;
@@ -145,7 +161,8 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置选中时点的半径。
-     * @param pointRadius 要设置的点的半径的px值。
+     *
+     * @param pointRadius 要设置的点的半径的px值，默认和未选中时一样。
      */
     public void setSelectedPointRadius(float pointRadius) {
         mSelectedPointRadius = pointRadius;
@@ -154,7 +171,8 @@ public class BannerIndicatorView extends View {
 
     /**
      * 设置点与点之间的间距。
-     * @param spacing 要设置的间距的px值。
+     *
+     * @param spacing 要设置的间距的px值，默认为点的选中和未选中状态下最小的那个直径。
      */
     public void setPointSpacing(float spacing) {
         mPointSpacing = spacing;
@@ -167,7 +185,7 @@ public class BannerIndicatorView extends View {
         //上padding + 下padding + 最大的点的直径 = 总高度。
         int newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(getPaddingTop() + getPaddingBottom() + Math.max(mSelectedPointDiameter, mPointDiameter), heightMode);
         //左padding + 右padding + 所有点需要占用的宽度 + 所有间距的宽度 = 总宽度。
-        int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(getPaddingStart() + getPaddingEnd() + ((mPointCount - 1) * mPointDiameter) + mSelectedPointDiameter + (int) ((mPointCount - 1) * mPointSpacing), widthMode);
+        int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(getPaddingLeft() + getPaddingRight() + ((mPointCount - 1) * mPointDiameter) + mSelectedPointDiameter + (int) ((mPointCount - 1) * mPointSpacing), widthMode);
         super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
     }
 
@@ -175,7 +193,7 @@ public class BannerIndicatorView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         float radius;
-        float startX = getPaddingStart();
+        float startX = getPaddingLeft();
         int diameter;
         for (int i = 0; i < mPointCount; i++) {
             if (i == mCurPosition) {
@@ -188,7 +206,7 @@ public class BannerIndicatorView extends View {
                 mPaint.setColor(mPointColor);
             }
             canvas.drawCircle(startX + radius, getHeight() / 2, radius, mPaint);
-            startX +=  diameter + mPointSpacing;
+            startX += diameter + mPointSpacing;
         }
     }
 }

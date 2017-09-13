@@ -9,7 +9,7 @@ import android.view.View;
  * 版本 v 1.0.0
  */
 
-public class DepthPageTransformer implements ViewPager.PageTransformer {
+class DepthPageTransformer implements ViewPager.PageTransformer {
     @Override
     public void transformPage(View page, float position) {
         float MIN_SCALE = 0.75f;
@@ -29,7 +29,6 @@ public class DepthPageTransformer implements ViewPager.PageTransformer {
             page.setScaleY(scaleFactor);
         } else {
             page.setAlpha(0);
-
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.kelin.banner.view;
 
-import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
@@ -17,45 +16,60 @@ import java.util.List;
  * 版本 v 1.0.0
  */
 
-class ViewBannerAdapter extends PagerAdapter {
-
+class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, View.OnLongClickListener {
+    /**
+     * 用来存放和获取索引的TAG。
+     */
+    private static final int KEY_INDEX_TAG = 0x1000_0000;
+    /**
+     * 用来存放页面点击和长按的事件监听对象。
+     */
     private final OnPageClickListener mClickListener;
+    /**
+     * 用来存放页面触摸事件的监听对象。
+     */
     private final View.OnTouchListener mTouchListener;
+    /**
+     * 用来存放所有页面的模型对象。
+     */
     private List<? extends BannerEntry> mItems;
-    private SparseArray<View> itemViews;
+    /**
+     * 用来放置可以复用的页面的View。
+     */
+    private SparseArray<View> itemViewCache = new SparseArray<>();
 
-    ViewBannerAdapter(@NonNull OnPageClickListener clickListener, View.OnTouchListener touchListener) {
-        itemViews = new SparseArray<>();
+    /**
+     * 构造方法。
+     * @param clickListener 页面点击事件的监听。
+     * @param touchListener 页面触摸事件的监听。
+     */
+    ViewBannerAdapter(OnPageClickListener clickListener, View.OnTouchListener touchListener) {
         mClickListener = clickListener;
         mTouchListener = touchListener;
     }
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        final int index = getIndex(position);
-        View entryView = itemViews.get(index);
+        int index = getIndex(position);
+        View entryView = itemViewCache.get(index);
         if (entryView == null) {
-            final BannerEntry bannerEntry = mItems.get(index);
+            BannerEntry bannerEntry = mItems.get(index);
             entryView = bannerEntry.onCreateView(container);
-            entryView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mClickListener.onPageClick(bannerEntry, index);
-                }
-            });
-            entryView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    mClickListener.onPageLongClick(bannerEntry, index);
-                    return true;
-                }
-            });
+            entryView.setTag(KEY_INDEX_TAG, index);
+            entryView.setOnClickListener(this);
+            entryView.setOnLongClickListener(this);
             entryView.setOnTouchListener(mTouchListener);
         } else {
-            itemViews.remove(index);
+            itemViewCache.remove(index);
         }
         container.addView(entryView);
         return entryView;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        itemViewCache.clear();
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -63,8 +77,8 @@ class ViewBannerAdapter extends PagerAdapter {
         View view = (View) object;
         container.removeView(view);
         int index = getIndex(position);
-        if (itemViews.get(index) == null) {
-            itemViews.put(index, view);
+        if (itemViewCache.get(index) == null) {
+            itemViewCache.put(index, view);
         }
     }
 
@@ -105,10 +119,27 @@ class ViewBannerAdapter extends PagerAdapter {
     }
 
     boolean setItems(List<? extends BannerEntry> items) {
-        if (mItems == items) {
+        if (mItems == items && items.size() == mItems.size()) {
             return false;
         }
         mItems = items;
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int tag = (int) v.getTag(KEY_INDEX_TAG);
+        if (mClickListener != null) {
+            mClickListener.onPageClick(mItems.get(tag), tag);
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        int tag = (int) v.getTag(KEY_INDEX_TAG);
+        if (mClickListener != null) {
+            mClickListener.onPageLongClick(mItems.get(tag), tag);
+        }
         return true;
     }
 

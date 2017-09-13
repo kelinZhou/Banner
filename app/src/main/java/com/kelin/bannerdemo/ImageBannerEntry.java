@@ -70,6 +70,6 @@ public class ImageBannerEntry implements BannerEntry<String> {
      */
     @Override
     public String getValue() {
-        return "我是可以同时显示三页的轮播图。";
+        return title;
     }
 }

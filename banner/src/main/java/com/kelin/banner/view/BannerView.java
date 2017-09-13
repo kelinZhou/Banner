@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Size;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -31,7 +30,7 @@ import java.util.List;
 
 public class BannerView extends ViewPager {
     private static final String TAG = "BannerView";
-    private BannerHelper mBanner;
+    private BannerHelper mBH;
     private int mPointIndicatorId;
     private int mTitleViewId;
     private int mSubTitleViewId;
@@ -48,7 +47,7 @@ public class BannerView extends ViewPager {
 
     private void init(Context context, AttributeSet attrs) {
         if (attrs == null) {
-            mBanner = new BannerHelper(this);
+            mBH = new BannerHelper(this);
         } else {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
             int pagingIntervalTime = typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0);
@@ -62,8 +61,41 @@ public class BannerView extends ViewPager {
                 interpolator = AnimationUtils.loadInterpolator(getContext(), interpolatorId);
             }
             typedArray.recycle();
-            mBanner = new BannerHelper(this, interpolator, pagingIntervalTime, decelerateMultiple);
+            mBH = new BannerHelper(this, interpolator, pagingIntervalTime, decelerateMultiple);
         }
+    }
+
+    @Override
+    public void removeView(View view) {
+        super.removeView(view);
+        reSetLayoutParams((LayoutParams) view.getLayoutParams());
+    }
+
+
+    private void reSetLayoutParams(ViewPager.LayoutParams lp) {
+        try {
+            Field positionField = getField(ViewPager.LayoutParams.class, "position");
+            if (positionField != null) {
+                positionField.setInt(lp, 0);
+            }
+            Field widthFactorField = getField(ViewPager.LayoutParams.class, "widthFactor");
+            if (widthFactorField != null) {
+                widthFactorField.setFloat(lp, 0.f);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Field getField(Class cls,String fieldName) {
+        Field positionField = null;
+        try {
+            positionField =cls.getDeclaredField(fieldName);
+            positionField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return positionField;
     }
 
     @Override
@@ -103,13 +135,13 @@ public class BannerView extends ViewPager {
         return addSuccess;
     }
 
-    private View findView(ViewGroup view, int pointIndicator) {
-        View v = view.findViewById(pointIndicator);
+    private View findView(ViewGroup view, int viewId) {
+        View v = view.findViewById(viewId);
         if (v == null) {
             if (view.getParent() == null) {
                 throw new Resources.NotFoundException("the pointIndicator view id is not found!");
             } else {
-                return findView((ViewGroup)view.getParent(), pointIndicator);
+                return findView((ViewGroup)view.getParent(), viewId);
             }
         }
         return v;
@@ -128,8 +160,8 @@ public class BannerView extends ViewPager {
      * @param items {@link BannerEntry} 集合。
      * @param refresh 是否刷新页面。
      */
-    public void setEntries(List<? extends BannerEntry> items, boolean refresh) {
-        mBanner.setEntries(items, refresh);
+    public void setEntries(@NonNull List<? extends BannerEntry> items, boolean refresh) {
+        mBH.setEntries(items, refresh);
     }
 
     /**
@@ -137,7 +169,7 @@ public class BannerView extends ViewPager {
      * @param pagingIntervalTime 要设置的时长。
      */
     public void setPagingIntervalTime(@Size(min = 1000) int pagingIntervalTime) {
-        mBanner.setPagingIntervalTime(pagingIntervalTime);
+        mBH.setPagingIntervalTime(pagingIntervalTime);
     }
 
     /**
@@ -145,7 +177,7 @@ public class BannerView extends ViewPager {
      * @param multiple 要减速的倍数。默认为ViewPage的6倍。
      */
     public void setDecelerateMultiple(@Size(min = 2) int multiple) {
-        mBanner.setMultiple(multiple);
+        mBH.setMultiple(multiple);
     }
 
     /**
@@ -153,7 +185,7 @@ public class BannerView extends ViewPager {
      * @param eventListener Banner事件监听对象。
      */
     public void setOnBannerEventListener(@NonNull BannerView.OnBannerEventListener eventListener) {
-        mBanner.setOnBannerEventListener(eventListener);
+        mBH.setOnBannerEventListener(eventListener);
     }
 
     /**
@@ -161,7 +193,7 @@ public class BannerView extends ViewPager {
      * @param indicatorView {@link BannerIndicatorView} 对象。
      */
     public void setPointIndicatorView(@NonNull BannerIndicatorView indicatorView) {
-        mBanner.setPointIndicatorView(indicatorView);
+        mBH.setPointIndicatorView(indicatorView);
     }
 
     /**
@@ -169,7 +201,7 @@ public class BannerView extends ViewPager {
      * @param titleView 用来显示标题的TextView。
      */
     public void setTitleView(TextView titleView) {
-        mBanner.setTitleView(titleView);
+        mBH.setTitleView(titleView);
     }
 
     /**
@@ -177,21 +209,21 @@ public class BannerView extends ViewPager {
      * @param subTitleView 用来显示副标题的TextView。
      */
     public void setSubTitleView(TextView subTitleView) {
-        mBanner.setSubTitleView(subTitleView);
+        mBH.setSubTitleView(subTitleView);
     }
 
     /**
      * 开始轮播。
      */
     public void start() {
-        mBanner.start();
+        mBH.start();
     }
 
     /**
      * 停止轮播。
      */
     public void stop() {
-        mBanner.stop();
+        mBH.stop();
     }
 
     /**
@@ -200,7 +232,7 @@ public class BannerView extends ViewPager {
      * @return 如果已经启动播返回true，否则返回false。
      */
     public boolean isStarted() {
-        return mBanner.isStarted();
+        return mBH.isStarted();
     }
 
     /**
@@ -215,7 +247,7 @@ public class BannerView extends ViewPager {
      * @param offset 向右偏移的页数。
      */
     public void selectCenterPage(int offset) {
-        mBanner.selectCenterPage(offset);
+        mBH.selectCenterPage(offset);
     }
 
     /**
@@ -258,15 +290,13 @@ public class BannerView extends ViewPager {
      * @see ViewPager#setPageTransformer(boolean, ViewPager.PageTransformer)
      */
     public void setShowLeftAndRightPage(int showWidthDp, boolean reverseDrawingOrder, ViewPager.PageTransformer pageTransformer) {
-        mBanner.setShowLeftAndRightPage(showWidthDp, reverseDrawingOrder, pageTransformer);
+        mBH.setShowLeftAndRightPage(showWidthDp, reverseDrawingOrder, pageTransformer);
     }
 
     int determineTargetPage(int currentPage, float pageOffset) {
         try {
-            Field lastMotionX = ViewPager.class.getDeclaredField("mLastMotionX");
-            lastMotionX.setAccessible(true);
-            Field initialMotionX = ViewPager.class.getDeclaredField("mInitialMotionX");
-            initialMotionX.setAccessible(true);
+            Field lastMotionX = getField(ViewPager.class, "mLastMotionX");
+            Field initialMotionX = getField(ViewPager.class, "mInitialMotionX");
             int deltaX = (int) (lastMotionX.getFloat(this) - initialMotionX.getFloat(this));
             Method method = ViewPager.class.getDeclaredMethod("determineTargetPage", int.class, float.class, int.class, int.class);
             method.setAccessible(true);
@@ -283,32 +313,36 @@ public class BannerView extends ViewPager {
             Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
             method.setAccessible(true);
             method.invoke(this, getCurrentItem(), false, 0, false);
-            Field mFirstLayout = ViewPager.class.getDeclaredField("mFirstLayout");
-            mFirstLayout.setAccessible(true);
+            Field mFirstLayout = getField(ViewPager.class, "mFirstLayout");
             mFirstLayout.setBoolean(this, false);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, "onAttachedToWindow: ", e);
         }
-        mBanner.reStart();
+        mBH.reStart();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mBanner.pause();
+        mBH.pause();
     }
 
-    public void replaceScroller(Scroller scroller) {
+    /**
+     * 替换原本的{@link Scroller}对象。
+     * @param scroller 要替换的{@link Scroller}对象。
+     */
+    void replaceScroller(Scroller scroller) {
         try {
-            Field scrollerField = ViewPager.class.getDeclaredField("mScroller");
-            scrollerField.setAccessible(true);
+            Field scrollerField = getField(ViewPager.class, "mScroller");
             scrollerField.set(this, scroller);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * 轮播图的所有事件监听类。
+     */
     public static abstract class OnBannerEventListener extends ViewBannerAdapter.OnPageClickListener {
 
         /**
