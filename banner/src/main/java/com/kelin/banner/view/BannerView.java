@@ -13,10 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
-
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.R;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -68,9 +66,9 @@ public class BannerView extends ViewPager {
     @Override
     public void removeView(View view) {
         super.removeView(view);
+        //这句代码是解决View复用导致的问题。重新对view的布局参数进行初始化。
         reSetLayoutParams((LayoutParams) view.getLayoutParams());
     }
-
 
     private void reSetLayoutParams(ViewPager.LayoutParams lp) {
         try {
