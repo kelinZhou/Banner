@@ -4,14 +4,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.kelinZhou'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK_VERSION)
+    buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 100
-        versionName "1.0.0"
+        minSdkVersion ANDROID_BUILD_MIN_SDK_VERSION
+        targetSdkVersion ANDROID_BUILD_TARGET_SDK_VERSION
+        versionCode Integer.parseInt(ANDROID_VERSION_CODE)
+        versionName ANDROID_VERSION_NAME
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
