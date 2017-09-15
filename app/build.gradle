@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK_VERSION)
+    compileSdkVersion 25
     buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
     defaultConfig {
         applicationId "com.kelin.banner"
