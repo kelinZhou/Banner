@@ -4,8 +4,6 @@
 
 ## 简介
 基于ViewPage的的封装，UI样式完全由自己控制。可自定义各种动画。可简单实现各种轮播图效果，支持对轮播图的各种事件监听，例如：点击、长按、页面选中等。
-## 效果图
-![Banner](materials/gif_banner.gif)
 
 ## 下载
 ###### 第一步：添加 JitPack 仓库到你项目根目录的 gradle 文件中。
@@ -23,6 +21,9 @@ dependencies {
     compile 'com.github.kelinZhou:Banner:1.0.0'
 }
 ```
+
+## 效果图
+![Banner](materials/gif_banner.gif)
 
 ## 使用
 #### 使用比较简单，请参考Demo。
