@@ -28,6 +28,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile "com.android.support:cardview-v7:${ANDROID_SUPPORT_LIB_VERSION}"
     compile project(':banner')
-    compile project(':recycleradapter')
+    compile 'com.github.kelinZhou:MultiTypeAdapter:1.0.0'
 }
 
