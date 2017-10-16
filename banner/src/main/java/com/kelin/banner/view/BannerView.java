@@ -27,7 +27,6 @@ import java.util.List;
  */
 
 public class BannerView extends ViewPager {
-    private static final String TAG = "BannerView";
     private BannerHelper mBH;
     private int mPointIndicatorId;
     private int mTitleViewId;
@@ -104,8 +103,8 @@ public class BannerView extends ViewPager {
         if (parent != null) {
             if (mPointIndicatorId != NO_ID) {
                 view = findView(parent, mPointIndicatorId);
-                if (view instanceof BannerIndicatorView) {
-                    setPointIndicatorView((BannerIndicatorView) view);
+                if (view instanceof BannerIndicator) {
+                    setIndicatorView((BannerIndicator) view);
                 } else {
                     throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the BannerIndicatorView！");
                 }
@@ -188,10 +187,10 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置页面指示器控件。
-     * @param indicatorView {@link BannerIndicatorView} 对象。
+     * @param indicatorView {@link BannerIndicator} 对象。
      */
-    public void setPointIndicatorView(@NonNull BannerIndicatorView indicatorView) {
-        mBH.setPointIndicatorView(indicatorView);
+    public void setIndicatorView(@NonNull BannerIndicator indicatorView) {
+        mBH.setIndicatorView(indicatorView);
     }
 
     /**

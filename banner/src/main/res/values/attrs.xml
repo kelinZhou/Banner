@@ -14,7 +14,13 @@
         <!--翻页动画差值器-->
         <attr name="interpolator" format="reference"/>
     </declare-styleable>
-    <declare-styleable name="BannerIndicatorView">
+
+    <declare-styleable name="BannerIndicator">
+        <!--总页数，如果是配合BannerView使用的则以BannerView的页数为准。-->
+        <attr name="totalCount" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="PointIndicatorView">
         <!--点的半径-->
         <attr name="pointRadius" format="dimension"/>
         <!--选中的点的半径-->
@@ -25,7 +31,20 @@
         <attr name="pointColor" format="color"/>
         <!--选中时点的颜色-->
         <attr name="selectedPointColor" format="color"/>
-        <!--点的个数，如果是配合BannerView使用的则以BannerView的页数为准。-->
-        <attr name="pointCount" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="NumberIndicatorView">
+        <!--字体大小-->
+        <attr name="android:textSize"/>
+        <!--所有的字体颜色-->
+        <attr name="android:textColor"/>
+        <!--分割符号文本-->
+        <attr name="separator" format="string"/>
+        <!--分隔符文本颜色-->
+        <attr name="separatorTextColor" format="color"/>
+        <!--当前页面码字体颜色-->
+        <attr name="currentPageTextColor" format="color"/>
+        <!--总页数字体颜色-->
+        <attr name="totalPageTextColor" format="color"/>
     </declare-styleable>
 </resources>

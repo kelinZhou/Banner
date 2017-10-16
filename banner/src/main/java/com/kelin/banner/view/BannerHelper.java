@@ -24,7 +24,7 @@ import java.util.List;
  * 版本 v 1.0.0
  */
 
-class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View.OnTouchListener, ViewPager.OnPageChangeListener {
+final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View.OnTouchListener, ViewPager.OnPageChangeListener {
     private static final String TAG = "--Banner";
 
     private static final int NOTHING_INT = 0xffff_ffff;
@@ -91,7 +91,7 @@ class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View
     /**
      * 轮播图的页码指示器控件。
      */
-    private BannerIndicatorView mIndicatorView;
+    private BannerIndicator mIndicatorView;
     /**
      * 翻页动画减速倍数。
      */
@@ -162,11 +162,11 @@ class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View
 
     /**
      * 设置页面指示器控件。
-     * @param indicatorView {@link BannerIndicatorView} 对象。
+     * @param indicatorView {@link BannerIndicator} 对象。
      */
-    void setPointIndicatorView(@NonNull BannerIndicatorView indicatorView) {
+    void setIndicatorView(@NonNull BannerIndicator indicatorView) {
         mIndicatorView = indicatorView;
-        indicatorView.setPointCount(mAdapter.getItemCount());
+        indicatorView.setTotalCount(mAdapter.getItemCount());
     }
 
     /**
@@ -198,7 +198,7 @@ class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View
      */
     void setEntries(List<? extends BannerEntry> items, boolean refresh) {
         if (mIndicatorView != null) {
-            mIndicatorView.setPointCount(items.size());
+            mIndicatorView.setTotalCount(items.size());
         }
         boolean update = mAdapter.setItems(items);
         if (refresh && update) {
