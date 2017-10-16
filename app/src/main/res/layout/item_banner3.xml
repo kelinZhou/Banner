@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         app:bannerIndicator="@+id/biv_indicator"
         app:titleView="@+id/tv_title"
-        app:pagingIntervalTime="3000"
+        app:pagingIntervalTime="3500"
         app:decelerateMultiple="4"
         android:background="#FFF"/>
 
@@ -42,14 +42,13 @@
             android:textStyle="bold"
             tools:text="我是标题！"/>
 
-        <com.kelin.banner.view.PointIndicatorView
+        <com.kelin.banner.view.NumberIndicatorView
             android:id="@+id/biv_indicator"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:pointRadius="3dp"
-            app:selectedPointRadius="4dp"
-            app:pointSpacing="4dp"
-            app:pointColor="#5fff"
-            app:selectedPointColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            app:separatorTextColor="@android:color/holo_green_light"
+            app:separator="/"
+            app:totalCount="6"/>
     </LinearLayout>
 </RelativeLayout>

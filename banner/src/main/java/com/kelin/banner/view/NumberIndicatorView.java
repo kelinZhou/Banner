@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -30,10 +31,29 @@ public class NumberIndicatorView extends BannerIndicator {
      * 用来记录分割符号。
      */
     private String mSeparator;
-    private int mSeparatorTextColor;
-    private int mCurrentPageTextColor;
-    private int mTotalPageTextColor;
+    /**
+     * 用来记录字体颜色。
+     */
+    @ColorInt
     private int mTextColor;
+    /**
+     * 分隔符颜色。
+     */
+    @ColorInt
+    private int mSeparatorTextColor;
+    /**
+     * 当前页颜色。
+     */
+    @ColorInt
+    private int mCurrentPageTextColor;
+    /**
+     * 总页数颜色。
+     */
+    @ColorInt
+    private int mTotalPageTextColor;
+    /**
+     * 用来记录测量过后的所有文字的宽度。
+     */
     private float mMeasureTextWidth;
 
     public NumberIndicatorView(Context context) {
@@ -70,12 +90,78 @@ public class NumberIndicatorView extends BannerIndicator {
                 mTextColor = mSeparatorTextColor;
                 getPaint().setColor(mTextColor);
             }
-            getPaint().setTextAlign(Paint.Align.CENTER);
         } else {
             mTextColor = Color.TRANSPARENT;
         }
         mSeparator = TextUtils.isEmpty(separator) ? DEFAULT_SEPARATOR : separator;
         getPaint().setTextSize(textSize);
+    }
+
+    /**
+     * 设置分隔符号文本。
+     * @param separator 要设置的分割符。
+     */
+    public void setSeparator(String separator) {
+        mSeparator = separator;
+        invalidate();
+    }
+
+    /**
+     * 设置所有文字的颜色。
+     * @param textColor 要设置的颜色。
+     */
+    public void setTextColor(@ColorInt int textColor) {
+        if (textColor == mTextColor) {
+            return;
+        }
+        mTextColor = mCurrentPageTextColor = mSeparatorTextColor = mTotalPageTextColor = textColor;
+        getPaint().setColor(mTextColor);
+        invalidate();
+    }
+
+    /**
+     * 设置分隔符文字颜色。
+     * @param separatorTextColor 要设置的颜色。
+     */
+    public void setSeparatorTextColor(@ColorInt int separatorTextColor) {
+        if (mSeparatorTextColor == separatorTextColor) {
+            return;
+        }
+        if (mTextColor != separatorTextColor) {
+            mTextColor = Color.TRANSPARENT;
+        }
+        mSeparatorTextColor = separatorTextColor;
+        invalidate();
+    }
+
+    /**
+     * 设置当前页文字颜色。
+     * @param currentPageTextColor 要设置的颜色。
+     */
+    public void setCurrentPageTextColor(@ColorInt int currentPageTextColor) {
+        if (mCurrentPageTextColor == currentPageTextColor) {
+            return;
+        }
+        if (mTextColor != currentPageTextColor) {
+            mTextColor = Color.TRANSPARENT;
+        }
+        mCurrentPageTextColor = currentPageTextColor;
+        invalidate();
+    }
+
+    /**
+     * 设置总页数文字颜色。
+     * @param totalPageTextColor 要设置的颜色。
+     */
+    public void setTotalPageTextColor(@ColorInt int totalPageTextColor) {
+        if (mTotalPageTextColor == totalPageTextColor) {
+            return;
+        }
+        if (mTextColor != totalPageTextColor) {
+            mTextColor = Color.TRANSPARENT;
+        }
+        mTotalPageTextColor = totalPageTextColor;
+        invalidate();
     }
 
     @Override
@@ -91,7 +177,7 @@ public class NumberIndicatorView extends BannerIndicator {
         String contentText = getContentText();
         Paint paint = getPaint();
         if (mTextColor != Color.TRANSPARENT) {
-            canvas.drawText(contentText, getWidth() / 2, getHeight() - MIN_SPACE_PADDING_TOP_OR_BOTTOM - getPaddingBottom(), paint);
+            canvas.drawText(contentText, getPaddingLeft(), getHeight() - MIN_SPACE_PADDING_TOP_OR_BOTTOM - getPaddingBottom(), paint);
         } else {
             String curPageNum = String.valueOf(getCurPageNum());
 

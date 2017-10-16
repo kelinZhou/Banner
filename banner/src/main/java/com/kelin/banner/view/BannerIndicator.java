@@ -99,7 +99,9 @@ public abstract class BannerIndicator extends View {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int[] rect = new int[2];
-        onMeasureWidthAndHeight(rect);
+        if (getTotalCount() > 0) {
+            onMeasureWidthAndHeight(rect);
+        }
         int newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(rect[1], heightMode);
         int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(rect[0], widthMode);
         super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);

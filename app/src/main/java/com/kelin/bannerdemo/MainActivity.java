@@ -1,5 +1,6 @@
 package com.kelin.bannerdemo;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnBannerEventListener mOnBannerEventListener;
 
+    private static final int[] colors = new int[]{Color.BLACK, Color.GREEN, Color.BLUE, Color.DKGRAY, Color.RED};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +34,10 @@ public class MainActivity extends AppCompatActivity {
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
         ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner2Adapter = new ItemAdapter<>(BannerHolder2.class, getTitleImageBannerEntries());
+        ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntries());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
-        adapter.addAdapter(banner1Adapter, banner2Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
+        adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
     }
 
