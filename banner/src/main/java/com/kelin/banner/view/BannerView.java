@@ -364,6 +364,7 @@ public class BannerView extends ViewPager {
         /**
          * 当页面被选中的时候调用。
          *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
         protected void onPageSelected(BannerEntry entry, int index) {

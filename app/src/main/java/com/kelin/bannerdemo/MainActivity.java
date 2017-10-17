@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntries());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
+        banner3Adapter.setEventInterceptor(getItemEventInterceptor());
         adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
     }
@@ -48,7 +49,69 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onInterceptor(View view, LayoutItem layoutItem) {
                     if (view.getId() == R.id.vp_view_pager) {
                         BannerView bannerView = (BannerView) view;
-                        bannerView.setOnBannerEventListener(getBannerEventListener());
+                        bannerView.setOnBannerEventListener(new BannerView.OnBannerEventListener() {
+                            /**
+                             * 页面被点击的时候执行。
+                             *
+                             * @param entry 当前页面的 {@link BannerEntry} 对象。
+                             * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+                             */
+                            @Override
+                            protected void onPageClick(BannerEntry entry, int index) {
+                                //处理页面被点击时的逻辑。
+                            }
+
+                            /**
+                             * 页面被长按的时候执行。
+                             *
+                             * @param entry 当前页面的 {@link BannerEntry} 对象。
+                             * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+                             */
+                            @Override
+                            protected void onPageLongClick(BannerEntry entry, int index) {
+                                super.onPageLongClick(entry, index);
+                                //该方法是非抽象方法，不需要关心可以不实现。
+                            }
+
+                            /**
+                             * 当页面被选中的时候调用。
+                             *
+                             * @param entry 当前页面的 {@link BannerEntry} 对象。
+                             * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+                             */
+                            @Override
+                            protected void onPageSelected(BannerEntry entry, int index) {
+                                super.onPageSelected(entry, index);
+                                //该方法是非抽象方法，不需要关心可以不实现。
+                            }
+
+                            /**
+                             * 当页面正在滚动中的时候执行。
+                             *
+                             * @param index                当前页面的索引。这个索引永远会在你的集合的size范围内。
+                             * @param positionOffset       值为(0,1)表示页面位置的偏移。
+                             * @param positionOffsetPixels 页面偏移的像素值。
+                             */
+                            @Override
+                            protected void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
+                                super.onPageScrolled(index, positionOffset, positionOffsetPixels);
+                                //该方法是非抽象方法，不需要关心可以不实现。
+                            }
+
+                            /**
+                             * 当Banner中的页面的滚动状态改变的时候被执行。
+                             *
+                             * @param state 当前的滚动状态。
+                             * @see BannerView#SCROLL_STATE_IDLE
+                             * @see BannerView#SCROLL_STATE_DRAGGING
+                             * @see BannerView#SCROLL_STATE_SETTLING
+                             */
+                            @Override
+                            protected void onPageScrollStateChanged(int state) {
+                                super.onPageScrollStateChanged(state);
+                                //该方法是非抽象方法，不需要关心可以不实现。
+                            }
+                        });
                         return true;
                     }
                     return false;

@@ -1,5 +1,5 @@
 # Banner
-###### 基于ViewPger封装的轮播图，支持无限轮播、支持自定义动画、支持自定义时长。高度可自定义UI。
+###### 基于ViewPager封装的轮播图，支持无限轮播、支持自定义动画、支持自定义时长。随意布局。
 * * *
 
 ## 简介
@@ -18,15 +18,187 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    compile 'com.github.kelinZhou:Banner:1.0.0'
+    compile 'com.github.kelinZhou:Banner:1.1.0'
 }
 ```
 
 ## 效果图
-![Banner](materials/gif_banner.gif)
+#### 样式一：标题等信息跟随页面滚动。
+![Banner](materials/gif_banner_one.gif)
+#### 样式二：标题固定，圆点指示器。
+指示器可以在XML中配置，翻页过程中无需做任何处理。支持配置点的颜色点的大小和选中时点的颜色和大小以及点与点之间的间距。
+
+![Banner](materials/gif_banner_two.gif)
+#### 样式三：标题固定，数字指示器。
+指示器可以在XML中配置，翻页过程中无需做任何处理。支持配置当前页字体颜色总页数字体颜色分隔符以及分割符字体颜色。
+
+![Banner](materials/gif_banner_three.gif)
 
 ## 使用
-#### 使用比较简单，请参考Demo。
+#### 数据模型。
+Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下是接口中的所有方法：
+
+| 方法名称 | 说明 | 返回值 |
+|---------|-----|--------|
+|```View onCreateView(ViewGroup parent);```|创建当前页面的布局视图。改方法只有第一加载视图进入页面的时候才会调用。也就是说视图有复用机制。|返回创建好的View对象。|
+|```CharSequence getTitle();```|获取标题。|返回当前页面的标题内容，也可以返回空，如果你当前页面没有标题的话。|
+|```CharSequence getSubTitle();```|获取子标题。|返回当前页面的子标题内容，也可以返回空，如果你当前页面没有子标题的话。|
+|```VALUE getValue();```|获取当前页面的数据。改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。|返回你所需要的任何对象|
+#### XML中使用。
+```
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:orientation="vertical"
+                android:paddingBottom="6dp"
+                android:paddingTop="6dp">
+
+    <com.kelin.banner.view.BannerView
+        android:id="@+id/vp_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        <!--为BannerView指定指示器，只要是BannerIndicator的子类都可以-->
+        app:bannerIndicator="@+id/biv_indicator"
+        <!--为BannerView指定用来显示标题的控件-->
+        app:titleView="@+id/tv_title"
+        <!--为BannerView指定用来显示副标题的控件-->
+        <!--app:subTitleView=""-->
+        <!--为BannerView设置翻页间隔-->
+        app:pagingIntervalTime="3000"
+        <!--为BannerView设置翻页时长减速倍数（是ViewPager时长的几倍）-->
+        app:decelerateMultiple="4"
+        <!--为BannerView指定动画差值器-->
+        <!--app:interpolator=""-->
+        android:background="#FFF"/>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_alignParentBottom="true"
+                  android:background="#8000"
+                  android:gravity="center_vertical"
+                  android:orientation="horizontal"
+                  android:padding="6dp">
+
+        <!--用来显示标题的控件-->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:maxWidth="300dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="6dp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="我是标题！"/>
+
+        <!--Banner的圆点型指示器-->
+        <com.kelin.banner.view.PointIndicatorView
+            android:id="@+id/biv_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            <!--设置总页数，这个参数设置了也是没有意义的，最总会以BannerView的总页数为准。配置
+            自定义属性只是为了能再布局文件中看到效果-->
+            app:totalCount="4"
+            <!--圆点的半径-->
+            app:pointRadius="3dp"
+            <!--选中时(也就是当前页)圆点的半径-->
+            app:selectedPointRadius="4dp"
+            <!--圆点与圆点之间的间距-->
+            app:pointSpacing="4dp"
+            <!--圆点的颜色-->
+            app:pointColor="#5fff"
+            <!--选中时(也就是当前页)圆点的颜色-->
+            app:selectedPointColor="@android:color/white"/>
+    </LinearLayout>
+</RelativeLayout>
+```
+#### 代码中使用。
+```
+    //找到BannerView控件。
+    BannerView bannerView = findViewById(R.id.vp_view_pager);
+    //设置翻页动画改变器
+    bannerView.setPageTransformer(true, new DepthPageTransformer());
+    //getData()方法是从网络上获取数据。这里只是伪代码。
+    List<TitleImageBannerEntry> bannerEntries = getData();
+    //设置数据源
+    bannerView.setEntries(bannerEntries);
+    //启动轮播。
+    bannerView.start();
+```
+#### 设置监听。
+```
+bannerView.setOnBannerEventListener(new BannerView.OnBannerEventListener() {
+        /**
+         * 页面被点击的时候执行。
+         *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
+         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+         */
+        @Override
+        protected void onPageClick(BannerEntry entry, int index) {
+            //处理页面被点击时的逻辑。
+        }
+
+        /**
+         * 页面被长按的时候执行。
+         *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
+         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+         */
+        @Override
+        protected void onPageLongClick(BannerEntry entry, int index) {
+            super.onPageLongClick(entry, index);
+            //该方法是非抽象方法，不需要关心可以不实现。
+        }
+
+        /**
+         * 当页面被选中的时候调用。
+         *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
+         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+         */
+        @Override
+        protected void onPageSelected(BannerEntry entry, int index) {
+            super.onPageSelected(entry, index);
+            //该方法是非抽象方法，不需要关心可以不实现。
+        }
+
+        /**
+         * 当页面正在滚动中的时候执行。
+         *
+         * @param index                当前页面的索引。这个索引永远会在你的集合的size范围内。
+         * @param positionOffset       值为(0,1)表示页面位置的偏移。
+         * @param positionOffsetPixels 页面偏移的像素值。
+         */
+        @Override
+        protected void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
+            super.onPageScrolled(index, positionOffset, positionOffsetPixels);
+            //该方法是非抽象方法，不需要关心可以不实现。
+        }
+
+        /**
+         * 当Banner中的页面的滚动状态改变的时候被执行。
+         *
+         * @param state 当前的滚动状态。
+         * @see BannerView#SCROLL_STATE_IDLE
+         * @see BannerView#SCROLL_STATE_DRAGGING
+         * @see BannerView#SCROLL_STATE_SETTLING
+         */
+        @Override
+        protected void onPageScrollStateChanged(int state) {
+            super.onPageScrollStateChanged(state);
+            //该方法是非抽象方法，不需要关心可以不实现。
+        }
+});
+```
 
 * * *
 ### License

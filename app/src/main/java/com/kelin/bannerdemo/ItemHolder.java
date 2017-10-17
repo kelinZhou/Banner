@@ -1,5 +1,6 @@
 package com.kelin.bannerdemo;
 
+import android.graphics.Color;
 import android.view.View;
 
 import com.kelin.recycleradapter.holder.ItemLayout;
@@ -14,6 +15,7 @@ import com.kelin.recycleradapter.holder.ItemViewHolder;
 class ItemHolder extends ItemViewHolder<String> {
     protected ItemHolder(View itemView) {
         super(itemView);
+        itemView.setBackgroundColor(Color.parseColor("#eeeeee"));
     }
 
     @Override
