@@ -13,8 +13,10 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
+
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.R;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -32,6 +34,24 @@ public class BannerView extends ViewPager {
     private int mTitleViewId;
     private int mSubTitleViewId;
 
+    /**
+     * 可以轮播有指示器。
+     */
+    static final int PAGING_AND_INDICATOR = 0x0000_0001;
+    /**
+     * 不可以轮播没有指示器。
+     */
+    static final int CAN_NOT_PAGING_NO_INDICATOR = 0x0000_0002;
+    /**
+     * 可以轮播没有指示器。
+     */
+    static final int CAN_PAGING_NO_INDICATOR = 0x0000_0003;
+    /**
+     * 不可以轮播有指示器。
+     */
+    static final int CAN_NOT_PAGING_HAVE_INDICATOR = 0x0000_0004;
+
+
     public BannerView(Context context) {
         this(context, null);
     }
@@ -44,21 +64,25 @@ public class BannerView extends ViewPager {
 
     private void init(Context context, AttributeSet attrs) {
         if (attrs == null) {
-            mBH = new BannerHelper(this);
+            mBH = new BannerHelper(this, PAGING_AND_INDICATOR);
         } else {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
-            int pagingIntervalTime = typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0);
-            int decelerateMultiple = typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0);
-            mPointIndicatorId = typedArray.getResourceId(R.styleable.BannerView_bannerIndicator, NO_ID);
-            mTitleViewId = typedArray.getResourceId(R.styleable.BannerView_titleView, NO_ID);
-            mSubTitleViewId = typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID);
             int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_interpolator, NO_ID);
             Interpolator interpolator = null;
             if (interpolatorId != NO_ID) {
                 interpolator = AnimationUtils.loadInterpolator(getContext(), interpolatorId);
             }
+
+            mBH = new BannerHelper(this,
+                    typedArray.getInt(R.styleable.BannerView_singlePageMode, PAGING_AND_INDICATOR),
+                    interpolator,
+                    typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0),
+                    typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0));
+
+            mPointIndicatorId = typedArray.getResourceId(R.styleable.BannerView_bannerIndicator, NO_ID);
+            mTitleViewId = typedArray.getResourceId(R.styleable.BannerView_titleView, NO_ID);
+            mSubTitleViewId = typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID);
             typedArray.recycle();
-            mBH = new BannerHelper(this, interpolator, pagingIntervalTime, decelerateMultiple);
         }
     }
 
@@ -106,7 +130,7 @@ public class BannerView extends ViewPager {
                 if (view instanceof BannerIndicator) {
                     setIndicatorView((BannerIndicator) view);
                 } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the BannerIndicatorView！");
+                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the BannerIndicator！");
                 }
                 mPointIndicatorId = NO_ID;
             }

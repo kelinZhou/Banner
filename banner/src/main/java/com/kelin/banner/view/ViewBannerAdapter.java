@@ -30,6 +30,10 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
      */
     private final View.OnTouchListener mTouchListener;
     /**
+     * 当只有一张图片时的显示方式。
+     */
+    private final int mSinglePageMode;
+    /**
      * 用来存放所有页面的模型对象。
      */
     private List<? extends BannerEntry> mItems;
@@ -40,12 +44,14 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
 
     /**
      * 构造方法。
+     *
      * @param clickListener 页面点击事件的监听。
      * @param touchListener 页面触摸事件的监听。
      */
-    ViewBannerAdapter(OnPageClickListener clickListener, View.OnTouchListener touchListener) {
+    ViewBannerAdapter(OnPageClickListener clickListener, View.OnTouchListener touchListener, int singlePageMode) {
         mClickListener = clickListener;
         mTouchListener = touchListener;
+        mSinglePageMode = singlePageMode;
     }
 
     @Override
@@ -84,7 +90,8 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
 
     @Override
     public int getCount() {
-        return mItems == null ? 0 : Integer.MAX_VALUE;
+        return mItems == null ? 0 : (mSinglePageMode == BannerView.CAN_NOT_PAGING_HAVE_INDICATOR
+                || mSinglePageMode == BannerView.CAN_NOT_PAGING_NO_INDICATOR) && mItems.size() == 1 ? 1 : Integer.MAX_VALUE;
     }
 
     @Override
@@ -94,6 +101,7 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
 
     /**
      * 获取最中间位置的第一页的位置。
+     *
      * @return 返回中间的第一页的位置。
      */
     int getCenterPageNumber() {
@@ -103,6 +111,7 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
 
     /**
      * 根据position计算出真正的 index 值。
+     *
      * @param position 当前的position。
      * @return 返回计算出的 index 值。
      */
@@ -114,16 +123,16 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
         return mItems.get(getIndex(position));
     }
 
-    int getItemCount() {
-        return mItems == null ? 0 : mItems.size();
-    }
-
     boolean setItems(List<? extends BannerEntry> items) {
         if (mItems == items && items.size() == mItems.size()) {
             return false;
         }
         mItems = items;
         return true;
+    }
+
+    List<? extends BannerEntry> getItems() {
+        return mItems;
     }
 
     @Override
@@ -146,6 +155,7 @@ class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, Vi
     static abstract class OnPageClickListener {
         /**
          * 页面被点击的时候执行。
+         *
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */

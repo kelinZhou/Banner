@@ -104,14 +104,22 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * 用来显示副标题的控件。
      */
     private TextView mSubTitleView;
+    /**
+     * 只有一张图片是的显示模式。
+     */
+    private int mSinglePageMode;
+    /**
+     * 用来记录指示器是否可用。
+     */
+    private boolean mIndicatorEnable;
 
     /**
      * 创建Banner对象。
      *
      * @param viewPager viewPager对象。
      */
-    BannerHelper(@NonNull BannerView viewPager) {
-        this(viewPager, null, 0, 0);
+    BannerHelper(@NonNull BannerView viewPager, int singlePageMode) {
+        this(viewPager, singlePageMode, null, 0, 0);
     }
 
     /**
@@ -119,12 +127,13 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      *
      * @param viewPager viewPager对象。
      */
-    BannerHelper(@NonNull BannerView viewPager, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple) {
+    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple) {
         mBannerView = viewPager;
         mHandler = viewPager.getHandler() == null ? new Handler() : viewPager.getHandler();
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
         mBannerView.replaceScroller(mScroller);
-        mAdapter = new ViewBannerAdapter(this, this);
+        mAdapter = new ViewBannerAdapter(this, this, singlePageMode);
+        mSinglePageMode = singlePageMode;
         viewPager.setAdapter(mAdapter);
         viewPager.setOnTouchListener(this);
         viewPager.addOnPageChangeListener(this);
@@ -134,6 +143,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置翻页的间隔时间，单位：毫秒。
+     *
      * @param pagingIntervalTime 要设置的时长。
      */
     void setPagingIntervalTime(@Size(min = 1000) int pagingIntervalTime) {
@@ -144,6 +154,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置翻页动画减速倍数。
+     *
      * @param multiple 要减速的倍数。默认为ViewPage的6倍。
      */
     void setMultiple(@Size(min = 2) int multiple) {
@@ -154,6 +165,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置事件监听。
+     *
      * @param eventListener Banner事件监听对象。
      */
     void setOnBannerEventListener(BannerView.OnBannerEventListener eventListener) {
@@ -162,15 +174,17 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置页面指示器控件。
+     *
      * @param indicatorView {@link BannerIndicator} 对象。
      */
     void setIndicatorView(@NonNull BannerIndicator indicatorView) {
         mIndicatorView = indicatorView;
-        indicatorView.setTotalCount(mAdapter.getItemCount());
+        checkIndicatorEnable(mAdapter.getItems());
     }
 
     /**
      * 设置标题显示控件。
+     *
      * @param titleView 用来显示标题的TextView。
      */
     void setTitleView(TextView titleView) {
@@ -182,6 +196,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置副标题显示控件。
+     *
      * @param subTitleView 用来显示副标题的TextView。
      */
     void setSubTitleView(TextView subTitleView) {
@@ -193,17 +208,49 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 设置条目数据。
-     * @param items {@link BannerEntry} 集合。
+     *
+     * @param items   {@link BannerEntry} 集合。
      * @param refresh 是否刷新页面。
      */
     void setEntries(List<? extends BannerEntry> items, boolean refresh) {
-        if (mIndicatorView != null) {
-            mIndicatorView.setTotalCount(items.size());
-        }
+        checkIndicatorEnable(items);
         boolean update = mAdapter.setItems(items);
         if (refresh && update) {
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void checkIndicatorEnable(List<? extends BannerEntry> items) {
+        if (mIndicatorView != null) {
+            if (indicatorEnable(items)) {
+                mIndicatorEnable = true;
+                mIndicatorView.setVisibility(View.VISIBLE);
+                mIndicatorView.setTotalCount(items.size());
+            } else {
+                mIndicatorEnable = false;
+                mIndicatorView.setVisibility(View.GONE);
+            }
+        } else {
+            mIndicatorEnable = false;
+        }
+    }
+
+    /**
+     * 判断Banner指示器是否可用。
+     * @param items 当前轮播图中的数据集。
+     * @return 可用返回true，不可用返回false。
+     */
+    private boolean indicatorEnable(List<? extends BannerEntry> items) {
+        return items.size() > 1 || (mSinglePageMode == BannerView.CAN_NOT_PAGING_HAVE_INDICATOR || mSinglePageMode == BannerView.PAGING_AND_INDICATOR);
+    }
+
+    /**
+     * 判断是否可以翻页。
+     * @param items 当前轮播图中的数据集。
+     * @return 可以翻页返回true，不可翻页返回false。
+     */
+    private boolean canPaging(List<? extends BannerEntry> items) {
+        return items.size() > 1 || (mSinglePageMode == BannerView.CAN_PAGING_NO_INDICATOR || mSinglePageMode == BannerView.PAGING_AND_INDICATOR);
     }
 
     /**
@@ -215,8 +262,11 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 开始轮播。
+     *
+     * @param restoration 是否复位。
      */
     private void start(boolean restoration) {
+        mHandler.removeCallbacksAndMessages(null);
         if (mIsStarted && !mIsPaused) {
             return;
         }
@@ -226,7 +276,10 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
             mIsNeverStarted = false;
             selectCenterPage(0);
         }
-        mHandler.postDelayed(mPageDownRunnable, mPagingIntervalTime);
+
+        if (canPaging(mAdapter.getItems())) {
+            mHandler.postDelayed(mPageDownRunnable, mPagingIntervalTime);
+        }
     }
 
     void selectCenterPage(int offset) {
@@ -331,7 +384,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
     public void onPageSelected(int position) {
         mCurrentItem = position;
         int index = mAdapter.getIndex(position);
-        if (mIndicatorView != null) {
+        if (mIndicatorEnable) {
             mIndicatorView.setCurPosition(index);
         }
         if (mTitleView != null) {
@@ -381,7 +434,6 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
     }
 
 
-
     /**
      * 页面被点击的时候执行。
      *
@@ -408,7 +460,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
         }
     }
 
-    private  class BannerScroller extends Scroller {
+    private class BannerScroller extends Scroller {
 
         private float mCardinal = 1;
 
