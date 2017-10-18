@@ -136,7 +136,7 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
 ```
     //找到BannerView控件。
     BannerView bannerView = findViewById(R.id.vp_view_pager);
-    //设置翻页动画改变器
+    //设置自定义翻页动画改变器，也可以不设置。如果没有设置，则使用ViewPager默认的翻页动画。
     bannerView.setPageTransformer(true, new DepthPageTransformer());
     //getData()方法是从网络上获取数据。这里只是伪代码。
     List<TitleImageBannerEntry> bannerEntries = getData();
