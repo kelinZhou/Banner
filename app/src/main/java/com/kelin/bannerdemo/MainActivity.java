@@ -34,10 +34,10 @@ public class MainActivity extends AppCompatActivity {
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
         ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner2Adapter = new ItemAdapter<>(BannerHolder2.class, getTitleImageBannerEntries());
-        ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntries());
+        ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntry());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
-        banner3Adapter.setEventInterceptor(getItemEventInterceptor());
+        banner2Adapter.setEventInterceptor(getItemEventInterceptor());
         adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
     }
@@ -93,6 +93,13 @@ public class MainActivity extends AppCompatActivity {
         items2.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", R.drawable.img_banner02, "我是第二页"));
         items2.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘", R.drawable.img_banner03, "我是第三页"));
         items2.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事", R.drawable.img_banner04, "我是第四页"));
+        return items2;
+    }
+
+    @NonNull
+    private List<TitleImageBannerEntry> getTitleImageBannerEntry() {
+        List<TitleImageBannerEntry> items2 = new ArrayList<>();
+        items2.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap", R.drawable.img_banner01, "我是第一页"));
         return items2;
     }
 

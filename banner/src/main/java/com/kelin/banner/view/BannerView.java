@@ -13,10 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
-
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.R;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
