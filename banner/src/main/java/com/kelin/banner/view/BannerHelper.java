@@ -53,6 +53,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mHandler.postDelayed(this, mPagingIntervalTime);
         }
     };
+
     /**
      * 存放当前BannerView的适配器。
      */
@@ -271,7 +272,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 可用返回true，不可用返回false。
      */
     private boolean indicatorEnable(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode == BannerView.CAN_NOT_PAGING_HAVE_INDICATOR || mSinglePageMode == BannerView.PAGING_AND_INDICATOR);
+        return items.size() > 1 || (mSinglePageMode & BannerView.NO_INDICATOR) == 0;
     }
 
     /**
@@ -281,7 +282,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 可以翻页返回true，不可翻页返回false。
      */
     private boolean canPaging(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode == BannerView.CAN_PAGING_NO_INDICATOR || mSinglePageMode == BannerView.PAGING_AND_INDICATOR);
+        return items.size() > 1 || (mSinglePageMode & BannerView.CAN_NOT_PAGING) == 0;
     }
 
     /**
@@ -580,8 +581,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public int getCount() {
-            return mItems == null ? 0 : (mSinglePageMode == BannerView.CAN_NOT_PAGING_HAVE_INDICATOR
-                    || mSinglePageMode == BannerView.CAN_NOT_PAGING_NO_INDICATOR) && mItems.size() == 1 ? 1 : Integer.MAX_VALUE;
+            return mItems == null ? 0 : canPaging(mItems) ? Integer.MAX_VALUE : mItems.size();
         }
 
         @Override

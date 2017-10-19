@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntry());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
-        banner2Adapter.setEventInterceptor(getItemEventInterceptor());
+        banner3Adapter.setEventInterceptor(getItemEventInterceptor());
         adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
     }

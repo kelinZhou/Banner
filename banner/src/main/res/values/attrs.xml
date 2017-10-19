@@ -14,16 +14,16 @@
         <!--翻页动画差值器-->
         <attr name="interpolator" format="reference"/>
         <!--只有一张图片时的显示模式-->
-        <attr name="singlePageMode">
-            <enum name="pagingAndIndicator" value="1"/>
-            <enum name="canNotPagingNoIndicator" value="2"/>
-            <enum name="canPagingNoIndicator" value="3"/>
-            <enum name="canNotPagingHaveIndicator" value="4"/>
+        <attr name="singlePageMode" format="integer">
+            <!--没有(不显示)指示器-->
+            <flag name="noIndicator" value="0x01"/>
+            <!--不可以也不能翻页-->
+            <flag name="canNotPaging" value="0x02"/>
         </attr>
     </declare-styleable>
 
     <declare-styleable name="BannerIndicator">
-        <!--总页数，如果是配合BannerView使用的则以BannerView的页数为准。-->
+        <!--总页数，如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以看到效果。-->
         <attr name="totalCount" format="integer"/>
     </declare-styleable>
 

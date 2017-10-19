@@ -34,21 +34,13 @@ public class BannerView extends ViewPager {
     private int mSubTitleViewId;
 
     /**
-     * 可以轮播有指示器。
+     * 没有(不显示)指示器。
      */
-    static final int PAGING_AND_INDICATOR = 0x0000_0001;
+    static final int NO_INDICATOR = 0x0000_0001;
     /**
-     * 不可以轮播没有指示器。
+     * 不可以也不能翻页。
      */
-    static final int CAN_NOT_PAGING_NO_INDICATOR = 0x0000_0002;
-    /**
-     * 可以轮播没有指示器。
-     */
-    static final int CAN_PAGING_NO_INDICATOR = 0x0000_0003;
-    /**
-     * 不可以轮播有指示器。
-     */
-    static final int CAN_NOT_PAGING_HAVE_INDICATOR = 0x0000_0004;
+    static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
 
 
     public BannerView(Context context) {
@@ -63,7 +55,7 @@ public class BannerView extends ViewPager {
 
     private void init(Context context, AttributeSet attrs) {
         if (attrs == null) {
-            mBH = new BannerHelper(this, PAGING_AND_INDICATOR);
+            mBH = new BannerHelper(this, 0);
         } else {
             TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
             int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_interpolator, NO_ID);
@@ -73,7 +65,7 @@ public class BannerView extends ViewPager {
             }
 
             mBH = new BannerHelper(this,
-                    typedArray.getInt(R.styleable.BannerView_singlePageMode, PAGING_AND_INDICATOR),
+                    typedArray.getInt(R.styleable.BannerView_singlePageMode, 0),
                     interpolator,
                     typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0),
                     typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0));

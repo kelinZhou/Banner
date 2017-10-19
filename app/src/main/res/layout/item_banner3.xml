@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:bannerIndicator="@+id/biv_indicator"
-        app:singlePageMode="canNotPagingHaveIndicator"
+        app:singlePageMode="canNotPaging"
         app:titleView="@+id/tv_title"
         app:pagingIntervalTime="3500"
         app:decelerateMultiple="4"

@@ -61,7 +61,7 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         <!--当Banner中的图片只有一张时的处理方式-->
-        app:singlePageMode="pagingAndIndicator"
+        app:singlePageMode="canNotPaging|noIndicator"
         <!--为BannerView指定指示器，只要是BannerIndicator的子类都可以-->
         app:bannerIndicator="@+id/biv_indicator"
         <!--为BannerView指定用来显示标题的控件-->
@@ -122,15 +122,15 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
     </LinearLayout>
 </RelativeLayout>
 ```
-上面的BannerView的自定义属性```app:singlePageMode```需要做下说明，因为支持无限轮播，那么只有一张图片的时候是否还需要无限轮播？这个属性就是用来配置当Banner中的图片只有一张时的处理方式的。
+上面的BannerView的自定义属性```app:singlePageMode="canNotPaging|noIndicator"```需要做下说明，因为支持无限轮播，那么只有一张图片的时候是否还需要无限轮播？这个属性就是用来配置当Banner中的图片只有一张时的处理方式的。
 
-###### 该属性是一个枚举属性，一共有以下四个值：
-1. ```pagingAndIndicator``` 表示即使只有一张图片也可以轮播，并且如果设置了指示器的话也依然显示指示器。该值也是默认值。
-2. ```canPagingNoIndicator``` 表示即使只有一张图片也可以轮播，但是无论你是否设置了指示器都不会显示。
-3. ```canNotPagingHaveIndicator``` 表示如果只有一张图片则不能轮播也不会自动轮播，但是如果设置了指示器的话就依然会显示。如果你使用的是圆点型指示器则会显示一个被选中的圆点，如果是数字指示器则会显示当前页为1总页数也是1。
-4. ```canNotPagingNoIndicator``` 表示如果只有一张图片则不能轮播也不会自动轮播，并且无论你是否设置了指示器都不会显示。
+###### 该属性是一个flag属性，一共有以下两个值：
+1. ```noIndicator``` 表示如果只有一张图片则没有指示器。也就是说无论你是否设置了指示器，如果只有一张图片的话那么指示器都是不显示的。但是依然是支持无限轮播的。
+2. ```canNotPaging``` 表示如果只有一张图片则不可以轮播。但是如你设置了指示器的话，指示器依然会显示。
 
-###### 以上所说的只有一张图片是指通过```BannerView```的```setEntries```方法设置数据源时数据源集合的```size()```等于1。
+    *上面两个属性可以同时配置，中间用"|"符号链接，例如上面代码中的配置。这样的话如果只有一张图片则既不会轮播而且无论你是否设置了指示器则都不会显示。*
+
+    **以上所说的只有一张图片是指通过```BannerView```的```setEntries```方法设置数据源时数据源集合的```size()```等于1。所说的设置只是器是指在XML代码中为BannerView配置```app:bannerIndicator```属性或者通过代码```BannerView.setIndicatorView(@NonNull BannerIndicator indicatorView)```为BannerView设置指示器。**
 
 #### 代码中使用。
 ```
