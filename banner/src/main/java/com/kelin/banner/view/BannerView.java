@@ -11,10 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.Scroller;
 import android.widget.TextView;
+
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.R;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -93,28 +94,17 @@ public class BannerView extends ViewPager {
 
     private void reSetLayoutParams(ViewPager.LayoutParams lp) {
         try {
-            Field positionField = getField(ViewPager.LayoutParams.class, "position");
+            Field positionField = BannerHelper.getField(ViewPager.LayoutParams.class, "position");
             if (positionField != null) {
                 positionField.setInt(lp, 0);
             }
-            Field widthFactorField = getField(ViewPager.LayoutParams.class, "widthFactor");
+            Field widthFactorField = BannerHelper.getField(ViewPager.LayoutParams.class, "widthFactor");
             if (widthFactorField != null) {
                 widthFactorField.setFloat(lp, 0.f);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private Field getField(Class cls,String fieldName) {
-        Field positionField = null;
-        try {
-            positionField =cls.getDeclaredField(fieldName);
-            positionField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return positionField;
     }
 
     @Override
@@ -314,8 +304,8 @@ public class BannerView extends ViewPager {
 
     int determineTargetPage(int currentPage, float pageOffset) {
         try {
-            Field lastMotionX = getField(ViewPager.class, "mLastMotionX");
-            Field initialMotionX = getField(ViewPager.class, "mInitialMotionX");
+            Field lastMotionX = BannerHelper.getField(ViewPager.class, "mLastMotionX");
+            Field initialMotionX = BannerHelper.getField(ViewPager.class, "mInitialMotionX");
             int deltaX = (int) (lastMotionX.getFloat(this) - initialMotionX.getFloat(this));
             Method method = ViewPager.class.getDeclaredMethod("determineTargetPage", int.class, float.class, int.class, int.class);
             method.setAccessible(true);
@@ -332,7 +322,7 @@ public class BannerView extends ViewPager {
             Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
             method.setAccessible(true);
             method.invoke(this, getCurrentItem(), false, 0, false);
-            Field mFirstLayout = getField(ViewPager.class, "mFirstLayout");
+            Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
             mFirstLayout.setBoolean(this, false);
         } catch (Exception e) {
             e.printStackTrace();
@@ -347,22 +337,9 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 替换原本的{@link Scroller}对象。
-     * @param scroller 要替换的{@link Scroller}对象。
-     */
-    void replaceScroller(Scroller scroller) {
-        try {
-            Field scrollerField = getField(ViewPager.class, "mScroller");
-            scrollerField.set(this, scroller);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * 轮播图的所有事件监听类。
      */
-    public static abstract class OnBannerEventListener extends ViewBannerAdapter.OnPageClickListener {
+    public static abstract class OnBannerEventListener {
 
         /**
          * 页面被点击的时候执行。
@@ -370,7 +347,6 @@ public class BannerView extends ViewPager {
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
-        @Override
         protected abstract void onPageClick(BannerEntry entry, int index);
 
         /**
@@ -379,7 +355,6 @@ public class BannerView extends ViewPager {
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
-        @Override
         protected void onPageLongClick(BannerEntry entry, int index) {
         }
 

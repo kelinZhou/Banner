@@ -4,17 +4,19 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
-
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.page.CenterBigTransformer;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ import java.util.List;
  * 版本 v 1.0.0
  */
 
-final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implements View.OnTouchListener, ViewPager.OnPageChangeListener {
+final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChangeListener {
     private static final String TAG = "--Banner";
 
     private static final int NOTHING_INT = 0xffff_ffff;
@@ -59,6 +61,9 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * Banner的事件监听对象。
      */
     private BannerView.OnBannerEventListener mEventListener;
+    /**
+     * 用来执行翻页任务。
+     */
     private Handler mHandler;
     /**
      * 记录是否已经被销毁。
@@ -93,6 +98,10 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      */
     private BannerIndicator mIndicatorView;
     /**
+     * 用来记录指示器是否可用，不可用就不会显示在屏幕上。
+     */
+    private boolean mIndicatorEnable;
+    /**
      * 翻页动画减速倍数。
      */
     private int mMultiple = 1;
@@ -108,10 +117,6 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * 只有一张图片是的显示模式。
      */
     private int mSinglePageMode;
-    /**
-     * 用来记录指示器是否可用。
-     */
-    private boolean mIndicatorEnable;
 
     /**
      * 创建Banner对象。
@@ -129,16 +134,40 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      */
     BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple) {
         mBannerView = viewPager;
+        mSinglePageMode = singlePageMode;
         mHandler = viewPager.getHandler() == null ? new Handler() : viewPager.getHandler();
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
-        mBannerView.replaceScroller(mScroller);
-        mAdapter = new ViewBannerAdapter(this, this, singlePageMode);
-        mSinglePageMode = singlePageMode;
-        viewPager.setAdapter(mAdapter);
+        replaceScroller(viewPager, mScroller);
+        viewPager.setAdapter(mAdapter = new ViewBannerAdapter());
         viewPager.setOnTouchListener(this);
         viewPager.addOnPageChangeListener(this);
         setPagingIntervalTime(pagingIntervalTime);
         setMultiple(decelerateMultiple);
+    }
+
+
+    /**
+     * 替换原本的{@link Scroller}对象。
+     * @param scroller 要替换的{@link Scroller}对象。
+     */
+    private void replaceScroller(@NonNull BannerView viewPager, Scroller scroller) {
+        try {
+            Field scrollerField = getField(ViewPager.class, "mScroller");
+            scrollerField.set(viewPager, scroller);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Field getField(Class cls,String fieldName) {
+        Field positionField = null;
+        try {
+            positionField =cls.getDeclaredField(fieldName);
+            positionField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return positionField;
     }
 
     /**
@@ -237,6 +266,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 判断Banner指示器是否可用。
+     *
      * @param items 当前轮播图中的数据集。
      * @return 可用返回true，不可用返回false。
      */
@@ -246,6 +276,7 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
 
     /**
      * 判断是否可以翻页。
+     *
      * @param items 当前轮播图中的数据集。
      * @return 可以翻页返回true，不可翻页返回false。
      */
@@ -266,7 +297,6 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * @param restoration 是否复位。
      */
     private void start(boolean restoration) {
-        mHandler.removeCallbacksAndMessages(null);
         if (mIsStarted && !mIsPaused) {
             return;
         }
@@ -440,7 +470,6 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * @param entry 当前页面的 {@link BannerEntry} 对象。
      * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
      */
-    @Override
     protected void onPageClick(BannerEntry entry, int index) {
         if (mEventListener != null) {
             mEventListener.onPageClick(entry, index);
@@ -453,13 +482,15 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
      * @param entry 当前页面的 {@link BannerEntry} 对象。
      * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
      */
-    @Override
     protected void onPageLongClick(BannerEntry entry, int index) {
         if (mEventListener != null) {
             mEventListener.onPageLongClick(entry, index);
         }
     }
 
+    /**
+     * Banner的页面滚动控制器。
+     */
     private class BannerScroller extends Scroller {
 
         private float mCardinal = 1;
@@ -489,6 +520,122 @@ final class BannerHelper extends ViewBannerAdapter.OnPageClickListener implement
         public float getInterpolation(float t) {
             t -= 1.0f;
             return t * t * t * t * t + 1.0f;
+        }
+    }
+
+    /**
+     * 描述 Banner的适配器。
+     * 创建人 kelin
+     * 创建时间 2017/7/21  下午4:14
+     * 版本 v 1.0.0
+     */
+
+    private class ViewBannerAdapter extends PagerAdapter implements View.OnClickListener, View.OnLongClickListener {
+        /**
+         * 用来存放和获取索引的TAG。
+         */
+        private static final int KEY_INDEX_TAG = 0x1000_0000;
+        /**
+         * 用来存放所有页面的模型对象。
+         */
+        private List<? extends BannerEntry> mItems;
+        /**
+         * 用来放置可以复用的页面的View。
+         */
+        private SparseArray<View> itemViewCache = new SparseArray<>();
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            int index = getIndex(position);
+            View entryView = itemViewCache.get(index);
+            if (entryView == null) {
+                BannerEntry bannerEntry = mItems.get(index);
+                entryView = bannerEntry.onCreateView(container);
+                entryView.setTag(KEY_INDEX_TAG, index);
+                entryView.setOnClickListener(this);
+                entryView.setOnLongClickListener(this);
+                entryView.setOnTouchListener(BannerHelper.this);
+            } else {
+                itemViewCache.remove(index);
+            }
+            container.addView(entryView);
+            return entryView;
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            itemViewCache.clear();
+            super.notifyDataSetChanged();
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            View view = (View) object;
+            container.removeView(view);
+            int index = getIndex(position);
+            if (itemViewCache.get(index) == null) {
+                itemViewCache.put(index, view);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return mItems == null ? 0 : (mSinglePageMode == BannerView.CAN_NOT_PAGING_HAVE_INDICATOR
+                    || mSinglePageMode == BannerView.CAN_NOT_PAGING_NO_INDICATOR) && mItems.size() == 1 ? 1 : Integer.MAX_VALUE;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        /**
+         * 获取最中间位置的第一页的位置。
+         *
+         * @return 返回中间的第一页的位置。
+         */
+        int getCenterPageNumber() {
+            int half = getCount() >>> 1;
+            return half - half % mItems.size();
+        }
+
+        /**
+         * 根据position计算出真正的 index 值。
+         *
+         * @param position 当前的position。
+         * @return 返回计算出的 index 值。
+         */
+        int getIndex(int position) {
+            return position % mItems.size();
+        }
+
+        BannerEntry getItem(int position) {
+            return mItems.get(getIndex(position));
+        }
+
+        boolean setItems(List<? extends BannerEntry> items) {
+            if (mItems == items && items.size() == mItems.size()) {
+                return false;
+            }
+            mItems = items;
+            return true;
+        }
+
+        List<? extends BannerEntry> getItems() {
+            return mItems;
+        }
+
+        @Override
+        public void onClick(View v) {
+            int tag = (int) v.getTag(KEY_INDEX_TAG);
+            onPageClick(mItems.get(tag), tag);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int tag = (int) v.getTag(KEY_INDEX_TAG);
+            onPageLongClick(mItems.get(tag), tag);
+            return true;
         }
     }
 }
