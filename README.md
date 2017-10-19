@@ -140,10 +140,8 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
     bannerView.setPageTransformer(true, new DepthPageTransformer());
     //getData()方法是从网络上获取数据。这里只是伪代码。
     List<TitleImageBannerEntry> bannerEntries = getData();
-    //设置数据源
+    //设置数据源并开始轮播。如果不希望启动轮播则调用两个参数的方法。
     bannerView.setEntries(bannerEntries);
-    //启动轮播。
-    bannerView.start();
 ```
 #### 设置监听。
 ```

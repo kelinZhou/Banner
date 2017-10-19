@@ -29,10 +29,8 @@ class BannerHolder3 extends ItemViewHolder<List<TitleImageBannerEntry>> {
 
     @Override
     public void onBindData(int i, List<TitleImageBannerEntry> bannerEntries) {
-        //设置数据源
+        //设置数据源并开始轮播。如果不希望启动轮播则调用两个参数的方法。
         mBannerView.setEntries(bannerEntries);
-        //启动轮播。
-        mBannerView.start();
     }
 
     @Override

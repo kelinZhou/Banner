@@ -28,19 +28,20 @@ import java.util.List;
  */
 
 public class BannerView extends ViewPager {
-    private BannerHelper mBH;
-    private int mPointIndicatorId;
-    private int mTitleViewId;
-    private int mSubTitleViewId;
 
     /**
      * 没有(不显示)指示器。
      */
-    static final int NO_INDICATOR = 0x0000_0001;
+    public static final int NO_INDICATOR = 0x0000_0001;
     /**
      * 不可以也不能翻页。
      */
-    static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
+    public static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
+
+    private BannerHelper mBH;
+    private int mPointIndicatorId;
+    private int mTitleViewId;
+    private int mSubTitleViewId;
 
 
     public BannerView(Context context) {
@@ -142,15 +143,17 @@ public class BannerView extends ViewPager {
             if (view.getParent() == null) {
                 throw new Resources.NotFoundException("the pointIndicator view id is not found!");
             } else {
-                return findView((ViewGroup)view.getParent(), viewId);
+                return findView((ViewGroup) view.getParent(), viewId);
             }
         }
         return v;
     }
 
     /**
-     * 设置条目数据并刷新页面。
+     * 设置条目数据并开始轮播。如果不希望启动轮播则调用两个参数的方法{@link #setEntries(List, boolean)}。
+     *
      * @param items {@link BannerEntry} 集合。
+     * @see #setEntries(List, boolean)
      */
     public void setEntries(List<? extends BannerEntry> items) {
         setEntries(items, true);
@@ -158,15 +161,17 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置条目数据。
+     *
      * @param items {@link BannerEntry} 集合。
-     * @param refresh 是否刷新页面。
+     * @param start 是否开始轮播。
      */
-    public void setEntries(@NonNull List<? extends BannerEntry> items, boolean refresh) {
-        mBH.setEntries(items, refresh);
+    public void setEntries(@NonNull List<? extends BannerEntry> items, boolean start) {
+        mBH.setEntries(items, start);
     }
 
     /**
      * 设置翻页的间隔时间，单位：毫秒。
+     *
      * @param pagingIntervalTime 要设置的时长。
      */
     public void setPagingIntervalTime(@Size(min = 1000) int pagingIntervalTime) {
@@ -175,6 +180,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置翻页动画减速倍数。
+     *
      * @param multiple 要减速的倍数。默认为ViewPage的6倍。
      */
     public void setDecelerateMultiple(@Size(min = 2) int multiple) {
@@ -183,6 +189,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置事件监听。
+     *
      * @param eventListener Banner事件监听对象。
      */
     public void setOnBannerEventListener(@NonNull BannerView.OnBannerEventListener eventListener) {
@@ -190,7 +197,22 @@ public class BannerView extends ViewPager {
     }
 
     /**
+     * 设置当Banner只有一张图片时的处理模式。该方法并不推荐使用，建议在XML中通过app:singlePageMode自定义属性配置。
+     *
+     * @param singlePageMode 要设置的处理模式，可以是{@link #NO_INDICATOR} 或者是 {@link #CAN_NOT_PAGING}。
+     *                       也可是同时设置两个参数，同时设置两个参数是中间用"|"符号链接。
+     *                       例如："bannerView.setSinglePageMode(BannerView.NO_INDICATOR|BannerView.CAN_NOT_PAGING)"。
+     *                       如果同时设置了两个参数则表示如果只有一张图片则既不会轮播而且无论你是否设置了指示器则都不会显示。
+     * @see #NO_INDICATOR
+     * @see #CAN_NOT_PAGING
+     */
+    public void setSinglePageMode(int singlePageMode) {
+        mBH.setSinglePageMode(singlePageMode);
+    }
+
+    /**
      * 设置页面指示器控件。
+     *
      * @param indicatorView {@link BannerIndicator} 对象。
      */
     public void setIndicatorView(@NonNull BannerIndicator indicatorView) {
@@ -199,6 +221,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置标题显示控件。
+     *
      * @param titleView 用来显示标题的TextView。
      */
     public void setTitleView(TextView titleView) {
@@ -207,6 +230,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 设置副标题显示控件。
+     *
      * @param subTitleView 用来显示副标题的TextView。
      */
     public void setSubTitleView(TextView subTitleView) {
@@ -245,6 +269,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 选择中间页，如果你没有调用Start()方法启动轮播的话默认是选中第一页的，如果你想移动到中间则需要调用这个方法。
+     *
      * @param offset 向右偏移的页数。
      */
     public void selectCenterPage(int offset) {

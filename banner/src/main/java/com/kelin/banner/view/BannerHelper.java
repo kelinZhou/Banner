@@ -19,6 +19,9 @@ import com.kelin.banner.page.CenterBigTransformer;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static com.kelin.banner.view.BannerView.CAN_NOT_PAGING;
+import static com.kelin.banner.view.BannerView.NO_INDICATOR;
+
 /**
  * 描述 Banner的帮助类。
  * 创建人 kelin
@@ -240,13 +243,16 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 设置条目数据。
      *
      * @param items   {@link BannerEntry} 集合。
-     * @param refresh 是否刷新页面。
+     * @param start 是否开始轮播。
      */
-    void setEntries(List<? extends BannerEntry> items, boolean refresh) {
+    void setEntries(List<? extends BannerEntry> items, boolean start) {
         checkIndicatorEnable(items);
         boolean update = mAdapter.setItems(items);
-        if (refresh && update) {
+        if (update) {
             mAdapter.notifyDataSetChanged();
+        }
+        if (start) {
+            start();
         }
     }
 
@@ -272,7 +278,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 可用返回true，不可用返回false。
      */
     private boolean indicatorEnable(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode & BannerView.NO_INDICATOR) == 0;
+        return items.size() > 1 || (mSinglePageMode & NO_INDICATOR) == 0;
     }
 
     /**
@@ -282,7 +288,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 可以翻页返回true，不可翻页返回false。
      */
     private boolean canPaging(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode & BannerView.CAN_NOT_PAGING) == 0;
+        return items.size() > 1 || (mSinglePageMode & CAN_NOT_PAGING) == 0;
     }
 
     /**
@@ -314,6 +320,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void selectCenterPage(int offset) {
+        int pageNum = mAdapter.getCenterPageNumber() + offset;
+        int count = mAdapter.getCount();
+        if (pageNum < 0 || pageNum > count) {
+            offset = 0;
+        }
         mBannerView.setCurrentItem(mAdapter.getCenterPageNumber() + offset);
     }
 
@@ -489,6 +500,16 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
+    void setSinglePageMode(int singlePageMode) {
+        if ((singlePageMode == NO_INDICATOR
+                || singlePageMode == CAN_NOT_PAGING
+                || singlePageMode == (NO_INDICATOR | CAN_NOT_PAGING))
+                && (mSinglePageMode & singlePageMode) != singlePageMode) {
+            mSinglePageMode = singlePageMode;
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
     /**
      * Banner的页面滚动控制器。
      */
@@ -595,8 +616,13 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
          * @return 返回中间的第一页的位置。
          */
         int getCenterPageNumber() {
-            int half = getCount() >>> 1;
-            return half - half % mItems.size();
+            int count = getCount();
+            if (count == 1) {
+                return 0;
+            } else {
+                int half = count >>> 1;
+                return half - half % mItems.size();
+            }
         }
 
         /**
