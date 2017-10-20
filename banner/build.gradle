@@ -32,6 +32,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:${ANDROID_SUPPORT_LIB_VERSION}"
     testCompile 'junit:junit:4.12'
 }
+
 // 指定编码
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
