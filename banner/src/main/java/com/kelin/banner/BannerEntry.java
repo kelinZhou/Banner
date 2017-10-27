@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 public interface BannerEntry<VALUE> {
 
     /**
-     * 获取当前页面的布局视图。
+     * 获取当前页面的布局视图。由于{@link com.kelin.banner.view.BannerHelper BannerHelper}对返回的View进行了
+     * {@link View#setOnTouchListener(View.OnTouchListener)}监听触摸事件的操作，所以你不能再对返回的View进行此操作了。
+     * 否者可能会出现手指在触摸时无法停止轮播的bug。
      * @param parent 当前的布局视图的父节点布局。
      * @return 返回当前页面所要显示的View。
      */

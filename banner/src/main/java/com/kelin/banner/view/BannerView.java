@@ -78,25 +78,43 @@ public class BannerView extends ViewPager {
         }
     }
 
+    /**
+     * 由于我需要监听BannerView的触摸事件，通过该事件来处理什么时候需要暂停和启动轮播图，所以我禁用了这个方法。其实你也并不需要
+     * 对Banner的触摸事件进行监听。
+     * @param l {@link OnTouchListener}对象。
+     */
+    @Override
+    @Deprecated
+    public void setOnTouchListener(OnTouchListener l) {
+        throw new RuntimeException("This method has been disabled");
+    }
+
+    /**
+     * 该方法进制调用，如果你非要调用将会导致Banner有严重的Bug。
+     * @param l {@link OnTouchListener}对象。
+     */
+    void listenerOnTouch(OnTouchListener l) {
+        super.setOnTouchListener(l);
+    }
+
     @Override
     public void removeView(View view) {
         super.removeView(view);
-        //这句代码是解决View复用导致的问题。重新对view的布局参数进行初始化。
-        reSetLayoutParams((LayoutParams) view.getLayoutParams());
-    }
-
-    private void reSetLayoutParams(ViewPager.LayoutParams lp) {
-        try {
-            Field positionField = BannerHelper.getField(ViewPager.LayoutParams.class, "position");
-            if (positionField != null) {
-                positionField.setInt(lp, 0);
+        //下面的代码是解决View复用导致的view层级关系错乱的问题。重新对view的布局参数进行初始化。
+        ViewGroup.LayoutParams lp = view.getLayoutParams();
+        if (lp != null) {
+            try {
+                Field positionField = BannerHelper.getField(ViewPager.LayoutParams.class, "position");
+                if (positionField != null) {
+                    positionField.setInt(lp, 0);
+                }
+                Field widthFactorField = BannerHelper.getField(ViewPager.LayoutParams.class, "widthFactor");
+                if (widthFactorField != null) {
+                    widthFactorField.setFloat(lp, 0.f);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            Field widthFactorField = BannerHelper.getField(ViewPager.LayoutParams.class, "widthFactor");
-            if (widthFactorField != null) {
-                widthFactorField.setFloat(lp, 0.f);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -1,5 +1,6 @@
 package com.kelin.banner.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
+
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.page.CenterBigTransformer;
 
@@ -136,6 +138,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      *
      * @param viewPager viewPager对象。
      */
+    @SuppressLint("ClickableViewAccessibility")
     BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple) {
         mBannerView = viewPager;
         mSinglePageMode = singlePageMode;
@@ -143,7 +146,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
         replaceScroller(viewPager, mScroller);
         viewPager.setAdapter(mAdapter = new ViewBannerAdapter());
-        viewPager.setOnTouchListener(this);
+        viewPager.listenerOnTouch(this);
         viewPager.addOnPageChangeListener(this);
         setPagingIntervalTime(pagingIntervalTime);
         setMultiple(decelerateMultiple);
@@ -152,6 +155,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
     /**
      * 替换原本的{@link Scroller}对象。
+     *
      * @param scroller 要替换的{@link Scroller}对象。
      */
     private void replaceScroller(@NonNull BannerView viewPager, Scroller scroller) {
@@ -163,10 +167,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    static Field getField(Class cls,String fieldName) {
+    static Field getField(Class cls, String fieldName) {
         Field positionField = null;
         try {
-            positionField =cls.getDeclaredField(fieldName);
+            positionField = cls.getDeclaredField(fieldName);
             positionField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -242,7 +246,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     /**
      * 设置条目数据。
      *
-     * @param items   {@link BannerEntry} 集合。
+     * @param items {@link BannerEntry} 集合。
      * @param start 是否开始轮播。
      */
     void setEntries(List<? extends BannerEntry> items, boolean start) {
@@ -357,8 +361,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     /**
-     * 设置显示左右两边的页面，调用该方法前你必须在你的布局文件中为 {@link BannerView} 包裹一层布局。而这个布局的触摸事件默认
-     * 会传递给 {@link BannerView}。
+     * 设置显示左右两边的页面，调用该方法前你必须在你的布局文件中为 {@link BannerView} 包裹一层布局。
+     * 由于{@link com.kelin.banner.view.BannerHelper BannerHelper}对包裹的这一层布局进行了
+     * {@link View#setOnTouchListener(View.OnTouchListener)}监听触摸事件的操作，所以你不能再对其进行此操作了。
+     * 否者可能会出现手指在触摸时无法停止轮播的bug。
      *
      * @param showWidthDp         两边页面的宽度。单位dp。
      * @param reverseDrawingOrder 是否翻转动画。
@@ -368,6 +374,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     void setShowLeftAndRightPage(int showWidthDp, boolean reverseDrawingOrder, ViewPager.PageTransformer pageTransformer) {
         BannerView viewPager = mBannerView;
         ViewGroup pagerBox = (ViewGroup) viewPager.getParent();
+        if (pagerBox == null) {
+            throw new RuntimeException("BannerView cannot be a root layout!");
+        }
         pagerBox.setOnTouchListener(this);
         pagerBox.setClipChildren(false);
         viewPager.setClipChildren(false);
@@ -515,12 +524,20 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      */
     private class BannerScroller extends Scroller {
 
+        /**
+         * 用来记录当前的基差。
+         */
         private float mCardinal = 1;
 
         private BannerScroller(Context context, Interpolator interpolator) {
             super(context, interpolator);
         }
 
+        /**
+         * 设置页面滚动的基差。
+         *
+         * @param cardinal 基差值。
+         */
         private void setCardinal(float cardinal) {
             mCardinal = cardinal;
         }
@@ -532,6 +549,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public void startScroll(int startX, int startY, int dx, int dy, int multiple) {
+            //根据设置的减速倍数和剩余需滚动的页面的基差重新计算出一个时长。
             int duration = (int) (multiple * mMultiple * mCardinal);
             super.startScroll(startX, startY, dx, dy, duration);
         }
