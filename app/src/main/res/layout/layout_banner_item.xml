@@ -61,4 +61,18 @@
         android:textSize="15sp"
         android:textStyle="bold"
         tools:text="楚乔楚乔我宣你！"/>
+
+    <TextView
+        android:id="@+id/tv_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:maxWidth="300dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="6dp"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        tools:text="更新至最后一集"/>
 </FrameLayout>

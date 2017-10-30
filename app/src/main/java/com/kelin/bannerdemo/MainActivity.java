@@ -1,6 +1,5 @@
 package com.kelin.bannerdemo;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,8 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnBannerEventListener mOnBannerEventListener;
-
-    private static final int[] colors = new int[]{Color.BLACK, Color.GREEN, Color.BLUE, Color.DKGRAY, Color.RED};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +76,11 @@ public class MainActivity extends AppCompatActivity {
     @NonNull
     private List<ImageBannerEntry> getImageBannerEntries() {
         List<ImageBannerEntry> items = new ArrayList<>();
-        items.add(new ImageBannerEntry("中国新歌声：E神赞藏语Rap", R.drawable.img_banner01));
-        items.add(new ImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", R.drawable.img_banner02));
-        items.add(new ImageBannerEntry("爱笑会议室：三生三世虐恋情缘", R.drawable.img_banner03));
-        items.add(new ImageBannerEntry("开心剧乐部：吴京上演战狼故事", R.drawable.img_banner04));
+        items.add(new ImageBannerEntry("大话西游：“炸毛韬”引诱老妖", "更新至50集", "http://m.qiyipic.com/common/lego/20171026/dd116655c96d4a249253167727ed37c8.jpg"));
+        items.add(new ImageBannerEntry("天使之路：藏风大片遇高反危机", "10-29期", "http://m.qiyipic.com/common/lego/20171029/c9c3800f35f84f1398b89740f80d8aa6.jpg"));
+        items.add(new ImageBannerEntry("星空海2：陆漓设局害惨吴居蓝", "更新至30集", "http://m.qiyipic.com/common/lego/20171023/bd84e15d8dd44d7c9674218de30ac75c.jpg"));
+        items.add(new ImageBannerEntry("中国职业脱口秀大赛：狂笑首播", "10-28期", "http://m.qiyipic.com/common/lego/20171028/f1b872de43e649ddbf624b1451ebf95e.jpg"));
+        items.add(new ImageBannerEntry("奇秀好音乐，你身边的音乐真人秀", null, "http://pic2.qiyipic.com/common/20171027/cdc6210c26e24f08940d36a5eb918c34.jpg"));
         return items;
     }
 

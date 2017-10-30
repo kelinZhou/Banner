@@ -12,7 +12,7 @@
         android:id="@+id/vp_view_pager"
         android:layout_width="match_parent"
         app:pagingIntervalTime="4000"
-        app:decelerateMultiple="4"
+        app:decelerateMultiple="6"
         android:layout_height="175dp"/>
 
 </RelativeLayout>

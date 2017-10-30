@@ -28,7 +28,7 @@ public abstract class BannerIndicator extends View {
      */
     private int mCurPosition;
     /**
-     * 画笔
+     * 画笔。
      */
     private final Paint mPaint;
 
