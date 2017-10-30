@@ -43,7 +43,7 @@ public class ImageBannerEntry implements BannerEntry<String> {
     }
 
     /**
-     * 获取标题，改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。
+     * 获取标题。
      *
      * @return 返回当前条目的标题。
      */
@@ -53,7 +53,7 @@ public class ImageBannerEntry implements BannerEntry<String> {
     }
 
     /**
-     * 获取子标题。改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。
+     * 获取子标题。
      *
      * @return 返回当前条目的子标题。
      */

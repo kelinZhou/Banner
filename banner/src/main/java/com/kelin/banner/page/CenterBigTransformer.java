@@ -1,6 +1,7 @@
 package com.kelin.banner.page;
 
 import android.support.annotation.FloatRange;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -25,13 +26,17 @@ public class CenterBigTransformer implements ViewPager.PageTransformer {
      *                 -1是向左的一个完整页面的位置。
      */
     @Override
-    public final void transformPage(View page, float position) {
+    public final void transformPage(@NonNull View page, float position) {
         //因为一个页面中做多可以出现三个页面所以超出范围的不计算。
         if (position > 2 || position < -2) {
             return;
         }
 
-        setPivotXY(page);
+        //设置缩放的x轴中心点
+        page.setPivotX(page.getWidth() / 2);
+        //设置缩放的y轴中心点
+        page.setPivotY(page.getHeight() / 2);
+
         //设置缩放比例
         if (position > 0 && position <= 1) {
             page.setScaleY(1 - position * (1 - scale));
@@ -40,12 +45,5 @@ public class CenterBigTransformer implements ViewPager.PageTransformer {
         } else {
             page.setScaleY(position == 0 ? 1 : scale);
         }
-    }
-
-    private void setPivotXY(View page) {
-        //设置缩放的x轴中心点
-        page.setPivotX(page.getWidth() / 2);
-        //设置缩放的y轴中心点
-        page.setPivotY(page.getHeight() / 2);
     }
 }

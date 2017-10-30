@@ -61,7 +61,7 @@ public abstract class BannerIndicator extends View {
     /**
      * 设置点的个数，如果你是配合 {@link BannerView } 使用的话，这不需要进行设置。只需要调用
      * {@link BannerView#setIndicatorView(BannerIndicator)} 方法或者为{@link BannerView}
-     * 配置"app:bannerIndicator"属性即可。
+     * 配置"app:bannerIndicator="@+id/banner_view"属性即可。
      *
      * @param totalCount 总的数量。
      * @see BannerView#setIndicatorView(BannerIndicator)
