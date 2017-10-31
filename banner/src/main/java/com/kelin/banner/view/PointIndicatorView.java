@@ -1,5 +1,6 @@
 package com.kelin.banner.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -8,6 +9,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 
 import com.kelin.banner.R;
 
@@ -151,18 +153,57 @@ public class PointIndicatorView extends BannerIndicator {
     }
 
     @Override
-    protected void onMeasureWidthAndHeight(int[] rect) {
-        //左padding + 右padding + 所有点需要占用的宽度 + 所有间距的宽度 = 总宽度。
-        rect[0] = getPaddingLeft() + getPaddingRight() + ((getTotalCount() - 1) * mNormalPointDiameter) + mSelectedPointDiameter + (int) ((getTotalCount() - 1) * mPointSpacing);
-        //上padding + 下padding + 最大的点的直径 = 总高度。
-        rect[1] = getPaddingTop() + getPaddingBottom() + Math.max(mSelectedPointDiameter, mNormalPointDiameter);
+    protected int onMeasureWidth() {
+        //所有点需要占用的宽度 + 所有间距的宽度 = 总宽度。
+        return (getTotalCount() - 1) * mNormalPointDiameter + mSelectedPointDiameter + (int) ((getTotalCount() - 1) * mPointSpacing);
     }
 
     @Override
+    protected int onMeasureHeight() {
+        //最大的点的直径 = 总高度。
+        return Math.max(mSelectedPointDiameter, mNormalPointDiameter);
+    }
+
+    @SuppressLint("RtlHardcoded")
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        int paddingTop = getPaddingTop();
+        int paddingLeft = getPaddingLeft();
+        int width = getWidth();
+        int measureWidth = getMeasureWidth();
+        int startX;
+        int height = getHeight();
+        int measureHeight = getMeasureHeight();
+        int centerY;
+
+        if (haveGravityFlag(Gravity.LEFT)) {
+            //默认按照Gravity.START算。
+            startX = paddingLeft;
+        } else if (haveGravityFlag(Gravity.RIGHT)) {
+            startX = width - measureWidth + paddingLeft;
+        } else if (haveGravityFlag(Gravity.CENTER_HORIZONTAL)) {
+            startX = ((width - measureWidth) >>> 1) - getPaddingRight() + paddingLeft;
+        } else {
+            //默认按照Gravity.START算。
+            startX = paddingLeft;
+        }
+
+        if (haveGravityFlag(Gravity.TOP)) {
+            //默认按照Gravity.TOP算。
+            centerY = (measureHeight >>> 1) + paddingTop;
+        } else if (haveGravityFlag(Gravity.BOTTOM)) {
+            centerY = height - (measureHeight >>> 1) - getPaddingBottom();
+        } else if (haveGravityFlag(Gravity.CENTER_VERTICAL)) {
+            centerY = (height >>> 1) - getPaddingBottom() + paddingTop;
+        } else {
+            //默认按照Gravity.TOP算。
+            centerY = (measureHeight >>> 1) + paddingTop;
+        }
+
+
         float radius;
-        float startX = getPaddingLeft();
         int diameter;
         for (int i = 0; i < getTotalCount(); i++) {
             if (i == getCurPosition()) {
@@ -174,7 +215,7 @@ public class PointIndicatorView extends BannerIndicator {
                 diameter = mNormalPointDiameter;
                 getPaint().setColor(mPointColor);
             }
-            canvas.drawCircle(startX + radius, getHeight() / 2, radius, getPaint());
+            canvas.drawCircle(startX + radius, centerY, radius, getPaint());
             startX += diameter + mPointSpacing;
         }
     }

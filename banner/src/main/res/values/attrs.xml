@@ -25,6 +25,7 @@
     <declare-styleable name="BannerIndicator">
         <!--总页数，如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以看到效果。-->
         <attr name="totalCount" format="integer"/>
+        <attr name="android:gravity"/>
     </declare-styleable>
 
     <declare-styleable name="PointIndicatorView">

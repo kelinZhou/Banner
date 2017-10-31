@@ -1,5 +1,6 @@
 package com.kelin.banner.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.Gravity;
 
 import com.kelin.banner.R;
 
@@ -26,7 +28,7 @@ public class NumberIndicatorView extends BannerIndicator {
     private static final int DEFAULT_TEXT_SIZE = 0x0000_000f;
     private static final String DEFAULT_SEPARATOR = "/";
 
-    private static final int MIN_SPACE_PADDING_TOP_OR_BOTTOM = 0x0000_0006;
+    private float MIN_SPACE_PADDING_TOP_OR_BOTTOM;
     /**
      * 用来记录分割符号。
      */
@@ -51,10 +53,6 @@ public class NumberIndicatorView extends BannerIndicator {
      */
     @ColorInt
     private int mTotalPageTextColor;
-    /**
-     * 用来记录测量过后的所有文字的宽度。
-     */
-    private float mMeasureTextWidth;
 
     public NumberIndicatorView(Context context) {
         this(context, null);
@@ -84,6 +82,7 @@ public class NumberIndicatorView extends BannerIndicator {
             mTotalPageTextColor = typedArray.getColor(R.styleable.NumberIndicatorView_totalPageTextColor, mTextColor);
             typedArray.recycle();
         }
+        MIN_SPACE_PADDING_TOP_OR_BOTTOM = 0x0000_0002 * (textSize / 15);
         if (mSeparatorTextColor == mCurrentPageTextColor && mTotalPageTextColor == mCurrentPageTextColor) {
             //如果这三个颜色相等则将这个颜色赋值给textColor。
             if (mSeparatorTextColor != mTextColor) {
@@ -99,6 +98,7 @@ public class NumberIndicatorView extends BannerIndicator {
 
     /**
      * 设置分隔符号文本。
+     *
      * @param separator 要设置的分割符。
      */
     public void setSeparator(String separator) {
@@ -108,6 +108,7 @@ public class NumberIndicatorView extends BannerIndicator {
 
     /**
      * 设置所有文字的颜色。
+     *
      * @param textColor 要设置的颜色。
      */
     public void setTextColor(@ColorInt int textColor) {
@@ -121,6 +122,7 @@ public class NumberIndicatorView extends BannerIndicator {
 
     /**
      * 设置分隔符文字颜色。
+     *
      * @param separatorTextColor 要设置的颜色。
      */
     public void setSeparatorTextColor(@ColorInt int separatorTextColor) {
@@ -136,6 +138,7 @@ public class NumberIndicatorView extends BannerIndicator {
 
     /**
      * 设置当前页文字颜色。
+     *
      * @param currentPageTextColor 要设置的颜色。
      */
     public void setCurrentPageTextColor(@ColorInt int currentPageTextColor) {
@@ -151,6 +154,7 @@ public class NumberIndicatorView extends BannerIndicator {
 
     /**
      * 设置总页数文字颜色。
+     *
      * @param totalPageTextColor 要设置的颜色。
      */
     public void setTotalPageTextColor(@ColorInt int totalPageTextColor) {
@@ -165,36 +169,72 @@ public class NumberIndicatorView extends BannerIndicator {
     }
 
     @Override
-    protected void onMeasureWidthAndHeight(int[] rect) {
-        mMeasureTextWidth = getPaint().measureText(getContentText());
-        rect[0] = (int) (getPaddingLeft() + getPaddingRight() + mMeasureTextWidth + 0.5f);
-        rect[1] = (int) (getPaddingTop() + getPaddingBottom() + Math.abs(getPaint().ascent() + getPaint().descent()) + (MIN_SPACE_PADDING_TOP_OR_BOTTOM << 1) + 0.5f);
+    protected int onMeasureHeight() {
+        return (int) (Math.abs(getPaint().ascent() + getPaint().descent()) + (MIN_SPACE_PADDING_TOP_OR_BOTTOM * 2) + 0.5f);
     }
 
+    @Override
+    protected int onMeasureWidth() {
+        return (int) (getPaint().measureText(getContentText()) + 0.5f);
+    }
+
+    @SuppressLint("RtlHardcoded")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         String contentText = getContentText();
         Paint paint = getPaint();
+
+        int paddingTop = getPaddingTop();
+        int paddingLeft = getPaddingLeft();
+        int width = getWidth();
+        int measureWidth = getMeasureWidth();
+        int startX;
+        int height = getHeight();
+        int measureHeight = getMeasureHeight();
+        int baseLine;
+
+        if (haveGravityFlag(Gravity.LEFT)) {
+            //默认按照Gravity.START算。
+            startX = paddingLeft;
+        } else if (haveGravityFlag(Gravity.RIGHT)) {
+            startX = width - measureWidth + paddingLeft;
+        } else if (haveGravityFlag(Gravity.CENTER_HORIZONTAL)) {
+            startX = ((width - measureWidth) >>> 1) - getPaddingRight() + paddingLeft;
+        } else {
+            //默认按照Gravity.START算。
+            startX = paddingLeft;
+        }
+
+        int paddingBottom = (int) (getPaddingBottom() + MIN_SPACE_PADDING_TOP_OR_BOTTOM + 0.5f);
+        if (haveGravityFlag(Gravity.TOP)) {
+            //默认按照Gravity.TOP算。
+            baseLine = measureHeight + paddingTop;
+        } else if (haveGravityFlag(Gravity.BOTTOM)) {
+            baseLine = height - paddingBottom;
+        } else if (haveGravityFlag(Gravity.CENTER_VERTICAL)) {
+            baseLine = (int) (((height + measureHeight) / 2f) - paddingBottom + paddingTop);
+        } else {
+            //默认按照Gravity.TOP算。
+            baseLine = measureHeight + paddingTop;
+        }
         if (mTextColor != Color.TRANSPARENT) {
-            canvas.drawText(contentText, getPaddingLeft(), getHeight() - MIN_SPACE_PADDING_TOP_OR_BOTTOM - getPaddingBottom(), paint);
+            drawText(canvas, paint, contentText, startX, mTextColor, baseLine);
         } else {
             String curPageNum = String.valueOf(getCurPageNum());
+            drawText(canvas, paint, curPageNum, startX, mCurrentPageTextColor, baseLine);
 
-            float startLocation = getPaddingLeft() + (getWidth() - mMeasureTextWidth) / 2;
-            drawText(canvas, paint, curPageNum, startLocation, mCurrentPageTextColor);
+            startX += paint.measureText(curPageNum);
+            drawText(canvas, paint, mSeparator, startX, mSeparatorTextColor, baseLine);
 
-            startLocation += paint.measureText(curPageNum);
-            drawText(canvas, paint, mSeparator, startLocation, mSeparatorTextColor);
-
-            startLocation += paint.measureText(mSeparator);
-            drawText(canvas, paint, String.valueOf(getTotalCount()), startLocation, mTotalPageTextColor);
+            startX += paint.measureText(mSeparator);
+            drawText(canvas, paint, String.valueOf(getTotalCount()), startX, mTotalPageTextColor, baseLine);
         }
     }
 
-    private void drawText(Canvas canvas, Paint paint, String text, float startLocation, int textColor) {
+    private void drawText(Canvas canvas, Paint paint, String text, float startLocation, int textColor, int y) {
         paint.setColor(textColor);
-        canvas.drawText(text, startLocation, getHeight() - MIN_SPACE_PADDING_TOP_OR_BOTTOM - getPaddingBottom(), paint);
+        canvas.drawText(text, startLocation, y, paint);
     }
 
     private String getContentText() {

@@ -1,11 +1,13 @@
 package com.kelin.banner.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 
 import com.kelin.banner.R;
@@ -31,6 +33,9 @@ public abstract class BannerIndicator extends View {
      * 画笔。
      */
     private final Paint mPaint;
+    int mGravity = Gravity.CENTER;
+    private int mMeasureWidth;
+    private int mMeasureHeight;
 
     public BannerIndicator(Context context) {
         this(context, null);
@@ -54,6 +59,7 @@ public abstract class BannerIndicator extends View {
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
         if (typedArray != null) {
             mTotalCount = typedArray.getInt(R.styleable.BannerIndicator_totalCount, 0);
+            setGravity(typedArray.getInt(R.styleable.BannerIndicator_android_gravity, Gravity.CENTER));
             typedArray.recycle();
         }
     }
@@ -98,18 +104,59 @@ public abstract class BannerIndicator extends View {
     protected final void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int[] rect = new int[2];
-        if (getTotalCount() > 0) {
-            onMeasureWidthAndHeight(rect);
+        int measureWidth = mMeasureWidth = onMeasureWidth();
+        int realWidth = measureWidth + getPaddingLeft() + getPaddingRight();
+        int measureHeight = mMeasureHeight = onMeasureHeight();
+        int realHeight = measureHeight + getPaddingTop() + getPaddingBottom();
+        if (widthMode != MeasureSpec.AT_MOST) {
+            realWidth = MeasureSpec.getSize(widthMeasureSpec);
         }
-        int newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(rect[1], heightMode);
-        int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(rect[0], widthMode);
-        super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
+        if (heightMode != MeasureSpec.AT_MOST) {
+            realHeight = MeasureSpec.getSize(heightMeasureSpec);
+        }
+        setMeasuredDimension(realWidth, realHeight);
+    }
+
+    protected abstract int onMeasureWidth();
+
+    protected abstract int onMeasureHeight();
+
+    protected int getMeasureWidth() {
+        return mMeasureWidth;
+    }
+
+    protected int getMeasureHeight() {
+        return mMeasureHeight;
+    }
+
+    protected final boolean haveGravityFlag(int gravity) {
+        return haveGravityFlag(mGravity, gravity);
+    }
+
+    protected final boolean haveGravityFlag(int flags, int gravity) {
+        return (flags & gravity) == gravity;
     }
 
     /**
-     * 当需要测量宽度和高度的时候调用。参数为一个长度为2的int数组，
-     * 你应当将测量的宽度赋值给数组的第一个元素，高度赋值给第二个元素。
+     * 设置偏移。只支持以下值的单一配置及合理组合:
+     * <p>{@link Gravity#TOP}、{@link Gravity#BOTTOM}、{@link Gravity#LEFT}、{@link Gravity#RIGHT}、{@link Gravity#START}
+     * 、{@link Gravity#END}、{@link Gravity#CENTER}、{@link Gravity#CENTER_VERTICAL}、{@link Gravity#CENTER_HORIZONTAL}。
+     * 可以同时配置多个值，多个值之间用"<font color="blue">|</font>"(或)符号连接。但是不支持{@link Gravity#FILL}、
+     * {@link Gravity#FILL_VERTICAL}、{@link Gravity#RELATIVE_HORIZONTAL_GRAVITY_MASK}、以及{@link Gravity#FILL_HORIZONTAL}
+     * 等类似配置。
+     *
+     * @param gravity 要设置的值。
      */
-    protected abstract void onMeasureWidthAndHeight(int[] rect);
+    @SuppressLint("RtlHardcoded")
+    public final void setGravity(int gravity) {
+        gravity &= 0x0000_ffff;
+        if (haveGravityFlag(gravity, Gravity.FILL)) {
+            gravity = Gravity.LEFT | Gravity.TOP;
+        }else if (haveGravityFlag(Gravity.FILL_VERTICAL)) {
+            gravity = Gravity.TOP;
+        }else{ if (haveGravityFlag(Gravity.FILL_HORIZONTAL)) {
+            gravity = Gravity.LEFT;
+        }}
+        mGravity = gravity;
+    }
 }

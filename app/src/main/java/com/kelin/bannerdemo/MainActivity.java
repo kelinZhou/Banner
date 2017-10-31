@@ -86,19 +86,22 @@ public class MainActivity extends AppCompatActivity {
 
     @NonNull
     private List<TitleImageBannerEntry> getTitleImageBannerEntries() {
-        List<TitleImageBannerEntry> items2 = new ArrayList<>();
-        items2.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap", R.drawable.img_banner01, "我是第一页"));
-        items2.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", R.drawable.img_banner02, "我是第二页"));
-        items2.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘", R.drawable.img_banner03, "我是第三页"));
-        items2.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事", R.drawable.img_banner04, "我是第四页"));
-        return items2;
+        List<TitleImageBannerEntry> items = new ArrayList<>();
+        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap","更新至10集", R.drawable.img_banner01, "我是第一页"));
+        items.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", "更新至11集", R.drawable.img_banner02, "我是第二页"));
+        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘","更新至12集", R.drawable.img_banner03, "我是第三页"));
+        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事","更新至13集", R.drawable.img_banner04, "我是第四页"));
+        return items;
     }
 
     @NonNull
     private List<TitleImageBannerEntry> getTitleImageBannerEntry() {
-        List<TitleImageBannerEntry> items2 = new ArrayList<>();
-        items2.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap", R.drawable.img_banner01, "我是第一页"));
-        return items2;
+        List<TitleImageBannerEntry> items = new ArrayList<>();
+        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap","更新至10集", R.drawable.img_banner01, "我是第一页"));
+        items.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", "更新至11集", R.drawable.img_banner02, "我是第二页"));
+        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘","更新至12集", R.drawable.img_banner03, "我是第三页"));
+        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事","更新至13集", R.drawable.img_banner04, "我是第四页"));
+        return items;
     }
 
     public List<String> getStringList() {

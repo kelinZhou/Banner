@@ -18,11 +18,13 @@ import com.kelin.banner.BannerEntry;
 public class TitleImageBannerEntry implements BannerEntry<String> {
     private final String url;
     private String title;
+    private String subTitle;
     @DrawableRes
     private int imgRes;
 
-    TitleImageBannerEntry(String title, int imgRes, String url) {
+    TitleImageBannerEntry(String title, String subTitle, int imgRes, String url) {
         this.title = title;
+        this.subTitle = subTitle;
         this.imgRes = imgRes;
         this.url = url;
     }
@@ -53,7 +55,7 @@ public class TitleImageBannerEntry implements BannerEntry<String> {
     @Nullable
     @Override
     public CharSequence getSubTitle() {
-        return null;
+        return subTitle;
     }
 
     /**

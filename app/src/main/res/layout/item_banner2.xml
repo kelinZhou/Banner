@@ -14,7 +14,9 @@
         android:layout_height="match_parent"
         app:bannerIndicator="@+id/biv_indicator"
         app:titleView="@+id/tv_title"
+        app:subTitleView="@+id/tv_sub_title"
         app:pagingIntervalTime="3000"
+        app:singlePageMode="canNotPaging|noIndicator"
         app:decelerateMultiple="4"
         android:background="#FFF"/>
 
@@ -39,28 +41,33 @@
                   android:orientation="horizontal"
                   android:padding="6dp">
 
-        <!--用来显示标题的控件-->
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1"
-            android:maxWidth="300dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="6dp"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            tools:text="我是标题！"/>
+            <!--用来显示标题的控件-->
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="我是标题！"/>
+
+            <!--用来显示子标题的控件-->
+            <TextView
+                android:id="@+id/tv_sub_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                tools:text="我是子标题"/>
 
         <!--Banner的圆点型指示器-->
         <com.kelin.banner.view.PointIndicatorView
             android:id="@+id/biv_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="end"
             app:totalCount="4"
             app:pointRadius="3dp"
             app:selectedPointRadius="4dp"
