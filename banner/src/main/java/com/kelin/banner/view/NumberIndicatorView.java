@@ -64,13 +64,9 @@ public class NumberIndicatorView extends BannerIndicator {
 
     public NumberIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    @Override
-    protected void onInitAttrs(Context context, AttributeSet attrs) {
-        super.onInitAttrs(context, attrs);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NumberIndicatorView);
-        int textSize = sp2px(DEFAULT_TEXT_SIZE);
+        TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.NumberIndicatorView);
+        final float fontScale = getContext().getResources().getDisplayMetrics().scaledDensity;
+        int textSize = (int) (DEFAULT_TEXT_SIZE * fontScale + 0.5f);
         mTextColor = mSeparatorTextColor = mCurrentPageTextColor = mTotalPageTextColor = getPaint().getColor();
         String separator = null;
         if (typedArray != null) {
@@ -182,16 +178,15 @@ public class NumberIndicatorView extends BannerIndicator {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        String contentText = getContentText();
         Paint paint = getPaint();
 
         int paddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
         int width = getWidth();
-        int measureWidth = getMeasureWidth();
+        int measureWidth = getContentWidth();
         int startX;
         int height = getHeight();
-        int measureHeight = getMeasureHeight();
+        int measureHeight = getContentHeight();
         int baseLine;
 
         if (haveGravityFlag(Gravity.LEFT)) {
@@ -219,7 +214,7 @@ public class NumberIndicatorView extends BannerIndicator {
             baseLine = measureHeight + paddingTop;
         }
         if (mTextColor != Color.TRANSPARENT) {
-            drawText(canvas, paint, contentText, startX, mTextColor, baseLine);
+            drawText(canvas, paint, getContentText(), startX, mTextColor, baseLine);
         } else {
             String curPageNum = String.valueOf(getCurPageNum());
             drawText(canvas, paint, curPageNum, startX, mCurrentPageTextColor, baseLine);
@@ -237,16 +232,21 @@ public class NumberIndicatorView extends BannerIndicator {
         canvas.drawText(text, startLocation, y, paint);
     }
 
-    private String getContentText() {
+    /**
+     * 获取当前控件中文字。
+     *
+     * @return 返回当前控件中文字。
+     */
+    public String getContentText() {
         return String.format(Locale.CHINA, "%d%s%d", getCurPageNum(), mSeparator, getTotalCount());
     }
 
-    private int getCurPageNum() {
+    /**
+     * 获取当前的页码数字号。
+     *
+     * @return 返回一个可以展示给用户看的页码数字。
+     */
+    public int getCurPageNum() {
         return getCurPosition() + 1;
-    }
-
-    private int sp2px(float sp) {
-        final float fontScale = getContext().getResources().getDisplayMetrics().scaledDensity;
-        return (int) (sp * fontScale + 0.5f);
     }
 }

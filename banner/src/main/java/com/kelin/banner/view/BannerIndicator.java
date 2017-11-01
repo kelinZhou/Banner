@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
-import android.support.annotation.CallSuper;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -33,9 +32,18 @@ public abstract class BannerIndicator extends View {
      * 画笔。
      */
     private final Paint mPaint;
+    /**
+     * 用来存放所有的gravity属性。
+     */
     int mGravity = Gravity.CENTER;
-    private int mMeasureWidth;
-    private int mMeasureHeight;
+    /**
+     * 用来记录内容区域的宽度。
+     */
+    private int mContentWidth;
+    /**
+     * 用来记录内容区域的高度。
+     */
+    private int mContentHeight;
 
     public BannerIndicator(Context context) {
         this(context, null);
@@ -48,20 +56,14 @@ public abstract class BannerIndicator extends View {
     public BannerIndicator(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-        if (attrs != null) {
-            onInitAttrs(context, attrs);
-        }
-    }
-
-    @CallSuper
-    protected void onInitAttrs(Context context, AttributeSet attrs) {
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
+        TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.BannerIndicator);
+        int gravity = Gravity.CENTER;
         if (typedArray != null) {
             mTotalCount = typedArray.getInt(R.styleable.BannerIndicator_totalCount, 0);
-            setGravity(typedArray.getInt(R.styleable.BannerIndicator_android_gravity, Gravity.CENTER));
+            gravity = typedArray.getInt(R.styleable.BannerIndicator_android_gravity, gravity);
             typedArray.recycle();
         }
+        setGravity(gravity);
     }
 
     /**
@@ -88,11 +90,21 @@ public abstract class BannerIndicator extends View {
         requestLayout();
     }
 
-    protected final int getTotalCount() {
+    /**
+     * 获取总的数量。
+     *
+     * @return 返回总的数量。
+     */
+    public final int getTotalCount() {
         return mTotalCount;
     }
 
-    protected final int getCurPosition() {
+    /**
+     * 获取当前的指针位置。
+     *
+     * @return 返回当前的指针位置。
+     */
+    public final int getCurPosition() {
         return mCurPosition;
     }
 
@@ -104,9 +116,9 @@ public abstract class BannerIndicator extends View {
     protected final void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int measureWidth = mMeasureWidth = onMeasureWidth();
+        int measureWidth = mContentWidth = onMeasureWidth();
         int realWidth = measureWidth + getPaddingLeft() + getPaddingRight();
-        int measureHeight = mMeasureHeight = onMeasureHeight();
+        int measureHeight = mContentHeight = onMeasureHeight();
         int realHeight = measureHeight + getPaddingTop() + getPaddingBottom();
         if (widthMode != MeasureSpec.AT_MOST) {
             realWidth = MeasureSpec.getSize(widthMeasureSpec);
@@ -117,24 +129,59 @@ public abstract class BannerIndicator extends View {
         setMeasuredDimension(realWidth, realHeight);
     }
 
+    /**
+     * 当需要测量宽度的时候调用。你不需要考虑padding的存在，只需要将你所需要的最小宽度测量出来并返回就好了。
+     *
+     * @return 返回你测量过后的所得到的不包含padding的宽度。
+     */
     protected abstract int onMeasureWidth();
 
+    /**
+     * 当需要测量高度的时候调用。你不需要考虑padding的存在，只需要将你所需要的最小高度测量出来并返回就好了。
+     *
+     * @return 返回你测量过后的所得到的不包含padding的高度。
+     */
     protected abstract int onMeasureHeight();
 
-    protected int getMeasureWidth() {
-        return mMeasureWidth;
+    /**
+     * 获取内容区域的宽度。
+     *
+     * @return 返回内容区域所占用的宽度，其实这个值就是{@link #onMeasureWidth()}方法的返回值。
+     * @see #onMeasureWidth()
+     */
+    protected final int getContentWidth() {
+        return mContentWidth;
     }
 
-    protected int getMeasureHeight() {
-        return mMeasureHeight;
+    /**
+     * 获取内容区域的高度。
+     *
+     * @return 返回内容区域所占用的高度，其实这个值就是{@link #onMeasureHeight()}方法的返回值。
+     * @see #onMeasureHeight()
+     */
+    protected final int getContentHeight() {
+        return mContentHeight;
     }
 
+    /**
+     * 判断当前所有的Gravity属性中是否包含某个属性。
+     *
+     * @param gravity 要判断的是否包含的属性。
+     * @return 如果包含则返回true，否则返回false。
+     */
     protected final boolean haveGravityFlag(int gravity) {
-        return haveGravityFlag(mGravity, gravity);
+        return haveFlag(mGravity, gravity);
     }
 
-    protected final boolean haveGravityFlag(int flags, int gravity) {
-        return (flags & gravity) == gravity;
+    /**
+     * 判断某个flag标识容器中是否存在指定的标识。
+     *
+     * @param flags 标识容器。
+     * @param flag  要判断的标识。
+     * @return 存在则返回true，否则返回false。
+     */
+    protected final boolean haveFlag(int flags, int flag) {
+        return (flags & flag) == flag;
     }
 
     /**
@@ -149,14 +196,16 @@ public abstract class BannerIndicator extends View {
      */
     @SuppressLint("RtlHardcoded")
     public final void setGravity(int gravity) {
-        gravity &= 0x0000_ffff;
-        if (haveGravityFlag(gravity, Gravity.FILL)) {
+        gravity &= 0x00ff;
+        if (haveFlag(gravity, Gravity.FILL)) {
             gravity = Gravity.LEFT | Gravity.TOP;
-        }else if (haveGravityFlag(Gravity.FILL_VERTICAL)) {
+        } else if (haveFlag(gravity, Gravity.FILL_VERTICAL)) {
             gravity = Gravity.TOP;
-        }else{ if (haveGravityFlag(Gravity.FILL_HORIZONTAL)) {
-            gravity = Gravity.LEFT;
-        }}
+        } else {
+            if (haveFlag(gravity, Gravity.FILL_HORIZONTAL)) {
+                gravity = Gravity.LEFT;
+            }
+        }
         mGravity = gravity;
     }
 }

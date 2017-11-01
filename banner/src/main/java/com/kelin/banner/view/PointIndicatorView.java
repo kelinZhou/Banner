@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.support.annotation.CallSuper;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -75,13 +74,8 @@ public class PointIndicatorView extends BannerIndicator {
         Paint paint = getPaint();
         paint.setStyle(Paint.Style.FILL);
         paint.setStrokeWidth(0);
-    }
 
-    @Override
-    @CallSuper
-    protected void onInitAttrs(Context context, AttributeSet attrs) {
-        super.onInitAttrs(context, attrs);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.PointIndicatorView);
+        TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.PointIndicatorView);
         float scale = getResources().getDisplayMetrics().densityDpi;
         float defaultPointRadius = (int) (3 * (scale / 160) + 0.5f);
         float selectedPointRadius = 0;
@@ -172,10 +166,10 @@ public class PointIndicatorView extends BannerIndicator {
         int paddingTop = getPaddingTop();
         int paddingLeft = getPaddingLeft();
         int width = getWidth();
-        int measureWidth = getMeasureWidth();
+        int measureWidth = getContentWidth();
         int startX;
         int height = getHeight();
-        int measureHeight = getMeasureHeight();
+        int measureHeight = getContentHeight();
         int centerY;
 
         if (haveGravityFlag(Gravity.LEFT)) {
