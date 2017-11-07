@@ -36,9 +36,9 @@ public class ImageBannerEntry implements BannerEntry<String> {
     @Override
     public View onCreateView(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_banner_item, parent, false);
-        ImageView imageView = view.findViewById(R.id.iv_image);
-        TextView tvTitle = view.findViewById(R.id.tv_title);
-        TextView tvSubTitle = view.findViewById(R.id.tv_sub_title);
+        ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
+        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        TextView tvSubTitle = (TextView) view.findViewById(R.id.tv_sub_title);
         //这是的Glide代码只是为了掩饰加载网络图片，如果你还不了解Glide的使用可以参考官方文档或他人博客。
         //这个库没有集成图片框架是因为大家的项目中所使用的图片框架可能不是都是一样的。我认为使用什么图片框架应该由大家自己决定，而不是我来集成。
         Glide.with(parent.getContext())
