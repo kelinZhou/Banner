@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.TextView;
@@ -158,10 +159,11 @@ public class BannerView extends ViewPager {
     private View findView(ViewGroup view, int viewId) {
         View v = view.findViewById(viewId);
         if (v == null) {
-            if (view.getParent() == null) {
-                throw new Resources.NotFoundException("the pointIndicator view id is not found!");
+            ViewParent parent = view.getParent();
+            if (parent != null && parent instanceof ViewGroup) {
+                return findView((ViewGroup) parent, viewId);
             } else {
-                return findView((ViewGroup) view.getParent(), viewId);
+                throw new Resources.NotFoundException("the pointIndicator view id is not found!");
             }
         }
         return v;
@@ -185,6 +187,14 @@ public class BannerView extends ViewPager {
      */
     public void setEntries(@NonNull List<? extends BannerEntry> items, boolean start) {
         mBH.setEntries(items, start);
+    }
+
+    /**
+     * 获取数据源集合。
+     * @return 返回上一次调用 {@link #setEntries(List)} 或 {@link #setEntries(List, boolean)} 方法成功时的参数。
+     */
+    public List<? extends BannerEntry> getEntries() {
+        return mBH.getEntries();
     }
 
     /**

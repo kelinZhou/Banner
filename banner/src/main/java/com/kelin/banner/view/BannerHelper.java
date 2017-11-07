@@ -260,6 +260,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
+    List<? extends BannerEntry> getEntries() {
+        return mAdapter.getItems();
+    }
+
     private void checkIndicatorEnable(List<? extends BannerEntry> items) {
         if (mIndicatorView != null) {
             if (indicatorEnable(items)) {
