@@ -1,6 +1,7 @@
 package com.kelin.bannerdemo;
 
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +60,10 @@ public class ImageBannerEntry implements BannerEntry<String> {
         return title;
     }
 
+    private String getImgUrl() {
+        return imgUrl;
+    }
+
     /**
      * 获取子标题。
      *
@@ -78,5 +83,10 @@ public class ImageBannerEntry implements BannerEntry<String> {
     @Override
     public String getValue() {
         return title;
+    }
+
+    @Override
+    public boolean same(BannerEntry newEntry) {
+        return newEntry instanceof ImageBannerEntry && TextUtils.equals(title, newEntry.getTitle()) && TextUtils.equals(subTitle, newEntry.getSubTitle()) && TextUtils.equals(imgUrl, ((ImageBannerEntry) newEntry).getImgUrl());
     }
 }

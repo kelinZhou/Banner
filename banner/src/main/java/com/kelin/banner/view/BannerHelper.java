@@ -250,13 +250,18 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param start 是否开始轮播。
      */
     void setEntries(List<? extends BannerEntry> items, boolean start) {
-        checkIndicatorEnable(items);
+        if (items == null || items.isEmpty()) {
+            return;
+        }
         boolean update = mAdapter.setItems(items);
         if (update) {
             mAdapter.notifyDataSetChanged();
-        }
-        if (start) {
-            start();
+            checkIndicatorEnable(items);
+            if (start) {
+                start();
+            } else {
+                selectCenterPage(0);
+            }
         }
     }
 
@@ -328,12 +333,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void selectCenterPage(int offset) {
-        int pageNum = mAdapter.getCenterPageNumber() + offset;
-        int count = mAdapter.getCount();
-        if (pageNum < 0 || pageNum > count) {
+        int pageNum = mAdapter.getCenterPageNumber();
+        if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
             offset = 0;
         }
-        mBannerView.setCurrentItem(mAdapter.getCenterPageNumber() + offset);
+        mBannerView.setCurrentItem(pageNum + offset);
     }
 
     /**
@@ -398,6 +402,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int action = motionEvent.getAction();
         int parseAction = parseAction(action);
@@ -554,7 +559,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         @Override
         public void startScroll(int startX, int startY, int dx, int dy, int multiple) {
             //根据设置的减速倍数和剩余需滚动的页面的基差重新计算出一个时长。
-            int duration = (int) (multiple * mMultiple * mCardinal);
+            int duration = (int) (multiple * (isStarted() ? mMultiple : 1) * mCardinal);
             super.startScroll(startX, startY, dx, dy, duration);
         }
     }
@@ -662,11 +667,27 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
 
         boolean setItems(List<? extends BannerEntry> items) {
-            if (mItems == items && items.size() == mItems.size()) {
-                return false;
+            boolean successful = true;
+            if (mItems != null) {
+                if (mItems == items) {
+                    successful = false;
+                } else if (items.size() == mItems.size()) {
+                    BannerEntry entry;
+                    BannerEntry newEntry;
+                    for (int i = 0; i < items.size(); i++) {
+                        entry = mItems.get(i);
+                        newEntry = items.get(i);
+                        if (!entry.same(newEntry)) {
+                            successful = true;
+                            break;
+                        }
+                    }
+                }
             }
-            mItems = items;
-            return true;
+            if (successful) {
+                mItems = items;
+            }
+            return successful;
         }
 
         List<? extends BannerEntry> getItems() {

@@ -2,6 +2,7 @@ package com.kelin.bannerdemo;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,5 +67,10 @@ public class TitleImageBannerEntry implements BannerEntry<String> {
     @Override
     public String getValue() {
         return url;
+    }
+
+    @Override
+    public boolean same(BannerEntry newEntry) {
+        return newEntry instanceof TitleImageBannerEntry && TextUtils.equals(title, newEntry.getTitle()) && TextUtils.equals(subTitle, newEntry.getSubTitle()) && imgRes == ((TitleImageBannerEntry)newEntry).imgRes;
     }
 }

@@ -273,7 +273,9 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 停止轮播。
+     * 停止轮播。调用此方法可以轮播图从正在轮播的状态改变到停止轮播的状态。该方法一般
+     * 情况下你是不需要调用的，假如你是配合可滚动的控件(如ScrollView、ListView或则RecyclerView)使用时希望通过调用
+     * 该方法在轮播图不可见时停止轮播的话，那就不必了。因为我已经做好了这件事情。
      */
     public void stop() {
         mBH.stop();
@@ -289,14 +291,14 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 选择中间页，如果你没有调用Start()方法启动轮播的话默认是选中第一页的，如果你想移动到中间则需要调用这个方法。
+     * 选择中间页，如果你想移动到中间则需要调用这个方法。
      */
     public void selectCenterPage() {
         selectCenterPage(0);
     }
 
     /**
-     * 选择中间页，如果你没有调用Start()方法启动轮播的话默认是选中第一页的，如果你想移动到中间则需要调用这个方法。
+     * 选择中间页，如果你想移动到中间则需要调用这个方法。
      *
      * @param offset 向右偏移的页数。
      */
@@ -363,6 +365,7 @@ public class BannerView extends ViewPager {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mBH.reStart();
         try {
             Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
             method.setAccessible(true);
@@ -372,7 +375,6 @@ public class BannerView extends ViewPager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mBH.reStart();
     }
 
     @Override
