@@ -5,6 +5,10 @@
 ## 简介
 基于ViewPage的的封装，UI样式完全由自己控制。可自定义各种动画。可简单实现各种轮播图效果，支持对轮播图的各种事件监听，例如：点击、长按、页面选中等。
 
+修复了ViewPage配合RecyclerView使用时的两大bug（1.Banner重新出现在屏幕上后第一次轮播没有动画，动画执行一半时上拉再下拉动画会开在哪里）。
+
+配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
+
 ## 下载
 ###### 第一步：添加 JitPack 仓库到你项目根目录的 gradle 文件中。
 ```
@@ -18,7 +22,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    compile 'com.github.kelinZhou:Banner:1.1.4'
+    compile 'com.github.kelinZhou:Banner:2.0.0'
 }
 ```
 
@@ -43,7 +47,8 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
 |```View onCreateView(ViewGroup parent);```|创建当前页面的布局视图。改方法只有第一加载视图进入页面的时候才会调用。也就是说视图有复用机制。|返回创建好的View对象。|
 |```CharSequence getTitle();```|获取标题。|返回当前页面的标题内容，也可以返回空，如果你当前页面没有标题的话。|
 |```CharSequence getSubTitle();```|获取子标题。|返回当前页面的子标题内容，也可以返回空，如果你当前页面没有子标题的话。|
-|```VALUE getValue();```|获取当前页面的数据。改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。|返回你所需要的任何对象|
+|```VALUE getValue();```|获取当前页面的数据。该方法为辅助方法，是为了方便开发者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。|返回你所需要的任何对象|
+|```boolean same(BannerEntry newEntry);```|比较两个模型是否相同（帮助文档中写的比较详细，这里就不多说了。注释比较长，具体可以参考帮助文档。）|该返回值决定了参数中的对象是否与this中所有需要展示在UI视图上的字段一致，如果一直返回true，否则返回false。|
 #### XML中使用。
 ```
 <?xml version="1.0" encoding="utf-8"?>
