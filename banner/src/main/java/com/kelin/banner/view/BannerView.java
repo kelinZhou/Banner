@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.R;
+import com.kelin.banner.page.Pageable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -40,8 +41,17 @@ public class BannerView extends ViewPager {
     public static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
 
     private BannerHelper mBH;
+    /**
+     * 用来记录指示器控件的ID。
+     */
     private int mPointIndicatorId;
+    /**
+     * 用来记录标题控件的ID。
+     */
     private int mTitleViewId;
+    /**
+     * 用来记录子标题控件的ID。
+     */
     private int mSubTitleViewId;
 
 
@@ -82,6 +92,7 @@ public class BannerView extends ViewPager {
     /**
      * 由于我需要监听BannerView的触摸事件，通过该事件来处理什么时候需要暂停和启动轮播图，所以我禁用了这个方法。其实你也并不需要
      * 对Banner的触摸事件进行监听。
+     *
      * @param l {@link OnTouchListener}对象。
      */
     @Override
@@ -92,6 +103,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 该方法进制调用，如果你非要调用将会导致Banner有严重的Bug。
+     *
      * @param l {@link OnTouchListener}对象。
      */
     void listenerOnTouch(OnTouchListener l) {
@@ -126,16 +138,12 @@ public class BannerView extends ViewPager {
         View view;
         if (parent != null) {
             if (mPointIndicatorId != NO_ID) {
-                view = findView(parent, mPointIndicatorId);
-                if (view instanceof BannerIndicator) {
-                    setIndicatorView((BannerIndicator) view);
-                } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the BannerIndicator！");
-                }
+                view = findView(parent, mPointIndicatorId, "PointIndicator");
+                mBH.setIndicatorView(view);
                 mPointIndicatorId = NO_ID;
             }
             if (mTitleViewId != NO_ID) {
-                view = findView(parent, mTitleViewId);
+                view = findView(parent, mTitleViewId, "TitleView");
                 if (view instanceof TextView) {
                     setTitleView((TextView) view);
                 } else {
@@ -144,7 +152,7 @@ public class BannerView extends ViewPager {
                 mTitleViewId = NO_ID;
             }
             if (mSubTitleViewId != NO_ID) {
-                view = findView(parent, mSubTitleViewId);
+                view = findView(parent, mSubTitleViewId, "SubTitleView");
                 if (view instanceof TextView) {
                     setSubTitleView((TextView) view);
                 } else {
@@ -156,14 +164,14 @@ public class BannerView extends ViewPager {
         return addSuccess;
     }
 
-    private View findView(ViewGroup view, int viewId) {
+    private View findView(ViewGroup view, int viewId, String desc) {
         View v = view.findViewById(viewId);
         if (v == null) {
             ViewParent parent = view.getParent();
             if (parent != null && parent instanceof ViewGroup) {
-                return findView((ViewGroup) parent, viewId);
+                return findView((ViewGroup) parent, viewId, desc);
             } else {
-                throw new Resources.NotFoundException("the pointIndicator view id is not found!");
+                throw new Resources.NotFoundException("the " + desc + " view id is not found!");
             }
         }
         return v;
@@ -191,6 +199,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 获取数据源集合。
+     *
      * @return 返回上一次调用 {@link #setEntries(List)} 或 {@link #setEntries(List, boolean)} 方法成功时的参数。
      */
     public List<? extends BannerEntry> getEntries() {
@@ -216,12 +225,47 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 设置事件监听。
+     * 设置点击事件监听。
      *
-     * @param eventListener Banner事件监听对象。
+     * @param listener Banner页面的点击事件监听对象。
      */
-    public void setOnBannerEventListener(@NonNull BannerView.OnBannerEventListener eventListener) {
-        mBH.setOnBannerEventListener(eventListener);
+    public void setOnPageClickListener(OnPageClickListener listener) {
+        mBH.setOnPageClickListener(listener);
+    }
+
+    /**
+     * 设置页面长按的监听。
+     *
+     * @param listener Banner页面的长按事件监听对象。
+     */
+    public void setOnPageLongClickListener(OnPageLongClickListener listener) {
+        mBH.setOnPageLongClickListener(listener);
+    }
+
+    /**
+     * 设置页面改变监听。
+     *
+     * @param listener Banner页面改变的监听对象。
+     */
+    public void setOnPageChangedListener(OnPageChangeListener listener) {
+        mBH.setOnPageChangedListener(listener);
+    }
+
+    /**
+     * 如果你想监听页面的改变，应当使用 {@link #setOnPageChangedListener(OnPageChangeListener)} 方法，
+     * 因为 {@link OnPageChangeListener} 的回调方法中会把页面中的数据模型回调给你。
+     *
+     * @param listener {@link ViewPager.OnPageChangeListener}的子类对象。
+     * @see #setOnPageChangedListener(OnPageChangeListener)
+     */
+    @Deprecated
+    @Override
+    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
+        super.addOnPageChangeListener(listener);
+    }
+
+    void addPageChangeListener(ViewPager.OnPageChangeListener listener) {
+        super.addOnPageChangeListener(listener);
     }
 
     /**
@@ -241,9 +285,9 @@ public class BannerView extends ViewPager {
     /**
      * 设置页面指示器控件。
      *
-     * @param indicatorView {@link BannerIndicator} 对象。
+     * @param indicatorView {@link Pageable} 对象。
      */
-    public void setIndicatorView(@NonNull BannerIndicator indicatorView) {
+    public <V extends View & Pageable> void setIndicatorView(@NonNull V indicatorView) {
         mBH.setIndicatorView(indicatorView);
     }
 
@@ -384,9 +428,9 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 轮播图的所有事件监听类。
+     * 轮播图的所有事件的监听类。
      */
-    public static abstract class OnBannerEventListener {
+    public static abstract class OnPageClickListener {
 
         /**
          * 页面被点击的时候执行。
@@ -395,15 +439,26 @@ public class BannerView extends ViewPager {
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
         protected abstract void onPageClick(BannerEntry entry, int index);
+    }
 
+    /**
+     * 页面长按的监听。
+     */
+    public interface OnPageLongClickListener {
         /**
          * 页面被长按的时候执行。
          *
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
-        protected void onPageLongClick(BannerEntry entry, int index) {
-        }
+        void onPageLongClick(BannerEntry entry, int index);
+    }
+
+    /**
+     * 页面改变的监听。
+     */
+    public interface OnPageChangeListener {
+
 
         /**
          * 当页面被选中的时候调用。
@@ -411,8 +466,7 @@ public class BannerView extends ViewPager {
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
-        protected void onPageSelected(BannerEntry entry, int index) {
-        }
+        void onPageSelected(BannerEntry entry, int index);
 
         /**
          * 当页面正在滚动中的时候执行。
@@ -421,8 +475,7 @@ public class BannerView extends ViewPager {
          * @param positionOffset       值为(0,1)表示页面位置的偏移。
          * @param positionOffsetPixels 页面偏移的像素值。
          */
-        protected void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
-        }
+        void onPageScrolled(int index, float positionOffset, int positionOffsetPixels);
 
         /**
          * 当Banner中的页面的滚动状态改变的时候被执行。
@@ -432,7 +485,6 @@ public class BannerView extends ViewPager {
          * @see BannerView#SCROLL_STATE_DRAGGING
          * @see BannerView#SCROLL_STATE_SETTLING
          */
-        protected void onPageScrollStateChanged(int state) {
-        }
+        void onPageScrollStateChanged(int state);
     }
 }

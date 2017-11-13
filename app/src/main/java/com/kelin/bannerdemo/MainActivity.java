@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private EventBindInterceptor mEventInterceptor;
-    private BannerView.OnBannerEventListener mOnBannerEventListener;
+    private BannerView.OnPageClickListener mOnBannerEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,34 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onInterceptor(View view, LayoutItem layoutItem) {
                     if (view.getId() == R.id.vp_view_pager) {
                         BannerView bannerView = (BannerView) view;
-                        bannerView.setOnBannerEventListener(getBannerEventListener());
+                        bannerView.setOnPageClickListener(new BannerView.OnPageClickListener() {
+                            @Override
+                            protected void onPageClick(BannerEntry entry, int index) {
+                                //某个页面被单击后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+                            }
+                        });
+                        bannerView.setOnPageLongClickListener(new BannerView.OnPageLongClickListener() {
+                            @Override
+                            public void onPageLongClick(BannerEntry entry, int index) {
+                                //某个页面被长按后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+                            }
+                        });
+                        bannerView.setOnPageChangedListener(new BannerView.OnPageChangeListener() {
+                            @Override
+                            public void onPageSelected(BannerEntry entry, int index) {
+                                //某个页面被选中后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+                            }
+
+                            @Override
+                            public void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
+                                //页面滑动中执行，这个与ViewPage的回调一致。
+                            }
+
+                            @Override
+                            public void onPageScrollStateChanged(int state) {
+                                //页面滑动的状态被改变时执行，也是与ViewPager的回调一致。
+                            }
+                        });
                         return true;
                     }
                     return false;
@@ -57,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private BannerView.OnBannerEventListener getBannerEventListener() {
+    private BannerView.OnPageClickListener getBannerEventListener() {
         if (mOnBannerEventListener == null) {
-            mOnBannerEventListener = new BannerView.OnBannerEventListener() {
+            mOnBannerEventListener = new BannerView.OnPageClickListener() {
                 @Override
                 protected void onPageClick(BannerEntry entry, int index) {
                     if (entry instanceof ImageBannerEntry) {

@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.page.CenterBigTransformer;
+import com.kelin.banner.page.Pageable;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -64,10 +65,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      */
     private ViewBannerAdapter mAdapter;
     /**
-     * Banner的事件监听对象。
-     */
-    private BannerView.OnBannerEventListener mEventListener;
-    /**
      * 用来执行翻页任务。
      */
     private Handler mHandler;
@@ -102,7 +99,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     /**
      * 轮播图的页码指示器控件。
      */
-    private BannerIndicator mIndicatorView;
+    private Pageable mIndicatorView;
     /**
      * 用来记录指示器是否可用，不可用就不会显示在屏幕上。
      */
@@ -123,6 +120,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 只有一张图片是的显示模式。
      */
     private int mSinglePageMode;
+    /**
+     * 用来存放监听对象的容器。
+     */
+    private PageListenerInfo mListenerInfo;
 
     /**
      * 创建Banner对象。
@@ -147,7 +148,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         replaceScroller(viewPager, mScroller);
         viewPager.setAdapter(mAdapter = new ViewBannerAdapter());
         viewPager.listenerOnTouch(this);
-        viewPager.addOnPageChangeListener(this);
+        viewPager.addPageChangeListener(this);
         setPagingIntervalTime(pagingIntervalTime);
         setMultiple(decelerateMultiple);
     }
@@ -200,23 +201,30 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    /**
-     * 设置事件监听。
-     *
-     * @param eventListener Banner事件监听对象。
-     */
-    void setOnBannerEventListener(BannerView.OnBannerEventListener eventListener) {
-        mEventListener = eventListener;
+    void setOnPageClickListener(BannerView.OnPageClickListener eventListener) {
+        getPageListenerInfo().onClickListener = eventListener;
+    }
+
+    void setOnPageLongClickListener(BannerView.OnPageLongClickListener onPageLongClickListener) {
+        getPageListenerInfo().onLongClickListener = onPageLongClickListener;
+    }
+
+    void setOnPageChangedListener(BannerView.OnPageChangeListener onPageChangedListener) {
+        getPageListenerInfo().onChangedListener = onPageChangedListener;
     }
 
     /**
      * 设置页面指示器控件。
      *
-     * @param indicatorView {@link BannerIndicator} 对象。
+     * @param indicatorView {@link Pageable} 对象。
      */
-    void setIndicatorView(@NonNull BannerIndicator indicatorView) {
-        mIndicatorView = indicatorView;
-        checkIndicatorEnable(mAdapter.getItems());
+    void setIndicatorView(@NonNull View indicatorView) {
+        if (indicatorView instanceof Pageable) {
+            mIndicatorView = (Pageable) indicatorView;
+            checkIndicatorEnable(mAdapter.getItems());
+        } else {
+            throw new IllegalArgumentException("the indicatorView must implements Pageable interface.");
+        }
     }
 
     /**
@@ -273,11 +281,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (mIndicatorView != null) {
             if (indicatorEnable(items)) {
                 mIndicatorEnable = true;
-                mIndicatorView.setVisibility(View.VISIBLE);
-                mIndicatorView.setTotalCount(items.size());
+                ((View)mIndicatorView).setVisibility(View.VISIBLE);
+                mIndicatorView.setTotalPage(items.size());
             } else {
                 mIndicatorEnable = false;
-                mIndicatorView.setVisibility(View.GONE);
+                ((View)mIndicatorView).setVisibility(View.GONE);
             }
         } else {
             mIndicatorEnable = false;
@@ -445,7 +453,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mCurrentItem = position;
         int index = mAdapter.getIndex(position);
         if (mIndicatorEnable) {
-            mIndicatorView.setCurPosition(index);
+            mIndicatorView.setCurrentPage(index);
         }
         if (mTitleView != null) {
             mTitleView.setText(mAdapter.getItem(position).getTitle());
@@ -457,8 +465,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             stop();
             pause();
         } else {
-            if (mEventListener != null) {
-                mEventListener.onPageSelected(mAdapter.getItem(position), index);
+            if (getPageListenerInfo().onChangedListener != null) {
+                getPageListenerInfo().onChangedListener.onPageSelected(mAdapter.getItem(position), index);
             }
         }
     }
@@ -469,8 +477,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mCurPositionOffset = positionOffset;
             mCurrentTouchingPage = position;
         }
-        if (mEventListener != null) {
-            mEventListener.onPageScrolled(mAdapter.getIndex(position), positionOffset, positionOffsetPixels);
+        if (getPageListenerInfo().onChangedListener != null) {
+            getPageListenerInfo().onChangedListener.onPageScrolled(mAdapter.getIndex(position), positionOffset, positionOffsetPixels);
         }
     }
 
@@ -488,8 +496,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         } else if (state == ViewPager.SCROLL_STATE_IDLE) {
             mScroller.setCardinal(1);
         }
-        if (mEventListener != null) {
-            mEventListener.onPageScrollStateChanged(state);
+        if (getPageListenerInfo().onChangedListener != null) {
+            getPageListenerInfo().onChangedListener.onPageScrollStateChanged(state);
         }
     }
 
@@ -500,9 +508,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param entry 当前页面的 {@link BannerEntry} 对象。
      * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
      */
-    protected void onPageClick(BannerEntry entry, int index) {
-        if (mEventListener != null) {
-            mEventListener.onPageClick(entry, index);
+    private void onPageClick(BannerEntry entry, int index) {
+        if (getPageListenerInfo().onClickListener != null) {
+            getPageListenerInfo().onClickListener.onPageClick(entry, index);
         }
     }
 
@@ -512,9 +520,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param entry 当前页面的 {@link BannerEntry} 对象。
      * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
      */
-    protected void onPageLongClick(BannerEntry entry, int index) {
-        if (mEventListener != null) {
-            mEventListener.onPageLongClick(entry, index);
+    private void onPageLongClick(BannerEntry entry, int index) {
+        if (getPageListenerInfo().onLongClickListener != null) {
+            getPageListenerInfo().onLongClickListener.onPageLongClick(entry, index);
         }
     }
 
@@ -526,6 +534,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mSinglePageMode = singlePageMode;
             mAdapter.notifyDataSetChanged();
         }
+    }
+
+    private PageListenerInfo getPageListenerInfo() {
+        if (mListenerInfo != null) {
+            return mListenerInfo;
+        }
+        mListenerInfo = new PageListenerInfo();
+        return mListenerInfo;
     }
 
     /**
@@ -706,5 +722,20 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             onPageLongClick(mItems.get(tag), tag);
             return true;
         }
+    }
+
+    private class PageListenerInfo {
+        /**
+         * Banner的页面点击事件监听。
+         */
+        private BannerView.OnPageClickListener onClickListener;
+        /**
+         * Banner的页面长按事件监听。
+         */
+        private BannerView.OnPageLongClickListener onLongClickListener;
+        /**
+         * Banner的页面改变事件监听。
+         */
+        private BannerView.OnPageChangeListener onChangedListener;
     }
 }

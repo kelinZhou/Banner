@@ -5,7 +5,7 @@
 ## 简介
 基于ViewPage的的封装，UI样式完全由自己控制。可自定义各种动画。可简单实现各种轮播图效果，支持对轮播图的各种事件监听，例如：点击、长按、页面选中等。
 
-修复了ViewPage配合RecyclerView使用时的两大bug（1.Banner重新出现在屏幕上后第一次轮播没有动画，动画执行一半时上拉再下拉动画会开在哪里）。
+修复了ViewPage配合RecyclerView使用时的两大bug（1.Banner重新出现在屏幕上后第一次轮播没有动画，动画执行一半时上拉再下拉动画会卡在那里）。
 
 配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
 
@@ -22,7 +22,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    compile 'com.github.kelinZhou:Banner:2.0.0'
+    compile 'com.github.kelinZhou:Banner:2.1.0'
 }
 ```
 
@@ -67,7 +67,7 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
         android:layout_height="match_parent"
         <!--当Banner中的图片只有一张时的处理方式-->
         app:singlePageMode="canNotPaging|noIndicator"
-        <!--为BannerView指定指示器，只要是BannerIndicator的子类都可以-->
+        <!--为BannerView指定指示器，只要是实现了Pageable接口的Veiw都可以-->
         app:bannerIndicator="@+id/biv_indicator"
         <!--为BannerView指定用来显示标题的控件-->
         app:titleView="@+id/tv_title"
@@ -149,69 +149,41 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
     bannerView.setEntries(bannerEntries);
 ```
 #### 设置监听。
+**页面点击监听**
 ```
-bannerView.setOnBannerEventListener(new BannerView.OnBannerEventListener() {
-        /**
-         * 页面被点击的时候执行。
-         *
-         * @param entry 当前页面的 {@link BannerEntry} 对象。
-         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
-         */
-        @Override
-        protected void onPageClick(BannerEntry entry, int index) {
-            //处理页面被点击时的逻辑。
-        }
+bannerView.setOnPageClickListener(new BannerView.OnPageClickListener() {
+    @Override
+    protected void onPageClick(BannerEntry entry, int index) {
+        //某个页面被单击后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+    }
+});
+```
+**页面长按监听**
+```
+bannerView.setOnPageLongClickListener(new BannerView.OnPageLongClickListener() {
+    @Override
+    public void onPageLongClick(BannerEntry entry, int index) {
+        //某个页面被长按后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+    }
+});
+```
+**页面改变监听**
+```
+bannerView.setOnPageChangedListener(new BannerView.OnPageChangeListener() {
+    @Override
+    public void onPageSelected(BannerEntry entry, int index) {
+        //某个页面被选中后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+    }
 
-        /**
-         * 页面被长按的时候执行。
-         *
-         * @param entry 当前页面的 {@link BannerEntry} 对象。
-         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
-         */
-        @Override
-        protected void onPageLongClick(BannerEntry entry, int index) {
-            super.onPageLongClick(entry, index);
-            //该方法是非抽象方法，不需要关心可以不实现。
-        }
+    @Override
+    public void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
+        //页面滑动中执行，这个与ViewPage的回调一致。
+    }
 
-        /**
-         * 当页面被选中的时候调用。
-         *
-         * @param entry 当前页面的 {@link BannerEntry} 对象。
-         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
-         */
-        @Override
-        protected void onPageSelected(BannerEntry entry, int index) {
-            super.onPageSelected(entry, index);
-            //该方法是非抽象方法，不需要关心可以不实现。
-        }
-
-        /**
-         * 当页面正在滚动中的时候执行。
-         *
-         * @param index                当前页面的索引。这个索引永远会在你的集合的size范围内。
-         * @param positionOffset       值为(0,1)表示页面位置的偏移。
-         * @param positionOffsetPixels 页面偏移的像素值。
-         */
-        @Override
-        protected void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
-            super.onPageScrolled(index, positionOffset, positionOffsetPixels);
-            //该方法是非抽象方法，不需要关心可以不实现。
-        }
-
-        /**
-         * 当Banner中的页面的滚动状态改变的时候被执行。
-         *
-         * @param state 当前的滚动状态。
-         * @see BannerView#SCROLL_STATE_IDLE
-         * @see BannerView#SCROLL_STATE_DRAGGING
-         * @see BannerView#SCROLL_STATE_SETTLING
-         */
-        @Override
-        protected void onPageScrollStateChanged(int state) {
-            super.onPageScrollStateChanged(state);
-            //该方法是非抽象方法，不需要关心可以不实现。
-        }
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        //页面滑动的状态被改变时执行，也是与ViewPager的回调一致。
+    }
 });
 ```
 

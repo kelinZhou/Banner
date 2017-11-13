@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.View;
 
 import com.kelin.banner.R;
+import com.kelin.banner.page.Pageable;
 
 /**
  * 描述 轮播图的指示器。
@@ -18,7 +19,7 @@ import com.kelin.banner.R;
  * 版本 v 1.0.0
  */
 
-public abstract class BannerIndicator extends View {
+public abstract class BannerIndicator extends View implements Pageable {
 
     /**
      * 用来记录总的数量。
@@ -71,11 +72,12 @@ public abstract class BannerIndicator extends View {
      * {@link BannerView#setIndicatorView(BannerIndicator)} 方法或者为{@link BannerView}
      * 配置"app:bannerIndicator="@+id/banner_view"属性即可。
      *
-     * @param totalCount 总的数量。
+     * @param totalPage 总的数量。
      * @see BannerView#setIndicatorView(BannerIndicator)
      */
-    public final void setTotalCount(int totalCount) {
-        mTotalCount = totalCount;
+    @Override
+    public final void setTotalPage(int totalPage) {
+        mTotalCount = totalPage;
     }
 
     /**
@@ -85,7 +87,8 @@ public abstract class BannerIndicator extends View {
      *
      * @param position 当前的索引位置。
      */
-    public final void setCurPosition(int position) {
+    @Override
+    public final void setCurrentPage(int position) {
         mCurPosition = position;
         requestLayout();
     }

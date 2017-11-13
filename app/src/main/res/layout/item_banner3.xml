@@ -48,8 +48,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            app:separatorTextColor="@android:color/holo_green_light"
             app:separator="/"
+            app:separatorTextColor="@android:color/holo_green_light"
             app:totalCount="6"/>
     </LinearLayout>
 </RelativeLayout>
