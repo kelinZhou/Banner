@@ -33,7 +33,6 @@ import static com.kelin.banner.view.BannerView.NO_INDICATOR;
  */
 
 final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChangeListener {
-    private static final String TAG = "--Banner";
 
     private static final int NOTHING_INT = 0xffff_ffff;
     /**
