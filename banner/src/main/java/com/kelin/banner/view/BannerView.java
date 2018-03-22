@@ -1,8 +1,10 @@
 package com.kelin.banner.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -66,7 +68,8 @@ public class BannerView extends ViewPager {
                     typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0),
                     typedArray.getResourceId(R.styleable.BannerView_bannerIndicator, NO_ID),
                     typedArray.getResourceId(R.styleable.BannerView_titleView, NO_ID),
-                    typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID));
+                    typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID),
+                    typedArray.getBoolean(R.styleable.BannerView_touchPauseEnable, true));
             typedArray.recycle();
         }
     }
@@ -74,8 +77,6 @@ public class BannerView extends ViewPager {
     /**
      * 由于我需要监听BannerView的触摸事件，通过该事件来处理什么时候需要暂停和启动轮播图，所以我禁用了这个方法。其实你也并不需要
      * 对Banner的触摸事件进行监听。
-     *
-     * @param l {@link OnTouchListener}对象。
      */
     @Override
     @Deprecated
@@ -84,10 +85,21 @@ public class BannerView extends ViewPager {
     }
 
     /**
+     * 由于我需要监听BannerView的触摸事件，通过该事件来处理什么时候需要暂停和启动轮播图，所以我禁用了这个方法。其实你也并不需要
+     * 对Banner的触摸事件进行监听。
+     */
+    @Override
+    @Deprecated
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        throw new RuntimeException("This method has been disabled");
+    }
+
+    /**
      * 该方法进制调用，如果你非要调用将会导致Banner有严重的Bug。
      *
      * @param l {@link OnTouchListener}对象。
      */
+    @SuppressLint("ClickableViewAccessibility")
     void listenerOnTouch(OnTouchListener l) {
         super.setOnTouchListener(l);
     }

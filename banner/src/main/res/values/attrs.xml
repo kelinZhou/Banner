@@ -20,6 +20,8 @@
             <!--不可以也不能翻页-->
             <flag name="canNotPaging" value="0x02"/>
         </attr>
+        <!--触摸暂停轮播是否可用-->
+        <attr name="touchPauseEnable" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="BannerIndicator">

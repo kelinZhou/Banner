@@ -138,6 +138,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 用来记录子标题控件的ID。
      */
     private int mSubTitleViewId;
+    private boolean mTouchPauseEnable;
 
     /**
      * 创建Banner对象。
@@ -145,7 +146,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param viewPager viewPager对象。
      */
     BannerHelper(@NonNull BannerView viewPager, int singlePageMode) {
-        this(viewPager, singlePageMode, null, 0, 0, View.NO_ID, View.NO_ID, View.NO_ID);
+        this(viewPager, singlePageMode, null, 0, 0, View.NO_ID, View.NO_ID, View.NO_ID, true);
     }
 
     /**
@@ -153,8 +154,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      *
      * @param viewPager viewPager对象。
      */
-    @SuppressLint("ClickableViewAccessibility")
-    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId) {
+    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId, boolean touchPauseEnable) {
         mBannerView = viewPager;
         mPointIndicatorId = pointIndicatorViewId;
         mTitleViewId = titleViewId;
@@ -164,7 +164,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
         replaceScroller(viewPager, mScroller);
         viewPager.setAdapter(mAdapter = new ViewBannerAdapter());
-        viewPager.listenerOnTouch(this);
+        mTouchPauseEnable = touchPauseEnable;
+        if (mTouchPauseEnable) {
+            viewPager.listenerOnTouch(this);
+        }
         viewPager.addPageChangeListener(this);
         setPagingIntervalTime(pagingIntervalTime);
         setMultiple(decelerateMultiple);
@@ -420,7 +423,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (pagerBox == null) {
             throw new RuntimeException("BannerView cannot be a root layout!");
         }
-        pagerBox.setOnTouchListener(this);
+        if (mTouchPauseEnable) {
+            pagerBox.setOnTouchListener(this);
+        }
         pagerBox.setClipChildren(false);
         viewPager.setClipChildren(false);
         viewPager.setOffscreenPageLimit(2);
@@ -681,7 +686,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 entryView.setTag(KEY_INDEX_TAG, index);
                 entryView.setOnClickListener(this);
                 entryView.setOnLongClickListener(this);
-                entryView.setOnTouchListener(BannerHelper.this);
+                if (mTouchPauseEnable) {
+                    entryView.setOnTouchListener(BannerHelper.this);
+                }
             } else {
                 itemViewCache.remove(index);
             }

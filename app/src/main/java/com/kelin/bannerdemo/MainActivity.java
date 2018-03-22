@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.view.BannerView;
@@ -50,12 +51,14 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onPageClick(BannerEntry entry, int index) {
                                 //某个页面被单击后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+                                Toast.makeText(MainActivity.this, "单击：" + entry.getTitle(), Toast.LENGTH_SHORT).show();
                             }
                         });
                         bannerView.setOnPageLongClickListener(new BannerView.OnPageLongClickListener() {
                             @Override
                             public void onPageLongClick(BannerEntry entry, int index) {
                                 //某个页面被长按后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
+                                Toast.makeText(MainActivity.this, "长按：" + entry.getTitle(), Toast.LENGTH_SHORT).show();
                             }
                         });
                         bannerView.setOnPageChangedListener(new BannerView.OnPageChangeListener() {
@@ -114,20 +117,20 @@ public class MainActivity extends AppCompatActivity {
     @NonNull
     private List<TitleImageBannerEntry> getTitleImageBannerEntries() {
         List<TitleImageBannerEntry> items = new ArrayList<>();
-        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap","更新至10集", R.drawable.img_banner01, "我是第一页"));
+        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap", "更新至10集", R.drawable.img_banner01, "我是第一页"));
         items.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", "更新至11集", R.drawable.img_banner02, "我是第二页"));
-        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘","更新至12集", R.drawable.img_banner03, "我是第三页"));
-        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事","更新至13集", R.drawable.img_banner04, "我是第四页"));
+        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘", "更新至12集", R.drawable.img_banner03, "我是第三页"));
+        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事", "更新至13集", R.drawable.img_banner04, "我是第四页"));
         return items;
     }
 
     @NonNull
     private List<TitleImageBannerEntry> getTitleImageBannerEntry() {
         List<TitleImageBannerEntry> items = new ArrayList<>();
-        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap","更新至10集", R.drawable.img_banner01, "我是第一页"));
+        items.add(new TitleImageBannerEntry("中国新歌声：E神赞藏语Rap", "更新至10集", R.drawable.img_banner01, "我是第一页"));
         items.add(new TitleImageBannerEntry("中国有嘻哈:热狗公演霸气嗨唱", "更新至11集", R.drawable.img_banner02, "我是第二页"));
-        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘","更新至12集", R.drawable.img_banner03, "我是第三页"));
-        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事","更新至13集", R.drawable.img_banner04, "我是第四页"));
+        items.add(new TitleImageBannerEntry("爱笑会议室：三生三世虐恋情缘", "更新至12集", R.drawable.img_banner03, "我是第三页"));
+        items.add(new TitleImageBannerEntry("开心剧乐部：吴京上演战狼故事", "更新至13集", R.drawable.img_banner04, "我是第四页"));
         return items;
     }
 
