@@ -40,7 +40,7 @@ dependencies {
 
 ## 使用
 #### 数据模型。
-Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下是接口中的所有方法：
+Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，以下是接口中的所有方法：
 
 | 方法名称 | 说明 | 返回值 |
 |---------|-----|--------|
@@ -48,7 +48,7 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
 |```CharSequence getTitle();```|获取标题。|返回当前页面的标题内容，也可以返回空，如果你当前页面没有标题的话。|
 |```CharSequence getSubTitle();```|获取子标题。|返回当前页面的子标题内容，也可以返回空，如果你当前页面没有子标题的话。|
 |```VALUE getValue();```|获取当前页面的数据。该方法为辅助方法，是为了方便开发者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。|返回你所需要的任何对象|
-|```boolean same(BannerEntry newEntry);```|比较两个模型是否相同（帮助文档中写的比较详细，这里就不多说了。注释比较长，具体可以参考帮助文档。）|该返回值决定了参数中的对象是否与this中所有需要展示在UI视图上的字段一致，如果一直返回true，否则返回false。|
+|```boolean same(BannerEntry newEntry);```|比较两个模型是否相同（代码中的文档注释中写的比较详细，这里就不多说了。注释比较长，具体可以参考文档注释。）该返回值决定了参数中的对象是否与this中所有需要展示在UI视图上的字段一致，如果一直返回true，否则返回false。该方法也是当配合RecyclerView使用时在bindView方法中不停调用```setEntries```方法而不会导致重复加载数据源的重要依据|该返回值决定了参数中的对象是否与this中所有需要展示在UI视图上的字段一致，如果一直返回true，否则返回false。|
 #### XML中使用。
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -128,14 +128,66 @@ Banner中每一页的数据模型都必须实现```BannerEntry```接口，以下
 </RelativeLayout>
 ```
 上面的BannerView的自定义属性```app:singlePageMode="canNotPaging|noIndicator"```需要做下说明，因为支持无限轮播，那么只有一张图片的时候是否还需要无限轮播？这个属性就是用来配置当Banner中的图片只有一张时的处理方式的。
+##### BannerView自定义属性说明
+```app:pagingIntervalTime``` **翻页间隔时长,用来配置每次自动翻页之间所间隔的时间，单位为毫秒。例如你想每5秒自动翻页一次，那么该属性应该为5000。**
 
-###### 该属性是一个flag属性，一共有以下两个值：
+```app:decelerateMultiple``` **翻页动画减速倍数，因为BannerView是继承自ViewPager，所以每次自动翻页所需要的时长都是较短的，你可以通过设置该属性来配置减速倍数，也就是你希望每次自动翻页所需要的时长是ViewPager原时长的多少倍。**
+
+```app:bannerIndicator``` **为BannerView指定指示器，只要是实现了Pageable接口的View都可以，该库中所提供的所以指示器都实现了Pageable接口，如果你不满住于我提供的指示器控件，那么你可以自己动手写只要实现Pageable接口就可以配合BannerView使用。例如样例中的该属性的值为：@+id/biv_indicator**
+
+```app:titleView``` **为BannerView指定用来显示标题的控件，通过该属性配置标题控件后你就不需要监听BannerView的切换，然后再为标题控件赋值。只要你配置了该属性我会自动为你赋值。前提是你要配置的控件必须是TextView或其子类。例如样例中的该属性的值为：@+id/tv_title**
+
+```app:subTitleView``` **为BannerView指定用来显示副标题的控件，通过该属性配置标题控件后你就不需要监听BannerView的切换，然后再为副标题控件赋值。只要你配置了该属性我会自动为你赋值。前提是你要配置的控件必须是TextView或其子类。例如该属性的值为：@+id/tv_sub_title**
+
+```app:interpolator``` **翻页动画差值器，可以通过该属性配置自动翻页动画的动画差值器。例如该属性的值为：@android:anim/bounce_interpolator**
+
+```app:singlePageMode``` **该属性是一个flag属性，一共有以下两个值:**
+
 1. ```noIndicator``` 表示如果只有一张图片则没有指示器。也就是说无论你是否设置了指示器，如果只有一张图片的话那么指示器都是不显示的。但是依然是支持无限轮播的。
 2. ```canNotPaging``` 表示如果只有一张图片则不可以轮播。但是如你设置了指示器的话，指示器依然会显示。
 
     *上面两个属性可以同时配置，中间用"|"符号链接，例如上面代码中的配置。这样的话如果只有一张图片则既不会轮播而且无论你是否设置了指示器则都不会显示。*
 
     **以上所说的只有一张图片是指通过```BannerView```的```setEntries```方法设置数据源时数据源集合的```size()```等于1。所说的设置只是器是指在XML代码中为BannerView配置```app:bannerIndicator```属性或者通过代码```BannerView.setIndicatorView(@NonNull BannerIndicator indicatorView)```为BannerView设置指示器。**
+
+```app:touchPauseEnable``` **用来配置触摸暂停轮播是否可用，BannerView默认在被触摸时是会暂停自动轮播的，如果你不希望在BannerView被触摸后被暂停自动轮播这可以为该属性赋值为：false**
+
+##### PointIndicatorView自定义属性说明
+```app:totalCount``` **一共有多少个点（也就是总页数），如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以及时看到效果，方便调试UI。**
+
+```android:gravity``` **设置偏移。只支持以下值的单一配置及合理组合:**
+
+Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT、View.NO_IDGravity#START、View.NO_IDGravity#END、View.NO_IDGravity#CENTER、View.NO_IDGravity#CENTER_VERTICAL、View.NO_IDGravity#CENTER_HORIZONTAL。
+
+*可以同时配置多个值，多个值之间用"|"(或)符号连接。但是不支持View.NO_IDGravity#FILL、View.NO_IDGravity#FILL_VERTICAL、View.NO_IDGravity#RELATIVE_HORIZONTAL_GRAVITY_MASK、以及View.NO_IDGravity#FILL_HORIZONTAL等类似配置。*
+
+```app:pointSpacing``` **点与点之间的间距，默认为最小的点的直径。**
+
+```app:pointRadius``` **点的半径。默认为3dp。**
+
+```app:selectedPointRadius``` **选中时点的半径，默认与pointRadius属性的值一直，如果你为pointRadius属性赋值5dp，那么该值的默认值就是5dp。**
+
+```app:pointColor``` **点的颜色。默认为25%透明度的白色。**
+
+```app:selectedPointColor``` **选中时点的颜色，默认为白色。**
+
+##### NumberIndicatorView自定义属性说明
+```app:totalCount``` **一共有多少个点（也就是总页数），如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以及时看到效果，方便调试UI。**
+
+```android:gravity``` **设置偏移。只支持以下值的单一配置及合理组合:**
+
+```android:textSize``` **字体大小。**
+
+```android:textColor``` **字体颜色。**
+
+```app:separator``` **分隔符号。例如：/**
+
+```app:separatorTextColor``` **分割符文本颜色。**
+
+```app:currentPageTextColor``` **当前页码文本颜色。**
+
+```app:totalPageTextColor``` **总页码文本颜色。**
+
 
 #### 代码中使用。
 ```
