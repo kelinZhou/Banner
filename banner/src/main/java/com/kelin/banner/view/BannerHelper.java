@@ -2,8 +2,10 @@ package com.kelin.banner.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -11,6 +13,7 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.Interpolator;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -123,6 +126,18 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 用来存放监听对象的容器。
      */
     private PageListenerInfo mListenerInfo;
+    /**
+     * 用来记录指示器控件的ID。
+     */
+    private int mPointIndicatorId;
+    /**
+     * 用来记录标题控件的ID。
+     */
+    private int mTitleViewId;
+    /**
+     * 用来记录子标题控件的ID。
+     */
+    private int mSubTitleViewId;
 
     /**
      * 创建Banner对象。
@@ -130,7 +145,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param viewPager viewPager对象。
      */
     BannerHelper(@NonNull BannerView viewPager, int singlePageMode) {
-        this(viewPager, singlePageMode, null, 0, 0);
+        this(viewPager, singlePageMode, null, 0, 0, View.NO_ID, View.NO_ID, View.NO_ID);
     }
 
     /**
@@ -139,8 +154,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param viewPager viewPager对象。
      */
     @SuppressLint("ClickableViewAccessibility")
-    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple) {
+    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId) {
         mBannerView = viewPager;
+        mPointIndicatorId = pointIndicatorViewId;
+        mTitleViewId = titleViewId;
+        mSubTitleViewId = subTitleViewId;
         mSinglePageMode = singlePageMode;
         mHandler = viewPager.getHandler() == null ? new Handler() : viewPager.getHandler();
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
@@ -280,11 +298,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (mIndicatorView != null) {
             if (indicatorEnable(items)) {
                 mIndicatorEnable = true;
-                ((View)mIndicatorView).setVisibility(View.VISIBLE);
+                ((View) mIndicatorView).setVisibility(View.VISIBLE);
                 mIndicatorView.setTotalPage(items.size());
             } else {
                 mIndicatorEnable = false;
-                ((View)mIndicatorView).setVisibility(View.GONE);
+                ((View) mIndicatorView).setVisibility(View.GONE);
             }
         } else {
             mIndicatorEnable = false;
@@ -307,7 +325,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param items 当前轮播图中的数据集。
      * @return 可以翻页返回true，不可翻页返回false。
      */
-    private boolean canPaging(List<? extends BannerEntry> items) {
+    private boolean canPaging(@NonNull List<? extends BannerEntry> items) {
         return items.size() > 1 || (mSinglePageMode & CAN_NOT_PAGING) == 0;
     }
 
@@ -334,17 +352,19 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             selectCenterPage(0);
         }
 
-        if (canPaging(mAdapter.getItems())) {
+        List<? extends BannerEntry> items = mAdapter.getItems();
+        if (items == null) {
+            throw new NullPointerException("you must call setEntries method!");
+        }
+        if (canPaging(items)) {
             mHandler.postDelayed(mPageDownRunnable, mPagingIntervalTime);
         }
     }
 
-    void selectCenterPage(int offset) {
-        int pageNum = mAdapter.getCenterPageNumber();
-        if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
-            offset = 0;
+    void reStart() {
+        if (isStarted() && isPaused()) {
+            start(false);
         }
-        mBannerView.setCurrentItem(pageNum + offset);
     }
 
     /**
@@ -360,6 +380,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mIsPaused = true;
             mHandler.removeCallbacks(mPageDownRunnable);
         }
+    }
+
+    void selectCenterPage(int offset) {
+        int pageNum = mAdapter.getCenterPageNumber();
+        if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
+            offset = 0;
+        }
+        mBannerView.setCurrentItem(pageNum + offset);
     }
 
     /**
@@ -426,12 +454,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             }
         }
         return view == mBannerView ? mBannerView.onTouchEvent(motionEvent) : view == mBannerView.getParent() ? mBannerView.dispatchTouchEvent(motionEvent) : view.onTouchEvent(motionEvent);
-    }
-
-    void reStart() {
-        if (isStarted() && isPaused()) {
-            start(false);
-        }
     }
 
     private int parseAction(int action) {
@@ -543,6 +565,47 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         return mListenerInfo;
     }
 
+    void findRelevantViews() {
+        ViewGroup parent = (ViewGroup) mBannerView.getParent();
+        if (parent != null) {
+            if (mPointIndicatorId != View.NO_ID) {
+                setIndicatorView(findView(parent, mPointIndicatorId, "PointIndicator"));
+                mPointIndicatorId = View.NO_ID;
+            }
+            if (mTitleViewId != View.NO_ID) {
+                View titleView = findView(parent, mTitleViewId, "TitleView");
+                if (titleView instanceof TextView) {
+                    setTitleView((TextView) titleView);
+                } else {
+                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+                }
+                mTitleViewId = View.NO_ID;
+            }
+            if (mSubTitleViewId != View.NO_ID) {
+                View subTitleView = findView(parent, mSubTitleViewId, "SubTitleView");
+                if (subTitleView instanceof TextView) {
+                    setSubTitleView((TextView) subTitleView);
+                } else {
+                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+                }
+                mSubTitleViewId = View.NO_ID;
+            }
+        }
+    }
+
+    private View findView(ViewGroup view, int viewId, String desc) {
+        View v = view.findViewById(viewId);
+        if (v == null) {
+            ViewParent parent = view.getParent();
+            if (parent != null && parent instanceof ViewGroup) {
+                return findView((ViewGroup) parent, viewId, desc);
+            } else {
+                throw new Resources.NotFoundException("the " + desc + " view id is not found!");
+            }
+        }
+        return v;
+    }
+
     /**
      * Banner的页面滚动控制器。
      */
@@ -609,7 +672,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         private SparseArray<View> itemViewCache = new SparseArray<>();
 
         @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+        public View instantiateItem(ViewGroup container, int position) {
             int index = getIndex(position);
             View entryView = itemViewCache.get(index);
             if (entryView == null) {
@@ -705,6 +768,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             return successful;
         }
 
+        @Nullable
         List<? extends BannerEntry> getItems() {
             return mItems;
         }

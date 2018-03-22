@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                         BannerView bannerView = (BannerView) view;
                         bannerView.setOnPageClickListener(new BannerView.OnPageClickListener() {
                             @Override
-                            protected void onPageClick(BannerEntry entry, int index) {
+                            public void onPageClick(BannerEntry entry, int index) {
                                 //某个页面被单击后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
                             }
                         });
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         if (mOnBannerEventListener == null) {
             mOnBannerEventListener = new BannerView.OnPageClickListener() {
                 @Override
-                protected void onPageClick(BannerEntry entry, int index) {
+                public void onPageClick(BannerEntry entry, int index) {
                     if (entry instanceof ImageBannerEntry) {
                         SubActivity.start(MainActivity.this, ((ImageBannerEntry) entry).getValue());
                     } else if (entry instanceof TitleImageBannerEntry) {

@@ -1,7 +1,6 @@
 package com.kelin.banner.view;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.annotation.Size;
@@ -9,7 +8,6 @@ import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.TextView;
@@ -40,19 +38,8 @@ public class BannerView extends ViewPager {
      */
     public static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
 
-    private BannerHelper mBH;
-    /**
-     * 用来记录指示器控件的ID。
-     */
-    private int mPointIndicatorId;
-    /**
-     * 用来记录标题控件的ID。
-     */
-    private int mTitleViewId;
-    /**
-     * 用来记录子标题控件的ID。
-     */
-    private int mSubTitleViewId;
+    @NonNull
+    private final BannerHelper mBH;
 
 
     public BannerView(Context context) {
@@ -62,14 +49,10 @@ public class BannerView extends ViewPager {
     public BannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        init(context, attrs);
-    }
-
-    private void init(Context context, AttributeSet attrs) {
-        if (attrs == null) {
+        TypedArray typedArray;
+        if (attrs == null || (typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView)) == null) {
             mBH = new BannerHelper(this, 0);
         } else {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
             int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_interpolator, NO_ID);
             Interpolator interpolator = null;
             if (interpolatorId != NO_ID) {
@@ -80,11 +63,10 @@ public class BannerView extends ViewPager {
                     typedArray.getInt(R.styleable.BannerView_singlePageMode, 0),
                     interpolator,
                     typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0),
-                    typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0));
-
-            mPointIndicatorId = typedArray.getResourceId(R.styleable.BannerView_bannerIndicator, NO_ID);
-            mTitleViewId = typedArray.getResourceId(R.styleable.BannerView_titleView, NO_ID);
-            mSubTitleViewId = typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID);
+                    typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0),
+                    typedArray.getResourceId(R.styleable.BannerView_bannerIndicator, NO_ID),
+                    typedArray.getResourceId(R.styleable.BannerView_titleView, NO_ID),
+                    typedArray.getResourceId(R.styleable.BannerView_subTitleView, NO_ID));
             typedArray.recycle();
         }
     }
@@ -134,47 +116,8 @@ public class BannerView extends ViewPager {
     @Override
     protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params) {
         boolean addSuccess = super.addViewInLayout(child, index, params);
-        ViewGroup parent = (ViewGroup) getParent();
-        View view;
-        if (parent != null) {
-            if (mPointIndicatorId != NO_ID) {
-                view = findView(parent, mPointIndicatorId, "PointIndicator");
-                mBH.setIndicatorView(view);
-                mPointIndicatorId = NO_ID;
-            }
-            if (mTitleViewId != NO_ID) {
-                view = findView(parent, mTitleViewId, "TitleView");
-                if (view instanceof TextView) {
-                    setTitleView((TextView) view);
-                } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
-                }
-                mTitleViewId = NO_ID;
-            }
-            if (mSubTitleViewId != NO_ID) {
-                view = findView(parent, mSubTitleViewId, "SubTitleView");
-                if (view instanceof TextView) {
-                    setSubTitleView((TextView) view);
-                } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
-                }
-                mSubTitleViewId = NO_ID;
-            }
-        }
+        mBH.findRelevantViews();
         return addSuccess;
-    }
-
-    private View findView(ViewGroup view, int viewId, String desc) {
-        View v = view.findViewById(viewId);
-        if (v == null) {
-            ViewParent parent = view.getParent();
-            if (parent != null && parent instanceof ViewGroup) {
-                return findView((ViewGroup) parent, viewId, desc);
-            } else {
-                throw new Resources.NotFoundException("the " + desc + " view id is not found!");
-            }
-        }
-        return v;
     }
 
     /**
@@ -183,7 +126,7 @@ public class BannerView extends ViewPager {
      * @param items {@link BannerEntry} 集合。
      * @see #setEntries(List, boolean)
      */
-    public void setEntries(List<? extends BannerEntry> items) {
+    public void setEntries(@NonNull List<? extends BannerEntry> items) {
         setEntries(items, true);
     }
 
@@ -430,7 +373,7 @@ public class BannerView extends ViewPager {
     /**
      * 轮播图的所有事件的监听类。
      */
-    public static abstract class OnPageClickListener {
+    public interface OnPageClickListener {
 
         /**
          * 页面被点击的时候执行。
@@ -438,7 +381,7 @@ public class BannerView extends ViewPager {
          * @param entry 当前页面的 {@link BannerEntry} 对象。
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
-        protected abstract void onPageClick(BannerEntry entry, int index);
+        void onPageClick(BannerEntry entry, int index);
     }
 
     /**
@@ -486,5 +429,44 @@ public class BannerView extends ViewPager {
          * @see BannerView#SCROLL_STATE_SETTLING
          */
         void onPageScrollStateChanged(int state);
+    }
+
+    /**
+     * 页面改变的监听的实现类，这里将所有的方法都进行了空实现。如果你希望监听页面改变而又不想监听所有事件，可以使用该实现类。
+     */
+    public abstract class OnPageChangeListenerImpl implements OnPageChangeListener {
+
+        /**
+         * 当页面被选中的时候调用。
+         *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
+         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+         */
+        @Override
+        public void onPageSelected(BannerEntry entry, int index) {
+        }
+
+        /**
+         * 当页面正在滚动中的时候执行。
+         *
+         * @param index                当前页面的索引。这个索引永远会在你的集合的size范围内。
+         * @param positionOffset       值为(0,1)表示页面位置的偏移。
+         * @param positionOffsetPixels 页面偏移的像素值。
+         */
+        @Override
+        public void onPageScrolled(int index, float positionOffset, int positionOffsetPixels) {
+        }
+
+        /**
+         * 当Banner中的页面的滚动状态改变的时候被执行。
+         *
+         * @param state 当前的滚动状态。
+         * @see BannerView#SCROLL_STATE_IDLE
+         * @see BannerView#SCROLL_STATE_DRAGGING
+         * @see BannerView#SCROLL_STATE_SETTLING
+         */
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
     }
 }
