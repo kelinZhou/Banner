@@ -65,45 +65,23 @@ Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，
         android:id="@+id/vp_view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        <!--当Banner中的图片只有一张时的处理方式-->
         app:singlePageMode="canNotPaging|noIndicator"
-        <!--为BannerView指定指示器，只要是实现了Pageable接口的Veiw都可以-->
         app:bannerIndicator="@+id/biv_indicator"
-        <!--为BannerView指定用来显示标题的控件-->
         app:titleView="@+id/tv_title"
-        <!--为BannerView指定用来显示副标题的控件-->
-        <!--app:subTitleView=""-->
-        <!--为BannerView设置翻页间隔-->
         app:pagingIntervalTime="3000"
-        <!--为BannerView设置翻页时长减速倍数（是ViewPager时长的几倍）-->
         app:decelerateMultiple="4"
-        <!--为BannerView指定动画差值器-->
-        <!--app:interpolator=""-->
         android:background="#FFF"/>
 
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:layout_alignParentBottom="true"
-                  android:background="#8000"
-                  android:gravity="center_vertical"
-                  android:orientation="horizontal"
-                  android:padding="6dp">
+                  style="@style/style_banner_title_layout">
 
         <!--用来显示标题的控件-->
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1"
-            android:maxWidth="300dp"
-            android:paddingBottom="6dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:paddingTop="6dp"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            style="@style/style_banner_title"
             tools:text="我是标题！"/>
 
         <!--Banner的圆点型指示器-->
@@ -111,19 +89,9 @@ Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，
             android:id="@+id/biv_indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            <!--设置总页数，这个参数设置了也是没有意义的，最总会以BannerView的总页数为准。配置
-            自定义属性只是为了能再布局文件中看到效果-->
-            app:totalCount="4"
-            <!--圆点的半径-->
             app:pointRadius="3dp"
-            <!--选中时(也就是当前页)圆点的半径-->
             app:selectedPointRadius="4dp"
-            <!--圆点与圆点之间的间距-->
-            app:pointSpacing="4dp"
-            <!--圆点的颜色-->
-            app:pointColor="#5fff"
-            <!--选中时(也就是当前页)圆点的颜色-->
-            app:selectedPointColor="@android:color/white"/>
+            app:pointSpacing="4dp"/>
     </LinearLayout>
 </RelativeLayout>
 ```
