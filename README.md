@@ -162,10 +162,10 @@ Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT�
     //找到BannerView控件。
     BannerView bannerView = findViewById(R.id.vp_view_pager);
     //设置自定义翻页动画改变器，也可以不设置。如果没有设置，则使用ViewPager默认的翻页动画。
-    bannerView.setPageTransformer(true, new DepthPageTransformer());
+    bannerView.setPageTransformer(true, new ScrollPaintingPageTransformer());
     //getData()方法是从网络上获取数据。这里只是伪代码。
     List<TitleImageBannerEntry> bannerEntries = getData();
-    //设置数据源并开始轮播。如果不希望启动轮播则调用两个参数的方法。
+    //设置数据源并开始轮播。如果不希望启动轮播则调用两个参数的方法：bannerView.setEntries(bannerEntries, false); 你也可以通过bannerView.start();的方式启动轮播。
     bannerView.setEntries(bannerEntries);
 ```
 #### 设置监听。
