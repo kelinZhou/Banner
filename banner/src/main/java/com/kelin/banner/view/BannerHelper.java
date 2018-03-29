@@ -683,6 +683,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (entryView == null) {
                 BannerEntry bannerEntry = mItems.get(index);
                 entryView = bannerEntry.onCreateView(container);
+                if (entryView == null) {
+                    throw new NullPointerException("The entryView must not null!");
+                } else if (entryView.getParent() != null) {
+                    throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
+                }
                 entryView.setTag(KEY_INDEX_TAG, index);
                 entryView.setOnClickListener(this);
                 entryView.setOnLongClickListener(this);
