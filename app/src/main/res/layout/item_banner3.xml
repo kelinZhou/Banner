@@ -16,7 +16,7 @@
         app:singlePageMode="canNotPaging"
         app:titleView="@+id/tv_title"
         app:pagingIntervalTime="3500"
-        app:decelerateMultiple="4"
+        app:decelerateMultiple="8"
         android:background="#FFF"/>
 
     <LinearLayout android:layout_width="match_parent"

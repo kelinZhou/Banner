@@ -24,7 +24,7 @@ class BannerHolder3 extends ItemViewHolder<List<TitleImageBannerEntry>> {
         //找到BannerView控件。
         mBannerView = getView(R.id.vp_view_pager);
         //设置翻页动画改变器
-        mBannerView.setPageTransformer(true, new ZoomOutPageTransformer());
+        mBannerView.setPageTransformer(true, new ScrollPaintingPageTransformer());
     }
 
     @Override
