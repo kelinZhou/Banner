@@ -5,6 +5,7 @@ import android.view.View;
 import com.kelin.banner.view.BannerView;
 import com.kelin.recycleradapter.holder.ItemLayout;
 import com.kelin.recycleradapter.holder.ItemViewHolder;
+import com.kelin.transformer.DepthPageTransformer;
 
 import java.util.List;
 

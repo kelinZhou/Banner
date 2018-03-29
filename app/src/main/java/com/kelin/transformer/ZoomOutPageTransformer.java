@@ -1,4 +1,4 @@
-package com.kelin.bannerdemo;
+package com.kelin.transformer;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

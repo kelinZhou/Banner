@@ -1,4 +1,4 @@
-package com.kelin.bannerdemo;
+package com.kelin.transformer;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -10,7 +10,7 @@ import android.view.View;
  * 版本 v 1.0.0
  */
 
-class DepthPageTransformer implements ViewPager.PageTransformer {
+public class DepthPageTransformer implements ViewPager.PageTransformer {
     private static final float MIN_SCALE = 0.75f;
 
     public void transformPage(View view, float position) {
