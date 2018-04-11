@@ -1,6 +1,6 @@
 package com.kelin.banner;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.List;
 
@@ -15,14 +15,14 @@ import java.util.List;
 
 public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
 
-    private final D d;
+    @Nullable private final D d;
 
     /**
      * BannerEntry构造器。
      *
      * @param d 该BannerEntry容器中所要盛放的对象。
      */
-    public SimpleBannerEntry(@NonNull D d) {
+    public SimpleBannerEntry(@Nullable D d) {
         this.d = d;
     }
 
@@ -32,8 +32,29 @@ public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
      * @return 该类就像是一个容器，用来盛放你Banner中的当个页面的对象，而该方法的返回值就是返回这个容器中所盛放的对象。
      */
     @Override
+    @Nullable
     public final D getValue() {
         return d;
+    }
+
+    /**
+     * 获取标题。
+     * @return 返回当前条目的标题。
+     */
+    @Nullable
+    @Override
+    public CharSequence getTitle() {
+        return null;
+    }
+
+    /**
+     * 获取子标题。
+     * @return 返回当前条目的子标题。
+     */
+    @Nullable
+    @Override
+    public CharSequence getSubTitle() {
+        return null;
     }
 
     /**

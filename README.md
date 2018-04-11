@@ -118,6 +118,12 @@ Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，
 
     *以上所说的只有一张图片是指通过```BannerView```的```setEntries```方法设置数据源时数据源集合的```size()```等于1。所说的设置只是器是指在XML代码中为BannerView配置```app:bannerIndicator```属性或者通过代码```BannerView.setIndicatorView(@NonNull BannerIndicator indicatorView)```为BannerView设置指示器。*
 
+```app:loopMode``` 配置轮播模式，该属性为枚举属性，有以下三个值可以配置：
+
+1. ```infiniteLoop``` 无限循环轮播。
+2. ```fromCoverToCover``` 从第一页轮播到最后一页，然后停止轮播。
+3. ```fromCoverToCoverLoop``` 从第一页轮播到最后一页，然后再会到第一页后再轮播到最后一页，一直重复。
+
 ```app:touchPauseEnable``` 用来配置触摸暂停轮播是否可用，BannerView默认在被触摸时是会暂停自动轮播的，如果你不希望在BannerView被触摸后被暂停自动轮播这可以为该属性赋值为：false
 
 #### PointIndicatorView的自定义属性

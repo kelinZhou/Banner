@@ -20,6 +20,15 @@
             <!--不可以也不能翻页-->
             <flag name="canNotPaging" value="0x02"/>
         </attr>
+        <!--拥有多张图片时的显示模式-->
+        <attr name="loopMode" format="enum">
+            <!--无限循环模式-->
+            <enum name="infiniteLoop" value="0x10" />
+            <!--从头至尾循环一次-->
+            <enum name="fromCoverToCover" value="0x20" />
+            <!--从头至尾一直循环-->
+            <enum name="fromCoverToCoverLoop" value="0x40" />
+        </attr>
         <!--触摸暂停轮播是否可用-->
         <attr name="touchPauseEnable" format="boolean" />
     </declare-styleable>

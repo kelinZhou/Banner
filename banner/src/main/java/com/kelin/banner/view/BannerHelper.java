@@ -25,8 +25,10 @@ import com.kelin.banner.page.Pageable;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import static com.kelin.banner.view.BannerView.CAN_NOT_PAGING;
-import static com.kelin.banner.view.BannerView.NO_INDICATOR;
+import static com.kelin.banner.view.BannerView.MULTI_MODE_FROM_COVER_TO_COVER;
+import static com.kelin.banner.view.BannerView.MULTI_MODE_INFINITE_LOOP;
+import static com.kelin.banner.view.BannerView.SINGLE_MODE_CAN_NOT_PAGING;
+import static com.kelin.banner.view.BannerView.SINGLE_MODE_NO_INDICATOR;
 
 /**
  * 描述 Banner的帮助类。
@@ -50,18 +52,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 翻页的间隔时长。
      */
     private int mPagingIntervalTime = 5000;
-
-    /**
-     * 用来翻页的任务。
-     */
-    private Runnable mPageDownRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mBannerView.setCurrentItem(mCurrentItem + 1, true);
-            mHandler.postDelayed(this, mPagingIntervalTime);
-        }
-    };
-
     /**
      * 存放当前BannerView的适配器。
      */
@@ -121,7 +111,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     /**
      * 只有一张图片是的显示模式。
      */
-    private int mSinglePageMode;
+    private int mPageModeFlags;
     /**
      * 用来存放监听对象的容器。
      */
@@ -138,15 +128,37 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 用来记录子标题控件的ID。
      */
     private int mSubTitleViewId;
+    /**
+     * 触摸暂停轮播是否可用。
+     */
     private boolean mTouchPauseEnable;
+    /**
+     * 用来翻页的任务。
+     */
+    private Runnable mPageDownRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isLastPage()) {
+                if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
+                    stop();
+                } else {
+                    mBannerView.setCurrentItem(0, false);
+                    mHandler.postDelayed(this, mPagingIntervalTime);
+                }
+            } else {
+                mBannerView.setCurrentItem(mCurrentItem + 1, true);
+                mHandler.postDelayed(this, mPagingIntervalTime);
+            }
+        }
+    };
 
     /**
      * 创建Banner对象。
      *
      * @param viewPager viewPager对象。
      */
-    BannerHelper(@NonNull BannerView viewPager, int singlePageMode) {
-        this(viewPager, singlePageMode, null, 0, 0, View.NO_ID, View.NO_ID, View.NO_ID, true);
+    BannerHelper(@NonNull BannerView viewPager, int pageModeFlags) {
+        this(viewPager, pageModeFlags, null, 0, 0, View.NO_ID, View.NO_ID, View.NO_ID, true);
     }
 
     /**
@@ -154,12 +166,12 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      *
      * @param viewPager viewPager对象。
      */
-    BannerHelper(@NonNull BannerView viewPager, int singlePageMode, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId, boolean touchPauseEnable) {
+    BannerHelper(@NonNull BannerView viewPager, int pageModeFlags, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId, boolean touchPauseEnable) {
         mBannerView = viewPager;
         mPointIndicatorId = pointIndicatorViewId;
         mTitleViewId = titleViewId;
         mSubTitleViewId = subTitleViewId;
-        mSinglePageMode = singlePageMode;
+        mPageModeFlags = pageModeFlags;
         mHandler = viewPager.getHandler() == null ? new Handler() : viewPager.getHandler();
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
         replaceScroller(viewPager, mScroller);
@@ -313,23 +325,46 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     /**
+     * 判断当前是否是最后一页。
+     *
+     * @return 如果当前正在显示最后一页则返回true，否则返回false。
+     */
+    private boolean isLastPage() {
+        return mAdapter.getCount() == mCurrentItem + 1;
+    }
+
+    /**
      * 判断Banner指示器是否可用。
      *
      * @param items 当前轮播图中的数据集。
      * @return 可用返回true，不可用返回false。
      */
     private boolean indicatorEnable(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode & NO_INDICATOR) == 0;
+        return items.size() > 1 || (getSinglePageModeFlags() & SINGLE_MODE_NO_INDICATOR) == 0;
     }
 
     /**
-     * 判断是否可以翻页。
+     * 判断是否可以循环翻页。
      *
      * @param items 当前轮播图中的数据集。
-     * @return 可以翻页返回true，不可翻页返回false。
+     * @return 可以循环翻页返回true，不可以循环翻页返回false。
      */
     private boolean canPaging(@NonNull List<? extends BannerEntry> items) {
-        return items.size() > 1 || (mSinglePageMode & CAN_NOT_PAGING) == 0;
+        return items.size() > 1 || (getSinglePageModeFlags() & SINGLE_MODE_CAN_NOT_PAGING) == 0;
+    }
+
+    /**
+     * 获取单页面的显示模式标识。
+     */
+    private int getSinglePageModeFlags() {
+        return mPageModeFlags & 0x0f;
+    }
+
+    /**
+     * 获取多页面的轮播模式标识。
+     */
+    private int getMultiPageMode() {
+        return mPageModeFlags & 0xf0;
     }
 
     /**
@@ -487,13 +522,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (mSubTitleView != null) {
             mSubTitleView.setText(mAdapter.getItem(position).getSubTitle());
         }
-        if (position == 0 || position == mAdapter.getCount()) {
-            stop();
-            pause();
-        } else {
-            if (getPageListenerInfo().onChangedListener != null) {
-                getPageListenerInfo().onChangedListener.onPageSelected(mAdapter.getItem(position), index);
-            }
+        if (getPageListenerInfo().onChangedListener != null) {
+            getPageListenerInfo().onChangedListener.onPageSelected(mAdapter.getItem(position), index);
         }
     }
 
@@ -512,11 +542,13 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     public void onPageScrollStateChanged(int state) {
         if (state == ViewPager.SCROLL_STATE_SETTLING && mCurPositionOffset != NOTHING_INT && mCurrentTouchingPage != NOTHING_INT) {
             int nextPage = mBannerView.determineTargetPage(mCurrentTouchingPage, mCurPositionOffset);
+            float cardinal = 1;
             if (nextPage > mCurrentTouchingPage) {
-                mScroller.setCardinal((1 - mCurPositionOffset) / 2);
+                cardinal = (1 - mCurPositionOffset) / 2;
             } else if (nextPage == mCurrentTouchingPage) {
-                mScroller.setCardinal(mCurPositionOffset / 2);
+                cardinal = mCurPositionOffset / 2;
             }
+            mScroller.setCardinal(cardinal == 0 ? 1 : cardinal);
             mCurPositionOffset = NOTHING_INT;
             mCurrentTouchingPage = NOTHING_INT;
         } else if (state == ViewPager.SCROLL_STATE_IDLE) {
@@ -553,11 +585,12 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void setSinglePageMode(int singlePageMode) {
-        if ((singlePageMode == NO_INDICATOR
-                || singlePageMode == CAN_NOT_PAGING
-                || singlePageMode == (NO_INDICATOR | CAN_NOT_PAGING))
-                && (mSinglePageMode & singlePageMode) != singlePageMode) {
-            mSinglePageMode = singlePageMode;
+        singlePageMode &= 0x0f;
+        if ((singlePageMode == SINGLE_MODE_NO_INDICATOR
+                || singlePageMode == SINGLE_MODE_CAN_NOT_PAGING
+                || singlePageMode == (SINGLE_MODE_NO_INDICATOR | SINGLE_MODE_CAN_NOT_PAGING))
+                && (getSinglePageModeFlags() & singlePageMode) != singlePageMode) {
+            mPageModeFlags = getMultiPageMode() | singlePageMode;
             mAdapter.notifyDataSetChanged();
         }
     }
@@ -689,14 +722,19 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
                 }
                 entryView.setTag(KEY_INDEX_TAG, index);
-                entryView.setOnClickListener(this);
-                entryView.setOnLongClickListener(this);
                 if (mTouchPauseEnable) {
                     entryView.setOnTouchListener(BannerHelper.this);
                 }
             } else {
                 itemViewCache.remove(index);
             }
+            if (getPageListenerInfo().onClickListener != null) {
+                entryView.setOnClickListener(this);
+            }
+            if (getPageListenerInfo().onLongClickListener != null) {
+                entryView.setOnLongClickListener(this);
+            }
+
             container.addView(entryView);
             return entryView;
         }
@@ -719,7 +757,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public int getCount() {
-            return mItems == null ? 0 : canPaging(mItems) ? Integer.MAX_VALUE : mItems.size();
+            return mItems == null ? 0 : getMultiPageMode() == MULTI_MODE_INFINITE_LOOP && canPaging(mItems) ? Integer.MAX_VALUE : mItems.size();
         }
 
         @Override

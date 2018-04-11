@@ -17,21 +17,9 @@
         app:subTitleView="@+id/tv_sub_title"
         app:pagingIntervalTime="3000"
         app:singlePageMode="canNotPaging|noIndicator"
+        app:loopMode="fromCoverToCover"
         app:decelerateMultiple="4"
         android:background="#FFF"/>
-
-    <!--为BannerView指定指示器，只要是BannerIndicator的子类都可以-->
-    <!--app:bannerIndicator="@+id/biv_indicator"-->
-    <!--为BannerView指定用来显示标题的控件-->
-    <!--app:titleView="@+id/tv_title"-->
-    <!--为BannerView指定用来显示副标题的控件-->
-    <!--app:subTitleView=""-->
-    <!--为BannerView设置翻页间隔-->
-    <!--app:pagingIntervalTime="3000"-->
-    <!--为BannerView设置翻页时长减速倍数（是ViewPager时长的几倍）-->
-    <!--app:decelerateMultiple="4"-->
-    <!--为BannerView指定动画差值器-->
-    <!--app:interpolator=""-->
 
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"

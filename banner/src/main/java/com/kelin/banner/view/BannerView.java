@@ -32,13 +32,25 @@ import java.util.List;
 public class BannerView extends ViewPager {
 
     /**
-     * 没有(不显示)指示器。
+     * singlePageMode-没有(不显示)指示器。
      */
-    public static final int NO_INDICATOR = 0x0000_0001;
+    public static final int SINGLE_MODE_NO_INDICATOR = 0x01;
     /**
-     * 不可以也不能翻页。
+     * singlePageMode-不可以也不能翻页。
      */
-    public static final int CAN_NOT_PAGING = NO_INDICATOR << 1;
+    public static final int SINGLE_MODE_CAN_NOT_PAGING = SINGLE_MODE_NO_INDICATOR << 1;
+    /**
+     * multiPageMode-无限循环轮播。
+     */
+    public static final int MULTI_MODE_INFINITE_LOOP = SINGLE_MODE_CAN_NOT_PAGING << 3;
+    /**
+     * multiPageMode-从头至尾轮播一次。
+     */
+    public static final int MULTI_MODE_FROM_COVER_TO_COVER = MULTI_MODE_INFINITE_LOOP << 1;
+    /**
+     * multiPageMode-从头至尾重复轮播。
+     */
+    public static final int MULTI_MODE_FROM_COVER_TO_COVER_LOOP = MULTI_MODE_FROM_COVER_TO_COVER << 1;
 
     @NonNull
     private final BannerHelper mBH;
@@ -53,7 +65,7 @@ public class BannerView extends ViewPager {
 
         TypedArray typedArray;
         if (attrs == null || (typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView)) == null) {
-            mBH = new BannerHelper(this, 0);
+            mBH = new BannerHelper(this, MULTI_MODE_INFINITE_LOOP);
         } else {
             int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_interpolator, NO_ID);
             Interpolator interpolator = null;
@@ -62,7 +74,8 @@ public class BannerView extends ViewPager {
             }
 
             mBH = new BannerHelper(this,
-                    typedArray.getInt(R.styleable.BannerView_singlePageMode, 0),
+                    typedArray.getInt(R.styleable.BannerView_singlePageMode, 0) |
+                            typedArray.getInt(R.styleable.BannerView_loopMode, MULTI_MODE_INFINITE_LOOP),
                     interpolator,
                     typedArray.getInt(R.styleable.BannerView_pagingIntervalTime, 0),
                     typedArray.getInt(R.styleable.BannerView_decelerateMultiple, 0),
@@ -226,12 +239,12 @@ public class BannerView extends ViewPager {
     /**
      * 设置当Banner只有一张图片时的处理模式。该方法并不推荐使用，建议在XML中通过app:singlePageMode自定义属性配置。
      *
-     * @param singlePageMode 要设置的处理模式，可以是{@link #NO_INDICATOR} 或者是 {@link #CAN_NOT_PAGING}。
+     * @param singlePageMode 要设置的处理模式，可以是{@link #SINGLE_MODE_NO_INDICATOR} 或者是 {@link #SINGLE_MODE_CAN_NOT_PAGING}。
      *                       也可是同时设置两个参数，同时设置两个参数是中间用"|"符号链接。
-     *                       例如："bannerView.setSinglePageMode(BannerView.NO_INDICATOR|BannerView.CAN_NOT_PAGING)"。
+     *                       例如："bannerView.setSinglePageMode(BannerView.SINGLE_MODE_NO_INDICATOR|BannerView.SINGLE_MODE_CAN_NOT_PAGING)"。
      *                       如果同时设置了两个参数则表示如果只有一张图片则既不会轮播而且无论你是否设置了指示器则都不会显示。
-     * @see #NO_INDICATOR
-     * @see #CAN_NOT_PAGING
+     * @see #SINGLE_MODE_NO_INDICATOR
+     * @see #SINGLE_MODE_CAN_NOT_PAGING
      */
     public void setSinglePageMode(int singlePageMode) {
         mBH.setSinglePageMode(singlePageMode);

@@ -1,5 +1,7 @@
 package com.kelin.banner;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,24 +23,28 @@ public interface BannerEntry<VALUE> {
      * @param parent 当前的布局视图的父节点布局。
      * @return 返回当前页面所要显示的View。
      */
+    @NonNull
     View onCreateView(ViewGroup parent);
 
     /**
      * 获取标题。
      * @return 返回当前条目的标题。
      */
+    @Nullable
     CharSequence getTitle();
 
     /**
      * 获取子标题。
      * @return 返回当前条目的子标题。
      */
+    @Nullable
     CharSequence getSubTitle();
 
     /**
      * 获取当前页面的数据。改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。
      * @return 返回当前页面的数据。
      */
+    @Nullable
     VALUE getValue();
 
     /**

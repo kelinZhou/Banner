@@ -1,5 +1,6 @@
 package com.kelin.bannerdemo;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class ImageBannerEntry implements BannerEntry<String> {
      * @return 返回当前页面所要显示的View。
      */
     @Override
+    @NonNull
     public View onCreateView(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_banner_item, parent, false);
         ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
