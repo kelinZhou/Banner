@@ -138,13 +138,6 @@ public class BannerView extends ViewPager {
         }
     }
 
-    @Override
-    protected boolean addViewInLayout(View child, int index, ViewGroup.LayoutParams params) {
-        boolean addSuccess = super.addViewInLayout(child, index, params);
-        mBH.findRelevantViews();
-        return addSuccess;
-    }
-
     /**
      * 设置条目数据并开始轮播。如果不希望启动轮播则调用两个参数的方法{@link #setEntries(List, boolean)}。
      *
@@ -377,6 +370,7 @@ public class BannerView extends ViewPager {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        mBH.findRelevantViews();
         mBH.reStart();
         try {
             Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);

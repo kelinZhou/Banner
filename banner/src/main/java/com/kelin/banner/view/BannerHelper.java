@@ -529,10 +529,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (mIsPaused) {
-            mCurPositionOffset = positionOffset;
-            mCurrentTouchingPage = position;
-        }
+        mCurPositionOffset = positionOffset;
+        mCurrentTouchingPage = position;
         if (getPageListenerInfo().onChangedListener != null) {
             getPageListenerInfo().onChangedListener.onPageScrolled(mAdapter.getIndex(position), positionOffset, positionOffsetPixels);
         }
@@ -604,8 +602,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void findRelevantViews() {
-        ViewGroup parent = (ViewGroup) mBannerView.getParent();
-        if (parent != null) {
+        ViewGroup parent;
+        if ((parent = (ViewGroup) mBannerView.getParent()) != null && (mPointIndicatorId & mTitleViewId & mSubTitleViewId) != View.NO_ID) {
             if (mPointIndicatorId != View.NO_ID) {
                 setIndicatorView(findView(parent, mPointIndicatorId, "PointIndicator"));
                 mPointIndicatorId = View.NO_ID;
@@ -716,9 +714,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (entryView == null) {
                 BannerEntry bannerEntry = mItems.get(index);
                 entryView = bannerEntry.onCreateView(container);
-                if (entryView == null) {
-                    throw new NullPointerException("The entryView must not null!");
-                } else if (entryView.getParent() != null) {
+                if (entryView.getParent() != null) {
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
                 }
                 entryView.setTag(KEY_INDEX_TAG, index);

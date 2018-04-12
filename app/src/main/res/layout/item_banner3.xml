@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         app:bannerIndicator="@+id/biv_indicator"
         app:singlePageMode="canNotPaging"
-        app:loopMode="infiniteLoop"
+        app:loopMode="fromCoverToCoverLoop"
         app:titleView="@+id/tv_title"
         app:pagingIntervalTime="3500"
         app:decelerateMultiple="8"
