@@ -340,7 +340,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 可用返回true，不可用返回false。
      */
     private boolean indicatorEnable(List<? extends BannerEntry> items) {
-        return items.size() > 1 || (getSinglePageModeFlags() & SINGLE_MODE_NO_INDICATOR) == 0;
+        return (items ！= null && items.size() > 1) || (getSinglePageModeFlags() & SINGLE_MODE_NO_INDICATOR) == 0;
     }
 
     /**
