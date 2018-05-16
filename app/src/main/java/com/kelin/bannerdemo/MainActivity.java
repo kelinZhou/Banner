@@ -22,12 +22,13 @@ public class MainActivity extends AppCompatActivity {
 
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnPageClickListener mOnBannerEventListener;
+    private BannerView bannerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        bannerView = (BannerView) findViewById(R.id.vp_view_pager);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
         ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
@@ -84,6 +85,17 @@ public class MainActivity extends AppCompatActivity {
             };
         }
         return mEventInterceptor;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bannerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bannerView.setEntries(getTitleImageBannerEntries());
+            }
+        }, 500);
     }
 
     @NonNull

@@ -1,8 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recycler_view"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-</android.support.v7.widget.RecyclerView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="175dp"
+        android:orientation="vertical"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp">
+
+        <com.kelin.banner.view.BannerView
+            android:id="@+id/vp_view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFF"
+            app:bannerIndicator="@+id/biv_indicator"
+            app:decelerateMultiple="4"
+            app:loopMode="infiniteLoop"
+            app:pagingIntervalTime="3000"
+            app:singlePageMode="canNotPaging|noIndicator"
+            app:subTitleView="@+id/tv_sub_title"
+            app:titleView="@+id/tv_title" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#8000"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="6dp">
+
+            <!--用来显示标题的控件-->
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="我是标题！" />
+
+            <!--用来显示子标题的控件-->
+            <TextView
+                android:id="@+id/tv_sub_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                tools:text="我是子标题" />
+
+            <!--Banner的圆点型指示器-->
+            <com.kelin.banner.view.PointIndicatorView
+                android:id="@+id/biv_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                app:pointColor="#5fff"
+                app:pointRadius="3dp"
+                app:pointSpacing="4dp"
+                app:selectedPointColor="@android:color/white"
+                app:selectedPointRadius="4dp"
+                app:totalCount="4" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

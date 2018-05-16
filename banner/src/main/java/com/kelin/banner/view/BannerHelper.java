@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static com.kelin.banner.view.BannerView.MULTI_MODE_FROM_COVER_TO_COVER;
+import static com.kelin.banner.view.BannerView.MULTI_MODE_FROM_COVER_TO_COVER_LOOP;
 import static com.kelin.banner.view.BannerView.MULTI_MODE_INFINITE_LOOP;
 import static com.kelin.banner.view.BannerView.SINGLE_MODE_CAN_NOT_PAGING;
 import static com.kelin.banner.view.BannerView.SINGLE_MODE_NO_INDICATOR;
@@ -141,7 +142,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (isLastPage()) {
                 if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
                     stop();
-                } else {
+                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
                     mBannerView.setCurrentItem(0, false);
                     mHandler.postDelayed(this, mPagingIntervalTime);
                 }
@@ -266,7 +267,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      */
     void setTitleView(TextView titleView) {
         if (titleView != null) {
-            titleView.setText(mAdapter.getItem(mCurrentItem).getTitle());
+            titleView.setText(mAdapter.isEmpty() ? null : mAdapter.getItem(mCurrentItem).getTitle());
             mTitleView = titleView;
         }
     }
@@ -278,7 +279,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      */
     void setSubTitleView(TextView subTitleView) {
         if (subTitleView != null) {
-            subTitleView.setText(mAdapter.getItem(mCurrentItem).getSubTitle());
+            subTitleView.setText(mAdapter.isEmpty() ? null : mAdapter.getItem(mCurrentItem).getSubTitle());
             mSubTitleView = subTitleView;
         }
     }
@@ -349,8 +350,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param items 当前轮播图中的数据集。
      * @return 可以循环翻页返回true，不可以循环翻页返回false。
      */
-    private boolean canPaging(@NonNull List<? extends BannerEntry> items) {
-        return items.size() > 1 || (getSinglePageModeFlags() & SINGLE_MODE_CAN_NOT_PAGING) == 0;
+    private boolean canPaging(List<? extends BannerEntry> items) {
+        return items != null && (items.size() > 1 || (getSinglePageModeFlags() & SINGLE_MODE_CAN_NOT_PAGING) == 0);
     }
 
     /**
@@ -425,7 +426,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
             offset = 0;
         }
-        mBannerView.setCurrentItem(pageNum + offset);
+        mBannerView.setCurrentItem(pageNum + offset, false);
+        setTitleView(mTitleView);
+        setSubTitleView(mSubTitleView);
     }
 
     /**
@@ -443,7 +446,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
     /**
      * 设置显示左右两边的页面，调用该方法前你必须在你的布局文件中为 {@link BannerView} 包裹一层布局。
-     * 由于{@link com.kelin.banner.view.BannerHelper BannerHelper}对包裹的这一层布局进行了
+     * 由于{@link BannerHelper BannerHelper}对包裹的这一层布局进行了
      * {@link View#setOnTouchListener(View.OnTouchListener)}监听触摸事件的操作，所以你不能再对其进行此操作了。
      * 否者可能会出现手指在触摸时无法停止轮播的bug。
      *
@@ -551,6 +554,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mCurrentTouchingPage = NOTHING_INT;
         } else if (state == ViewPager.SCROLL_STATE_IDLE) {
             mScroller.setCardinal(1);
+            if ((isLastPage() || mCurrentItem == 0) && isInfiniteLoopMode()) {
+                mBannerView.setCurrentItem(mAdapter.getItemSize(), false);
+            }
         }
         if (getPageListenerInfo().onChangedListener != null) {
             getPageListenerInfo().onChangedListener.onPageScrollStateChanged(state);
@@ -627,6 +633,15 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 mSubTitleViewId = View.NO_ID;
             }
         }
+    }
+
+    /**
+     * 是否为无限轮播模式。
+     *
+     * @return 如果是返回true，否则返回false。
+     */
+    private boolean isInfiniteLoopMode() {
+        return mAdapter != null && getMultiPageMode() == MULTI_MODE_INFINITE_LOOP && canPaging(mAdapter.getItems());
     }
 
     private View findView(ViewGroup view, int viewId, String desc) {
@@ -753,7 +768,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public int getCount() {
-            return mItems == null ? 0 : getMultiPageMode() == MULTI_MODE_INFINITE_LOOP && canPaging(mItems) ? Integer.MAX_VALUE : mItems.size();
+            return mItems == null ? 0 : isInfiniteLoopMode() ? mItems.size() * 2 + 1 : mItems.size();
         }
 
         @Override
@@ -830,6 +845,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             int tag = (int) v.getTag(KEY_INDEX_TAG);
             onPageLongClick(mItems.get(tag), tag);
             return true;
+        }
+
+        private boolean isEmpty() {
+            return mItems == null || mItems.isEmpty();
+        }
+
+        int getItemSize() {
+            return mItems == null ? 0 : mItems.size();
         }
     }
 
