@@ -54,9 +54,6 @@ public class BannerView extends ViewPager {
      */
     public static final int MULTI_MODE_FROM_COVER_TO_COVER_LOOP = MULTI_MODE_FROM_COVER_TO_COVER << 1;
 
-    private PageTransformer mTransformer;
-    private int lastVisibilityStatus = -1;
-
     @NonNull
     private final BannerHelper mBH;
 
@@ -363,7 +360,7 @@ public class BannerView extends ViewPager {
     public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer, int pageLayerType) {
         super.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType);
         if (Build.VERSION.SDK_INT >= 11) {
-            mTransformer = transformer;
+            mBH.updatePageTransformer(transformer);
         }
     }
 
@@ -383,24 +380,7 @@ public class BannerView extends ViewPager {
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
         super.onWindowVisibilityChanged(visibility);
-        if (lastVisibilityStatus != visibility) {
-            lastVisibilityStatus = visibility;
-            if (visibility == GONE) {
-                mBH.pause();
-            } else {
-                mBH.findRelevantViews();
-                mBH.reStart();
-                try {
-                    Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
-                    method.setAccessible(true);
-                    method.invoke(this, getCurrentItem(), false, 0, false);
-                    Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
-                    mFirstLayout.setBoolean(this, false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        mBH.onWindowVisibilityChanged(visibility);
     }
 
     boolean isFirstLayout() {
@@ -417,26 +397,6 @@ public class BannerView extends ViewPager {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-    }
-
-    void postInitFirstPageScrolled() {
-        if (mTransformer != null) {
-            post(new Runnable() {
-                @Override
-                public void run() {
-                    final int scrollX = getScrollX();
-                    final int childCount = getChildCount();
-                    for (int i = 0; i < childCount; i++) {
-                        final View child = getChildAt(i);
-                        final LayoutParams lp = (LayoutParams) child.getLayoutParams();
-
-                        if (lp.isDecor) continue;
-                        final float transformPos = (float) (child.getLeft() - scrollX) / (getMeasuredWidth() - getPaddingLeft() - getPaddingRight());
-                        mTransformer.transformPage(child, transformPos);
-                    }
-                }
-            });
-        }
     }
 
     /**

@@ -23,6 +23,7 @@ import com.kelin.banner.page.CenterBigTransformer;
 import com.kelin.banner.page.Pageable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.kelin.banner.view.BannerView.MULTI_MODE_FROM_COVER_TO_COVER;
@@ -133,6 +134,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 触摸暂停轮播是否可用。
      */
     private boolean mTouchPauseEnable;
+    /**
+     * 自定义翻页动画。
+     */
+    private ViewPager.PageTransformer mTransformer;
+    /**
+     * 用来记录上一次的BannerView的Visibility状态。
+     */
+    private int lastVisibilityStatus = -1;
     /**
      * 用来翻页的任务。
      */
@@ -415,7 +424,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (isStarted() && isPaused()) {
             start(false);
             if (isFirstPage()) {
-                mBannerView.postInitFirstPageScrolled();
+                postInitFirstPageScrolled();
             }
         }
     }
@@ -449,7 +458,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
         mBannerView.setCurrentItem(pageNum + offset, false);
         if (mBannerView.isFirstLayout()) {
-            mBannerView.postInitFirstPageScrolled();
+            postInitFirstPageScrolled();
         }
         setTitleView(mTitleView);
         setSubTitleView(mSubTitleView);
@@ -679,6 +688,51 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             }
         }
         return v;
+    }
+
+    void updatePageTransformer(ViewPager.PageTransformer transformer) {
+        mTransformer = transformer;
+    }
+
+    void onWindowVisibilityChanged(int visibility) {
+        if (lastVisibilityStatus != visibility) {
+            lastVisibilityStatus = visibility;
+            if (visibility == View.GONE) {
+                pause();
+            } else {
+                findRelevantViews();
+                reStart();
+                try {
+                    Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
+                    method.setAccessible(true);
+                    method.invoke(this, mBannerView.getCurrentItem(), false, 0, false);
+                    Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
+                    mFirstLayout.setBoolean(this, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    void postInitFirstPageScrolled() {
+        if (mTransformer != null) {
+            mBannerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    final int scrollX = mBannerView.getScrollX();
+                    final int childCount = mBannerView.getChildCount();
+                    for (int i = 0; i < childCount; i++) {
+                        final View child = mBannerView.getChildAt(i);
+                        final ViewPager.LayoutParams lp = (ViewPager.LayoutParams) child.getLayoutParams();
+
+                        if (lp.isDecor) continue;
+                        final float transformPos = (float) (child.getLeft() - scrollX) / (mBannerView.getMeasuredWidth() - mBannerView.getPaddingLeft() - mBannerView.getPaddingRight());
+                        mTransformer.transformPage(child, transformPos);
+                    }
+                }
+            });
+        }
     }
 
     /**
