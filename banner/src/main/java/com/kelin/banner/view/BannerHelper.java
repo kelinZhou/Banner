@@ -151,10 +151,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (isLastPage()) {
                 if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
                     stop();
-                } else if (getMultiPageMode() == MULTI_MODE_INFINITE_LOOP) {
-                    mBannerView.setCurrentItem(0, false);
-                    mHandler.postDelayed(this, mPagingIntervalTime);
-                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP){
+                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
                     mBannerView.setCurrentItem(0, true);
                     mHandler.postDelayed(this, mPagingIntervalTime);
                 }
@@ -343,11 +340,12 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 如果当前正在显示最后一页则返回true，否则返回false。
      */
     private boolean isLastPage() {
-        return mAdapter.getCount() == mCurrentItem + 1;
+        return mAdapter.getCount() == mCurrentItem + mBannerView.getOffscreenPageLimit();
     }
 
     /**
      * 判断当前是否是第一页。
+     *
      * @return 如果当前正在显示第一页则返回true，否则返回false。
      */
     private boolean isFirstPage() {
@@ -420,7 +418,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    void reStart() {
+    private void reStart() {
         if (isStarted() && isPaused()) {
             start(false);
             if (isFirstPage()) {
@@ -437,7 +435,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mIsStarted = false;
     }
 
-    void pause() {
+    private void pause() {
         if (!isPaused() && !mIsNeverStarted) {
             mIsPaused = true;
             mHandler.removeCallbacks(mPageDownRunnable);
@@ -589,6 +587,15 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mScroller.setCardinal(1);
             if ((isLastPage() || mCurrentItem == 0) && isInfiniteLoopMode()) {
                 mBannerView.setCurrentItem(mAdapter.getItemSize(), false);
+                if (mTransformer != null) {
+                    for (int i = 0; i < mBannerView.getChildCount(); i++) {
+                        View child = mBannerView.getChildAt(i);
+                        int viewPosition = (int) (child.getTag(ViewBannerAdapter.KEY_INDEX_TAG));
+                        if (viewPosition == mBannerView.getCurrentItem() - 1 || viewPosition == 1) {
+                            mTransformer.transformPage(child, 1);
+                        }
+                    }
+                }
             }
         }
         if (getPageListenerInfo().onChangedListener != null) {
@@ -640,7 +647,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         return mListenerInfo;
     }
 
-    void findRelevantViews() {
+    private void findRelevantViews() {
         ViewGroup parent;
         if ((parent = (ViewGroup) mBannerView.getParent()) != null && (mPointIndicatorId & mTitleViewId & mSubTitleViewId) != View.NO_ID) {
             if (mPointIndicatorId != View.NO_ID) {
@@ -705,9 +712,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 try {
                     Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
                     method.setAccessible(true);
-                    method.invoke(this, mBannerView.getCurrentItem(), false, 0, false);
+                    method.invoke(mBannerView, mBannerView.getCurrentItem(), false, 0, false);
                     Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
-                    mFirstLayout.setBoolean(this, false);
+                    mFirstLayout.setBoolean(mBannerView, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -715,7 +722,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    void postInitFirstPageScrolled() {
+    private void postInitFirstPageScrolled() {
         if (mTransformer != null) {
             mBannerView.post(new Runnable() {
                 @Override
@@ -846,7 +853,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public int getCount() {
-            return mItems == null ? 0 : isInfiniteLoopMode() ? mItems.size() * 2 + 1 : mItems.size();
+            return mItems == null ? 0 : isInfiniteLoopMode() ? mItems.size() * 2 + mBannerView.getOffscreenPageLimit() : mItems.size();
         }
 
         @Override

@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
         banner3Adapter.setEventInterceptor(getItemEventInterceptor());
-        adapter.addAdapter(banner1Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
+        adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
     }
 
@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        bannerView.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                bannerView.setEntries(getTitleImageBannerEntries());
-//            }
-//        }, 500);
+        bannerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                bannerView.setEntries(getTitleImageBannerEntries());
+            }
+        }, 500);
     }
 
     @NonNull
