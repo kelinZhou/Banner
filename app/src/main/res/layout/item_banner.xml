@@ -14,7 +14,6 @@
         app:pagingIntervalTime="4000"
         app:loopMode="infiniteLoop"
         app:decelerateMultiple="6"
-        app:touchPauseEnable="false"
         android:layout_height="175dp"/>
 
 </RelativeLayout>

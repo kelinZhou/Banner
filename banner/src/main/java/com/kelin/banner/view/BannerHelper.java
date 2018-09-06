@@ -142,8 +142,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (isLastPage()) {
                 if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
                     stop();
-                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
+                } else if (getMultiPageMode() == MULTI_MODE_INFINITE_LOOP) {
                     mBannerView.setCurrentItem(0, false);
+                    mHandler.postDelayed(this, mPagingIntervalTime);
+                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP){
+                    mBannerView.setCurrentItem(0, true);
                     mHandler.postDelayed(this, mPagingIntervalTime);
                 }
             } else {
@@ -335,6 +338,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     /**
+     * 判断当前是否是第一页。
+     * @return 如果当前正在显示第一页则返回true，否则返回false。
+     */
+    private boolean isFirstPage() {
+        return mCurrentItem % 5 == 0;
+    }
+
+    /**
      * 判断Banner指示器是否可用。
      *
      * @param items 当前轮播图中的数据集。
@@ -381,6 +392,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @param restoration 是否复位。
      */
     private void start(boolean restoration) {
+        List<? extends BannerEntry> items = mAdapter.getItems();
+        if (items == null) {
+            throw new NullPointerException("you must call setEntries method!");
+        }
         if (mIsStarted && !mIsPaused) {
             return;
         }
@@ -391,10 +406,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             selectCenterPage(0);
         }
 
-        List<? extends BannerEntry> items = mAdapter.getItems();
-        if (items == null) {
-            throw new NullPointerException("you must call setEntries method!");
-        }
         if (canPaging(items)) {
             mHandler.postDelayed(mPageDownRunnable, mPagingIntervalTime);
         }
@@ -403,6 +414,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     void reStart() {
         if (isStarted() && isPaused()) {
             start(false);
+            if (isFirstPage()) {
+                mBannerView.postInitFirstPageScrolled();
+            }
         }
     }
 
@@ -418,6 +432,13 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (!isPaused() && !mIsNeverStarted) {
             mIsPaused = true;
             mHandler.removeCallbacks(mPageDownRunnable);
+            if (isLastPage()) {
+                if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
+                    mIsStarted = false;
+                } else if (getMultiPageMode() == MULTI_MODE_INFINITE_LOOP) {
+                    mBannerView.setCurrentItem(0, false);
+                }
+            }
         }
     }
 
@@ -427,6 +448,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             offset = 0;
         }
         mBannerView.setCurrentItem(pageNum + offset, false);
+        if (mBannerView.isFirstLayout()) {
+            mBannerView.postInitFirstPageScrolled();
+        }
         setTitleView(mTitleView);
         setSubTitleView(mSubTitleView);
     }

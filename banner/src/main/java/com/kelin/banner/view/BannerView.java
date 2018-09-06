@@ -3,6 +3,8 @@ package com.kelin.banner.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
@@ -51,6 +53,9 @@ public class BannerView extends ViewPager {
      * multiPageMode-从头至尾重复轮播。
      */
     public static final int MULTI_MODE_FROM_COVER_TO_COVER_LOOP = MULTI_MODE_FROM_COVER_TO_COVER << 1;
+
+    private PageTransformer mTransformer;
+    private int lastVisibilityStatus = -1;
 
     @NonNull
     private final BannerHelper mBH;
@@ -354,6 +359,14 @@ public class BannerView extends ViewPager {
         mBH.setShowLeftAndRightPage(showWidthDp, reverseDrawingOrder, pageTransformer);
     }
 
+    @Override
+    public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer, int pageLayerType) {
+        super.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType);
+        if (Build.VERSION.SDK_INT >= 11) {
+            mTransformer = transformer;
+        }
+    }
+
     int determineTargetPage(int currentPage, float pageOffset) {
         try {
             Field lastMotionX = BannerHelper.getField(ViewPager.class, "mLastMotionX");
@@ -368,25 +381,62 @@ public class BannerView extends ViewPager {
     }
 
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        mBH.findRelevantViews();
-        mBH.reStart();
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (lastVisibilityStatus != visibility) {
+            lastVisibilityStatus = visibility;
+            if (visibility == GONE) {
+                mBH.pause();
+            } else {
+                mBH.findRelevantViews();
+                mBH.reStart();
+                try {
+                    Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
+                    method.setAccessible(true);
+                    method.invoke(this, getCurrentItem(), false, 0, false);
+                    Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
+                    mFirstLayout.setBoolean(this, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    boolean isFirstLayout() {
+        Boolean isFirstLayout = true;
         try {
-            Method method = ViewPager.class.getDeclaredMethod("scrollToItem", int.class, boolean.class, int.class, boolean.class);
-            method.setAccessible(true);
-            method.invoke(this, getCurrentItem(), false, 0, false);
             Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
-            mFirstLayout.setBoolean(this, false);
+            isFirstLayout = mFirstLayout.getBoolean(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return isFirstLayout;
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mBH.pause();
+    }
+
+    void postInitFirstPageScrolled() {
+        if (mTransformer != null) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    final int scrollX = getScrollX();
+                    final int childCount = getChildCount();
+                    for (int i = 0; i < childCount; i++) {
+                        final View child = getChildAt(i);
+                        final LayoutParams lp = (LayoutParams) child.getLayoutParams();
+
+                        if (lp.isDecor) continue;
+                        final float transformPos = (float) (child.getLeft() - scrollX) / (getMeasuredWidth() - getPaddingLeft() - getPaddingRight());
+                        mTransformer.transformPage(child, transformPos);
+                    }
+                }
+            });
+        }
     }
 
     /**
