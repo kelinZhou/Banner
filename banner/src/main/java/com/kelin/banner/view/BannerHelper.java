@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -148,7 +149,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     private Runnable mPageDownRunnable = new Runnable() {
         @Override
         public void run() {
-            if (isLastPage()) {
+            if (isLastPage() && !isFirstPage()) {
                 if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
                     stop();
                 } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
@@ -349,7 +350,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * @return 如果当前正在显示第一页则返回true，否则返回false。
      */
     private boolean isFirstPage() {
-        return mCurrentItem % 5 == 0;
+        return mCurrentItem % mAdapter.getItemSize() == 0;
     }
 
     /**
@@ -450,11 +451,15 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void selectCenterPage(int offset) {
-        int pageNum = mAdapter.getCenterPageNumber();
-        if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
-            offset = 0;
+        if (mAdapter.getItemSize() == 1) {
+            mBannerView.setCurrentItem(1, false);
+        } else {
+            int pageNum = mAdapter.getCenterPageNumber();
+            if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
+                offset = 0;
+            }
+            mBannerView.setCurrentItem(pageNum + offset, false);
         }
-        mBannerView.setCurrentItem(pageNum + offset, false);
         if (mBannerView.isFirstLayout()) {
             postInitFirstPageScrolled();
         }
@@ -588,11 +593,13 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if ((isLastPage() || mCurrentItem == 0) && isInfiniteLoopMode()) {
                 mBannerView.setCurrentItem(mAdapter.getItemSize(), false);
                 if (mTransformer != null) {
-                    for (int i = 0; i < mBannerView.getChildCount(); i++) {
+                    int childCount = mBannerView.getChildCount();
+                    for (int i = 0; i < childCount; i++) {
                         View child = mBannerView.getChildAt(i);
-                        int viewPosition = (int) (child.getTag(ViewBannerAdapter.KEY_INDEX_TAG));
-                        if (viewPosition == mBannerView.getCurrentItem() - 1 || viewPosition == 1) {
-                            mTransformer.transformPage(child, 1);
+                        int layoutPosition = (int) child.getTag(ViewBannerAdapter.KEY_LAYOUT_POSITION);
+                        int currentItem = mBannerView.getCurrentItem();
+                        if (layoutPosition != currentItem) {
+                            mTransformer.transformPage(child, layoutPosition - currentItem);
                         }
                     }
                 }
@@ -799,6 +806,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
          */
         private static final int KEY_INDEX_TAG = 0x1000_0000;
         /**
+         * 用来存放和获取索引的TAG。
+         */
+        private static final int KEY_LAYOUT_POSITION = 0x1000_0001;
+        /**
          * 用来存放所有页面的模型对象。
          */
         private List<? extends BannerEntry> mItems;
@@ -830,7 +841,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (getPageListenerInfo().onLongClickListener != null) {
                 entryView.setOnLongClickListener(this);
             }
-
+            entryView.setTag(KEY_LAYOUT_POSITION, position);
             container.addView(entryView);
             return entryView;
         }

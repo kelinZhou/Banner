@@ -13,6 +13,7 @@ import com.kelin.recycleradapter.ItemAdapter;
 import com.kelin.recycleradapter.MultiTypeAdapter;
 import com.kelin.recycleradapter.interfaces.EventBindInterceptor;
 import com.kelin.recycleradapter.interfaces.LayoutItem;
+import com.kelin.transformer.CardPageTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bannerView = (BannerView) findViewById(R.id.vp_view_pager);
+        bannerView.setPageTransformer(true, new CardPageTransformer());
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
         ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
