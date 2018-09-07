@@ -38,6 +38,9 @@ dependencies {
 
 ![Banner](materials/gif_banner_three.gif)
 
+#### 各种效果。
+![Banner](materials/gif_banner_all.gif)
+
 ## 使用
 #### 数据模型。
 Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，以下是接口中的所有方法：
