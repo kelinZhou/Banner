@@ -22,7 +22,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    compile 'com.github.kelinZhou:Banner:2.1.0'
+    implementation 'com.github.kelinZhou:Banner:2.5.1'
 }
 ```
 
