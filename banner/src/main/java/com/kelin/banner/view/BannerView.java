@@ -69,7 +69,7 @@ public class BannerView extends ViewPager {
         if (attrs == null || (typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView)) == null) {
             mBH = new BannerHelper(this, MULTI_MODE_INFINITE_LOOP);
         } else {
-            int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_interpolator, NO_ID);
+            int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_pagingInterpolator, NO_ID);
             Interpolator interpolator = null;
             if (interpolatorId != NO_ID) {
                 interpolator = AnimationUtils.loadInterpolator(getContext(), interpolatorId);

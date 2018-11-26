@@ -12,7 +12,7 @@
         <!--子标题控件-->
         <attr name="subTitleView" format="reference"/>
         <!--翻页动画差值器-->
-        <attr name="interpolator" format="reference"/>
+        <attr name="pagingInterpolator" format="reference"/>
         <!--只有一张图片时的显示模式-->
         <attr name="singlePageMode" format="integer">
             <!--没有(不显示)指示器-->
