@@ -322,7 +322,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
     private void checkIndicatorEnable(List<? extends BannerEntry> items) {
         if (mIndicatorView != null) {
-            if (indicatorEnable(items)) {
+            if (!items.isEmpty() && indicatorEnable(items)) {
                 mIndicatorEnable = true;
                 ((View) mIndicatorView).setVisibility(View.VISIBLE);
                 mIndicatorView.setTotalPage(items.size());

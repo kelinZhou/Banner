@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK_VERSION)
-    buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
     defaultConfig {
         applicationId "com.kelin.banner"
         minSdkVersion ANDROID_BUILD_MIN_SDK_VERSION
@@ -17,6 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion '27.0.3'
 }
 
 dependencies {
