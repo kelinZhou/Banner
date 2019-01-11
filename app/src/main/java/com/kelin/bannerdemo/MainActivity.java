@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import com.kelin.transformer.CardPageTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnPageClickListener mOnBannerEventListener;
     private BannerView bannerView;
+    private ItemAdapter<List<ImageBannerEntry>> banner1Adapter;
+    private int curIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +39,29 @@ public class MainActivity extends AppCompatActivity {
         bannerView.setPageTransformer(true, new CardPageTransformer());
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
-        ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
+        banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner2Adapter = new ItemAdapter<>(BannerHolder2.class, getTitleImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntry());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
         banner2Adapter.setEventInterceptor(getItemEventInterceptor());
         banner3Adapter.setEventInterceptor(getItemEventInterceptor());
-        adapter.addAdapter(banner1Adapter, banner2Adapter, banner3Adapter, new ItemAdapter<>(getStringList(), ItemHolder.class));
+        adapter.addAdapter(/*banner1Adapter, banner2Adapter, banner3Adapter, */new ItemAdapter<>(getStringList(), ItemHolder.class));
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_refresh, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_refresh) {
+            bannerView.setEntries(getImageBannerEntries());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private EventBindInterceptor getItemEventInterceptor() {
@@ -95,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         bannerView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                bannerView.setEntries(getTitleImageBannerEntries());
+                bannerView.setEntries(getImageBannerEntries());
             }
         }, 500);
     }
@@ -119,12 +140,15 @@ public class MainActivity extends AppCompatActivity {
 
     @NonNull
     private List<ImageBannerEntry> getImageBannerEntries() {
+        String[] imgs = {"http://m.qiyipic.com/common/lego/20171029/c9c3800f35f84f1398b89740f80d8aa6.jpg", "http://m.qiyipic.com/common/lego/20171023/bd84e15d8dd44d7c9674218de30ac75c.jpg", "http://m.qiyipic.com/common/lego/20171028/f1b872de43e649ddbf624b1451ebf95e.jpg", "http://pic2.qiyipic.com/common/20171027/cdc6210c26e24f08940d36a5eb918c34.jpg"};
+        String[] titles = {"天使之路：藏风大片遇高反危机", "星空海2：陆漓设局害惨吴居蓝", "中国职业脱口秀大赛：狂笑首播", "奇秀好音乐，你身边的音乐真人秀"};
+        String[] subTitles = {"10-29期", "更新至30集", "10-28期", null};
+        int nextInt = ++curIndex % 4;
         List<ImageBannerEntry> items = new ArrayList<>();
         items.add(new ImageBannerEntry("大话西游：“炸毛韬”引诱老妖", "更新至50集", "http://m.qiyipic.com/common/lego/20171026/dd116655c96d4a249253167727ed37c8.jpg"));
-        items.add(new ImageBannerEntry("天使之路：藏风大片遇高反危机", "10-29期", "http://m.qiyipic.com/common/lego/20171029/c9c3800f35f84f1398b89740f80d8aa6.jpg"));
-        items.add(new ImageBannerEntry("星空海2：陆漓设局害惨吴居蓝", "更新至30集", "http://m.qiyipic.com/common/lego/20171023/bd84e15d8dd44d7c9674218de30ac75c.jpg"));
-        items.add(new ImageBannerEntry("中国职业脱口秀大赛：狂笑首播", "10-28期", "http://m.qiyipic.com/common/lego/20171028/f1b872de43e649ddbf624b1451ebf95e.jpg"));
-        items.add(new ImageBannerEntry("奇秀好音乐，你身边的音乐真人秀", null, "http://pic2.qiyipic.com/common/20171027/cdc6210c26e24f08940d36a5eb918c34.jpg"));
+        String imgUrl = imgs[nextInt];
+        Log.d("==========", "imgUrl: " + imgUrl);
+        items.add(new ImageBannerEntry(titles[nextInt], subTitles[nextInt], imgUrl));
         return items;
     }
 

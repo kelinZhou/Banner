@@ -149,16 +149,18 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     private Runnable mPageDownRunnable = new Runnable() {
         @Override
         public void run() {
-            if (isLastPage() && !isFirstPage()) {
-                if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
-                    stop();
-                } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
-                    mBannerView.setCurrentItem(0, true);
+            if (!mIsPaused) {
+                if (isLastPage() && !isFirstPage()) {
+                    if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER) {
+                        stop();
+                    } else if (getMultiPageMode() == MULTI_MODE_FROM_COVER_TO_COVER_LOOP) {
+                        mBannerView.setCurrentItem(0, true);
+                        mHandler.postDelayed(this, mPagingIntervalTime);
+                    }
+                } else {
+                    mBannerView.setCurrentItem(mCurrentItem + 1, true);
                     mHandler.postDelayed(this, mPagingIntervalTime);
                 }
-            } else {
-                mBannerView.setCurrentItem(mCurrentItem + 1, true);
-                mHandler.postDelayed(this, mPagingIntervalTime);
             }
         }
     };
@@ -309,6 +311,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             mAdapter.notifyDataSetChanged();
             checkIndicatorEnable(items);
             if (start) {
+                if (isStarted()) {
+                    stop();
+                }
                 start();
             } else {
                 selectCenterPage(0);
@@ -322,7 +327,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
     private void checkIndicatorEnable(List<? extends BannerEntry> items) {
         if (mIndicatorView != null) {
-            if (!items.isEmpty() && indicatorEnable(items)) {
+            if (items != null && !items.isEmpty() && indicatorEnable(items)) {
                 mIndicatorEnable = true;
                 ((View) mIndicatorView).setVisibility(View.VISIBLE);
                 mIndicatorView.setTotalPage(items.size());
@@ -434,6 +439,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     void stop() {
         pause();
         mIsStarted = false;
+        mCurrentItem = 0;
     }
 
     private void pause() {
@@ -816,7 +822,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         /**
          * 用来放置可以复用的页面的View。
          */
-        private SparseArray<View> itemViewCache = new SparseArray<>();
+        SparseArray<View> itemViewCache = new SparseArray<>();
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
@@ -825,6 +831,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (entryView == null) {
                 BannerEntry bannerEntry = mItems.get(index);
                 entryView = bannerEntry.onCreateView(container);
+                entryView.setTag(bannerEntry.getValue());
                 if (entryView.getParent() != null) {
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
                 }
@@ -848,8 +855,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public void notifyDataSetChanged() {
-            itemViewCache.clear();
             super.notifyDataSetChanged();
+            itemViewCache.clear();
         }
 
         @Override
@@ -870,6 +877,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
 
         /**

@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mytest="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.higgs.app.haolieb.ui.MainActivity">
+
+    <item
+        android:id="@+id/menu_refresh"
+        android:title="@string/refresh"
+        app:showAsAction="always"/>
+</menu>
