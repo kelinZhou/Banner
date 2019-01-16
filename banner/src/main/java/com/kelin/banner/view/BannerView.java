@@ -394,11 +394,6 @@ public class BannerView extends ViewPager {
         return isFirstLayout;
     }
 
-    @Override
-    protected void onPageScrolled(int position, float offset, int offsetPixels) {
-        super.onPageScrolled(position, offset, offsetPixels);
-    }
-
     /**
      * 轮播图的所有事件的监听类。
      */

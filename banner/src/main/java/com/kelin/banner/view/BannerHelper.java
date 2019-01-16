@@ -188,7 +188,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mHandler = viewPager.getHandler() == null ? new Handler() : viewPager.getHandler();
         mScroller = new BannerScroller(viewPager.getContext(), interpolator == null ? new BannerInterpolator() : interpolator);
         replaceScroller(viewPager, mScroller);
-        viewPager.setAdapter(mAdapter = new ViewBannerAdapter());
+        mAdapter = new ViewBannerAdapter();
         mTouchPauseEnable = touchPauseEnable;
         if (mTouchPauseEnable) {
             viewPager.listenerOnTouch(this);
@@ -308,7 +308,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
         boolean update = mAdapter.setItems(items);
         if (update) {
-            mAdapter.notifyDataSetChanged();
+            mBannerView.setAdapter(mAdapter);
             checkIndicatorEnable(items);
             if (start) {
                 if (isStarted()) {
@@ -440,6 +440,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         pause();
         mIsStarted = false;
         mCurrentItem = 0;
+        mIsNeverStarted = true;
     }
 
     private void pause() {
@@ -648,7 +649,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 || singlePageMode == (SINGLE_MODE_NO_INDICATOR | SINGLE_MODE_CAN_NOT_PAGING))
                 && (getSinglePageModeFlags() & singlePageMode) != singlePageMode) {
             mPageModeFlags = getMultiPageMode() | singlePageMode;
-            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -822,7 +822,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         /**
          * 用来放置可以复用的页面的View。
          */
-        SparseArray<View> itemViewCache = new SparseArray<>();
+        private SparseArray<View> itemViewCache = new SparseArray<>();
 
         @Override
         public View instantiateItem(ViewGroup container, int position) {
@@ -831,7 +831,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             if (entryView == null) {
                 BannerEntry bannerEntry = mItems.get(index);
                 entryView = bannerEntry.onCreateView(container);
-                entryView.setTag(bannerEntry.getValue());
                 if (entryView.getParent() != null) {
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
                 }
@@ -854,12 +853,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
 
         @Override
-        public void notifyDataSetChanged() {
-            super.notifyDataSetChanged();
-            itemViewCache.clear();
-        }
-
-        @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             View view = (View) object;
             container.removeView(view);
@@ -877,11 +870,6 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
         }
 
         /**
@@ -919,6 +907,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 if (mItems == items) {
                     successful = false;
                 } else if (items.size() == mItems.size()) {
+                    successful = false;
                     BannerEntry entry;
                     BannerEntry newEntry;
                     for (int i = 0; i < items.size(); i++) {

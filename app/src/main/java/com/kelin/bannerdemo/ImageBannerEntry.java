@@ -74,7 +74,7 @@ public class ImageBannerEntry implements BannerEntry<String> {
     @Nullable
     @Override
     public CharSequence getSubTitle() {
-        return null;
+        return subTitle;
     }
 
     /**
