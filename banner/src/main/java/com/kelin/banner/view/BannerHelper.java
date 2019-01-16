@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -308,7 +307,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
         boolean update = mAdapter.setItems(items);
         if (update) {
-            mBannerView.setAdapter(mAdapter);
+            mBannerView.setAdapter(mAdapter.clearCache());
             checkIndicatorEnable(items);
             if (start) {
                 if (isStarted()) {
@@ -701,7 +700,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         View v = view.findViewById(viewId);
         if (v == null) {
             ViewParent parent = view.getParent();
-            if (parent != null && parent instanceof ViewGroup) {
+            if (parent instanceof ViewGroup) {
                 return findView((ViewGroup) parent, viewId, desc);
             } else {
                 throw new Resources.NotFoundException("the " + desc + " view id is not found!");
@@ -823,9 +822,18 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
          * 用来放置可以复用的页面的View。
          */
         private SparseArray<View> itemViewCache = new SparseArray<>();
+        /**
+         * 缓存是否可用。
+         */
+        private boolean cacheAvailable = true;
 
+        @NonNull
         @Override
-        public View instantiateItem(ViewGroup container, int position) {
+        public View instantiateItem(@NonNull ViewGroup container, int position) {
+            if (!cacheAvailable) {
+                itemViewCache.clear();
+                cacheAvailable = true;
+            }
             int index = getIndex(position);
             View entryView = itemViewCache.get(index);
             if (entryView == null) {
@@ -853,12 +861,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
 
         @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            View view = (View) object;
-            container.removeView(view);
-            int index = getIndex(position);
-            if (itemViewCache.get(index) == null) {
-                itemViewCache.put(index, view);
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            if (cacheAvailable) {
+                View view = (View) object;
+                container.removeView(view);
+                int index = getIndex(position);
+                if (itemViewCache.get(index) == null) {
+                    itemViewCache.put(index, view);
+                }
             }
         }
 
@@ -868,7 +878,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
 
         @Override
-        public boolean isViewFromObject(View view, Object object) {
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
             return view == object;
         }
 
@@ -950,6 +960,12 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         int getItemSize() {
             return mItems == null ? 0 : mItems.size();
+        }
+
+        PagerAdapter clearCache() {
+            itemViewCache.clear();
+            cacheAvailable = false;
+            return this;
         }
     }
 
