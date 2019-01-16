@@ -22,7 +22,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    implementation 'com.github.kelinZhou:Banner:2.5.1'
+    implementation 'com.github.kelinZhou:Banner:2.5.4'
 }
 ```
 
@@ -180,7 +180,7 @@ Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT�
 #### 设置监听。
 **页面点击监听**
 ```
-bannerView.setOnPageClickListener(new BannerView.OnPageClickListener() {
+bannerView.setOnPageClickListener(new BannerView.OnPasetOnPageClickListenergeClickListener() {
     @Override
     protected void onPageClick(BannerEntry entry, int index) {
         //某个页面被单击后执行，entry就是这个页面的数据模型。index是页面索引，从0开始。
