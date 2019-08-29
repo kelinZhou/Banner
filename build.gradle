@@ -6,7 +6,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         //添加以下代码，其中版本号应保持最新
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
     }

@@ -15,18 +15,18 @@ import java.util.List;
  * 版本 v 1.0.0
  */
 @ItemLayout(R.layout.item_banner)
-class BannerHolder extends ItemViewHolder<List<ImageBannerEntry>> {
+class BannerHolder extends ItemViewHolder<List<TitleImageBannerEntry>> {
 
     private final BannerView mBanner;
 
     protected BannerHolder(final View itemView) {
         super(itemView);
         mBanner = getView(R.id.vp_view_pager);
-        mBanner.setShowLeftAndRightPage();
+        mBanner.setPageTransformer(true, new CardPageTransformer());
     }
 
     @Override
-    public void onBindData(int i, List<ImageBannerEntry> bannerEntries) {
+    public void onBindData(int i, List<TitleImageBannerEntry> bannerEntries) {
         //设置数据源并开始轮播。如果不希望启动轮播则调用两个参数的方法。
         mBanner.setEntries(bannerEntries);
     }

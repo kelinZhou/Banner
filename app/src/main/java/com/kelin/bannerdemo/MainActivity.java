@@ -1,5 +1,6 @@
 package com.kelin.bannerdemo;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.kelin.recycleradapter.MultiTypeAdapter;
 import com.kelin.recycleradapter.interfaces.EventBindInterceptor;
 import com.kelin.recycleradapter.interfaces.LayoutItem;
 import com.kelin.transformer.CardPageTransformer;
+import com.kelin.transformer.GalleryTransformer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +31,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bannerView = (BannerView) findViewById(R.id.vp_view_pager);
-        bannerView.setPageTransformer(true, new CardPageTransformer());
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        bannerView = findViewById(R.id.vp_view_pager);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            bannerView.setShowLeftAndRightPage(30, true, new GalleryTransformer());
+        } else {
+            bannerView.setShowLeftAndRightPage(20);
+        }
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         MultiTypeAdapter adapter = new MultiTypeAdapter(recyclerView);
-        ItemAdapter<List<ImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getImageBannerEntries());
+        ItemAdapter<List<TitleImageBannerEntry>> banner1Adapter = new ItemAdapter<>(BannerHolder.class, getTitleImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner2Adapter = new ItemAdapter<>(BannerHolder2.class, getTitleImageBannerEntries());
         ItemAdapter<List<TitleImageBannerEntry>> banner3Adapter = new ItemAdapter<>(BannerHolder3.class, getTitleImageBannerEntry());
         banner1Adapter.setEventInterceptor(getItemEventInterceptor());
@@ -95,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         bannerView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                bannerView.setEntries(getTitleImageBannerEntries());
+                bannerView.setEntries(getImageBannerEntries());
             }
         }, 500);
     }

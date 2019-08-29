@@ -508,7 +508,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
         pagerBox.setClipChildren(false);
         viewPager.setClipChildren(false);
-        viewPager.setOffscreenPageLimit(2);
+        viewPager.setOffscreenPageLimit(3);
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) viewPager.getLayoutParams();
         int margin = dp2px(showWidthDp > 0 ? showWidthDp : 12);
         lp.setMargins(margin, lp.topMargin, margin, lp.bottomMargin);
