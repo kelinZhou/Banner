@@ -9,6 +9,11 @@
 
 配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
 
+## 体验
+[点击下载](https://fir.im/rnam)或扫码下载DemoApk
+
+![DemoApk](materials/apk_download.png)
+
 ## 下载
 ###### 第一步：添加 JitPack 仓库到你项目根目录的 gradle 文件中。
 ```
@@ -22,13 +27,13 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    implementation 'com.github.kelinZhou:Banner:2.5.5'
+    implementation 'com.github.kelinZhou:Banner:2.5.6'
 }
 ```
 
 ## 效果图
 #### 样式一：标题等信息跟随页面滚动。
-![Banner](materials/gif_banner_one.gif)
+![Banner](materials/gif_banner_one_1.gif)
 #### 样式二：标题固定，圆点指示器。
 指示器可以在XML中配置，翻页过程中无需做任何处理。支持配置点的颜色点的大小和选中时点的颜色和大小以及点与点之间的间距。
 
