@@ -98,12 +98,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        bannerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                bannerView.setEntries(getImageBannerEntries());
-            }
-        }, 500);
+        bannerView.setEntries(getImageBannerEntries());
     }
 
     @NonNull
