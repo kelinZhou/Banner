@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Banner</string>
-    <string name="refresh">刷新</string>
+    <string name="banner_app_name">Banner</string>
+    <string name="banner_refresh">刷新</string>
 </resources>
