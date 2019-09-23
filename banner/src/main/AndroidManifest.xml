@@ -2,12 +2,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.kelin.banner">
 
-    <application
-        android:allowBackup="true"
-        android:label="@string/banner_app_name"
-        android:supportsRtl="true"
-        tools:replace="android:label,android:icon">
-
-    </application>
-
 </manifest>
