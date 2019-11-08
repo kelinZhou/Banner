@@ -299,6 +299,8 @@ public class BannerView extends ViewPager {
 
     /**
      * 选择中间页，如果你想移动到中间则需要调用这个方法。
+     *
+     * <br/><br/><br/><strong>必须在{@link #setEntries(List)}或{@link #setEntries(List, boolean)}方法之后调用。</strong>
      */
     public void selectCenterPage() {
         selectCenterPage(0);
@@ -308,6 +310,8 @@ public class BannerView extends ViewPager {
      * 选择中间页，如果你想移动到中间则需要调用这个方法。
      *
      * @param offset 向右偏移的页数。
+     *
+     * <br/><br/><br/><strong>必须在{@link #setEntries(List)}或{@link #setEntries(List, boolean)}方法之后调用。</strong>
      */
     public void selectCenterPage(int offset) {
         mBH.selectCenterPage(offset);

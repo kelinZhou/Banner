@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         bannerView.setEntries(getImageBannerEntries());
+        bannerView.selectCenterPage(2);
     }
 
     @NonNull

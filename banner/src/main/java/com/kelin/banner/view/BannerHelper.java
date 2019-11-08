@@ -121,7 +121,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     /**
      * 用来记录指示器控件的ID。
      */
-    private int mPointIndicatorId;
+    private int mIndicatorId;
     /**
      * 用来记录标题控件的ID。
      */
@@ -178,9 +178,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      *
      * @param viewPager viewPager对象。
      */
-    BannerHelper(@NonNull BannerView viewPager, int pageModeFlags, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int pointIndicatorViewId, int titleViewId, int subTitleViewId, boolean touchPauseEnable) {
+    BannerHelper(@NonNull BannerView viewPager, int pageModeFlags, Interpolator interpolator, int pagingIntervalTime, int decelerateMultiple, int indicatorViewId, int titleViewId, int subTitleViewId, boolean touchPauseEnable) {
         mBannerView = viewPager;
-        mPointIndicatorId = pointIndicatorViewId;
+        mIndicatorId = indicatorViewId;
         mTitleViewId = titleViewId;
         mSubTitleViewId = subTitleViewId;
         mPageModeFlags = pageModeFlags;
@@ -308,6 +308,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         boolean update = mAdapter.setItems(items);
         if (update) {
             mBannerView.setAdapter(mAdapter.clearCache());
+            findRelevantViews();
             checkIndicatorEnable(items);
             if (start) {
                 if (isStarted()) {
@@ -457,20 +458,24 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     void selectCenterPage(int offset) {
-        if (mAdapter.getItemSize() == 1) {
-            mBannerView.setCurrentItem(1, false);
-        } else {
-            int pageNum = mAdapter.getCenterPageNumber();
-            if (pageNum + offset < 0 || pageNum + offset > mAdapter.getCount()) {
-                offset = 0;
+        if (mAdapter.mItems != null) {
+            if (mAdapter.getItemSize() == 1) {
+                mBannerView.setCurrentItem(1, false);
+            } else {
+                int pageNum = mAdapter.getCenterPageNumber();
+                if (pageNum + offset < 0 || pageNum + offset >= mAdapter.getCount()) {
+                    offset = 0;
+                }
+                mBannerView.setCurrentItem(pageNum + offset, false);
             }
-            mBannerView.setCurrentItem(pageNum + offset, false);
+            if (mBannerView.isFirstLayout()) {
+                postInitFirstPageScrolled();
+            }
+            setTitleView(mTitleView);
+            setSubTitleView(mSubTitleView);
+        } else {
+            throw new RuntimeException("You need called the setEntries method!");
         }
-        if (mBannerView.isFirstLayout()) {
-            postInitFirstPageScrolled();
-        }
-        setTitleView(mTitleView);
-        setSubTitleView(mSubTitleView);
     }
 
     /**
@@ -660,29 +665,31 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     private void findRelevantViews() {
-        ViewGroup parent;
-        if ((parent = (ViewGroup) mBannerView.getParent()) != null && (mPointIndicatorId & mTitleViewId & mSubTitleViewId) != View.NO_ID) {
-            if (mPointIndicatorId != View.NO_ID) {
-                setIndicatorView(findView(parent, mPointIndicatorId, "PointIndicator"));
-                mPointIndicatorId = View.NO_ID;
-            }
-            if (mTitleViewId != View.NO_ID) {
-                View titleView = findView(parent, mTitleViewId, "TitleView");
-                if (titleView instanceof TextView) {
-                    setTitleView((TextView) titleView);
-                } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+        if ((mIndicatorId & mTitleViewId & mSubTitleViewId) != View.NO_ID) {
+            ViewGroup parent = (ViewGroup) mBannerView.getParent();
+            if (parent != null) {
+                if (mIndicatorId != View.NO_ID) {
+                    setIndicatorView(findView(parent, mIndicatorId, "PointIndicator"));
+                    mIndicatorId = View.NO_ID;
                 }
-                mTitleViewId = View.NO_ID;
-            }
-            if (mSubTitleViewId != View.NO_ID) {
-                View subTitleView = findView(parent, mSubTitleViewId, "SubTitleView");
-                if (subTitleView instanceof TextView) {
-                    setSubTitleView((TextView) subTitleView);
-                } else {
-                    throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+                if (mTitleViewId != View.NO_ID) {
+                    View titleView = findView(parent, mTitleViewId, "TitleView");
+                    if (titleView instanceof TextView) {
+                        setTitleView((TextView) titleView);
+                    } else {
+                        throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+                    }
+                    mTitleViewId = View.NO_ID;
                 }
-                mSubTitleViewId = View.NO_ID;
+                if (mSubTitleViewId != View.NO_ID) {
+                    View subTitleView = findView(parent, mSubTitleViewId, "SubTitleView");
+                    if (subTitleView instanceof TextView) {
+                        setSubTitleView((TextView) subTitleView);
+                    } else {
+                        throw new ClassCastException("The bannerIndicator attribute in XML must be the resource id of the TextView！");
+                    }
+                    mSubTitleViewId = View.NO_ID;
+                }
             }
         }
     }
