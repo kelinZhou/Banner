@@ -1,5 +1,7 @@
 package com.kelin.bannerdemo;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnPageClickListener mOnBannerEventListener;
     private BannerView bannerView;
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, MainActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

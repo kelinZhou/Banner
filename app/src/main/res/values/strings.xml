@@ -1,4 +1,5 @@
 <resources>
     <string name="banner_app_name">Banner</string>
     <string name="banner_refresh">刷新</string>
+    <string name="experience_now">立即体验</string>
 </resources>

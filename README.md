@@ -32,13 +32,14 @@ dependencies {
 ```
 
 ## 效果图
-#### 样式一：标题等信息跟随页面滚动。
+#### 引导页效果。
+![Guide Page](materials/gif_banner_guide_demo.gif)
+#### Banner样式一：标题等信息跟随页面滚动。
 ![Banner](materials/gif_banner_one_1.gif)
-#### 样式二：标题固定，圆点指示器。
+#### Banner样式二：标题固定，圆点指示器。
 指示器可以在XML中配置，翻页过程中无需做任何处理。支持配置点的颜色点的大小和选中时点的颜色和大小以及点与点之间的间距。
-
 ![Banner](materials/gif_banner_two.gif)
-#### 样式三：标题固定，数字指示器。
+#### Banner样式三：标题固定，数字指示器。
 指示器可以在XML中配置，翻页过程中无需做任何处理。支持配置当前页字体颜色总页数字体颜色分隔符以及分割符字体颜色。
 
 ![Banner](materials/gif_banner_three.gif)

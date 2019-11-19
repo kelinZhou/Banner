@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.kelin.banner.view.BannerView
+        android:id="@+id/bvGuide"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:bannerIndicator="@+id/pivIndicator"
+        app:loopMode="fromCoverToCover" />
+
+
+    <com.kelin.banner.view.PointIndicatorView
+        android:id="@+id/pivIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.79"
+        app:pointColor="#30000000"
+        app:pointRadius="4dp"
+        app:selectedPointColor="#EB6F5A"
+        tools:totalCount="3" />
+
+    <Button
+        android:id="@+id/btnExperienceNow"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:alpha="0"
+        android:background="@drawable/bg_guide_button"
+        android:text="@string/experience_now"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pivIndicator"
+        app:layout_constraintVertical_bias="0.2"
+        app:layout_constraintWidth_percent="0.4"
+        tools:alpha="1"
+        tools:visibility="visible" />
+</android.support.constraint.ConstraintLayout>
