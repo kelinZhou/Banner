@@ -49,7 +49,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    implementation 'com.github.kelinZhou:Banner:2.6.0'
+    implementation 'com.github.kelinZhou:Banner:2.7.0'
 }
 ```
 
