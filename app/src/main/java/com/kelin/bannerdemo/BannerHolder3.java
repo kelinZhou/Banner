@@ -5,7 +5,7 @@ import android.view.View;
 import com.kelin.banner.view.BannerView;
 import com.kelin.recycleradapter.holder.ItemLayout;
 import com.kelin.recycleradapter.holder.ItemViewHolder;
-import com.kelin.transformer.ScrollPaintingPageTransformer;
+import com.kelin.banner.transformer.ScrollPaintingPageTransformer;
 
 import java.util.List;
 

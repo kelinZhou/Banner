@@ -16,8 +16,7 @@ import com.kelin.recycleradapter.ItemAdapter;
 import com.kelin.recycleradapter.MultiTypeAdapter;
 import com.kelin.recycleradapter.interfaces.EventBindInterceptor;
 import com.kelin.recycleradapter.interfaces.LayoutItem;
-import com.kelin.transformer.CardPageTransformer;
-import com.kelin.transformer.GalleryTransformer;
+import com.kelin.banner.transformer.GalleryTransformer;
 
 import java.util.ArrayList;
 import java.util.List;

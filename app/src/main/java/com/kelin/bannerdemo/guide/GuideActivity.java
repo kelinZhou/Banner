@@ -19,7 +19,7 @@ import com.kelin.banner.SimpleBannerEntry;
 import com.kelin.banner.view.BannerView;
 import com.kelin.bannerdemo.MainActivity;
 import com.kelin.bannerdemo.R;
-import com.kelin.transformer.AlphaPageTransformer;
+import com.kelin.banner.transformer.AlphaPageTransformer;
 
 import java.util.ArrayList;
 import java.util.List;

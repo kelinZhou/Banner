@@ -1,4 +1,4 @@
-package com.kelin.transformer;
+package com.kelin.banner.transformer;
 
 import android.os.Build;
 import android.support.annotation.NonNull;

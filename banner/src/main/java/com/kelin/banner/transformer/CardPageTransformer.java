@@ -1,10 +1,8 @@
-package com.kelin.transformer;
+package com.kelin.banner.transformer;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.util.TypedValue;
 import android.view.View;
 
 /**
