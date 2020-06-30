@@ -154,6 +154,10 @@ Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT�
 
 ```app:selectedPointColor``` 选中时点的颜色，默认为白色。
 
+```app:strokeSize``` 设置边框的粗细，正常情况下你不需要设置该参数，除非你使用了空心样式(```app:hollowStyle```)。
+
+```app:hollowStyle``` 设置点为空心样式(圆环样式)。你可以将该参数设置为```normal```，表示未被选中的点是空心，选中后为实心。也可以设置为```selected```，表示未被选中的点是实心，选中后为空心。如果你希望所有的点都为空心，那么你可以设置为```normal|selected```，即两个值同时使用，中间用|符号分隔。
+
 #### NumberIndicatorView的自定义属性
 ```app:totalCount``` 一共有多少个点（也就是总页数），如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以及时看到效果，方便调试UI。
 

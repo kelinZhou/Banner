@@ -30,6 +30,15 @@ public class PointIndicatorView extends BannerIndicator {
      */
     private static final int COLOR_DEFAULT_SELECTED_POINT_COLOR = 0xFFFFFFFF;
     /**
+     * 表示未被选中的点为空心。
+     */
+    private static final int STYLE_HOLLOW_NORMAL = 0x01;
+    /**
+     * 表示被选中的点为空心。
+     */
+    private static final int STYLE_HOLLOW_SELECTED = 0x02;
+
+    /**
      * 点的颜色。
      */
     @ColorInt
@@ -59,6 +68,14 @@ public class PointIndicatorView extends BannerIndicator {
      * 点与点之间的间距。
      */
     private float mPointSpacing;
+    /**
+     * 点的空心样式。
+     */
+    private int hollowStyle;
+    /**
+     * 边框线的宽度。
+     */
+    private int strokeWidth;
 
     public PointIndicatorView(Context context) {
         this(context, null);
@@ -71,10 +88,6 @@ public class PointIndicatorView extends BannerIndicator {
 
     public PointIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Paint paint = getPaint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setStrokeWidth(0);
-
         TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.PointIndicatorView);
         float scale = getResources().getDisplayMetrics().densityDpi;
         float defaultPointRadius = (int) (3 * (scale / 160) + 0.5f);
@@ -90,6 +103,10 @@ public class PointIndicatorView extends BannerIndicator {
             selectedPointRadius = typedArray.getDimension(R.styleable.PointIndicatorView_selectedPointRadius, defaultPointRadius);
             selectedPointDiameter = (int) (selectedPointRadius * 2);
             pointSpacing = typedArray.getDimension(R.styleable.PointIndicatorView_pointSpacing, Math.min(normalPointDiameter, selectedPointDiameter));
+            hollowStyle = typedArray.getInt(R.styleable.PointIndicatorView_hollowStyle, 0);
+            float sw = typedArray.getDimension(R.styleable.PointIndicatorView_strokeSize, 0);
+            strokeWidth = (int) (sw < 0 ? 0 : sw + 2);
+            getPaint().setStrokeWidth(sw < 0 ? 0 : sw);
             typedArray.recycle();
         }
         mPointRadius = defaultPointRadius;
@@ -149,13 +166,14 @@ public class PointIndicatorView extends BannerIndicator {
     @Override
     protected int onMeasureWidth() {
         //所有点需要占用的宽度 + 所有间距的宽度 = 总宽度。
-        return (getTotalCount() - 1) * mNormalPointDiameter + mSelectedPointDiameter + (int) ((getTotalCount() - 1) * mPointSpacing);
+        int totalCount = getTotalCount();
+        return (totalCount - 1) * mNormalPointDiameter + mSelectedPointDiameter + (int) ((totalCount - 1) * mPointSpacing) + strokeWidth * totalCount;
     }
 
     @Override
     protected int onMeasureHeight() {
         //最大的点的直径 = 总高度。
-        return Math.max(mSelectedPointDiameter, mNormalPointDiameter);
+        return Math.max(mSelectedPointDiameter + strokeWidth, mNormalPointDiameter + strokeWidth);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -172,16 +190,17 @@ public class PointIndicatorView extends BannerIndicator {
         int measureHeight = getContentHeight();
         int centerY;
 
+        int halfStroke = strokeWidth / 2;
         if (haveGravityFlag(Gravity.LEFT)) {
             //默认按照Gravity.START算。
-            startX = paddingLeft;
+            startX = paddingLeft + halfStroke;
         } else if (haveGravityFlag(Gravity.RIGHT)) {
-            startX = width - measureWidth + paddingLeft;
+            startX = width - measureWidth + paddingLeft + halfStroke;
         } else if (haveGravityFlag(Gravity.CENTER_HORIZONTAL)) {
-            startX = ((width - measureWidth) >>> 1) - getPaddingRight() + paddingLeft;
+            startX = ((width - measureWidth) >>> 1) - getPaddingRight() + paddingLeft + halfStroke;
         } else {
             //默认按照Gravity.START算。
-            startX = paddingLeft;
+            startX = paddingLeft  + halfStroke;
         }
 
         if (haveGravityFlag(Gravity.TOP)) {
@@ -199,17 +218,23 @@ public class PointIndicatorView extends BannerIndicator {
 
         float radius;
         int diameter;
+        Paint paint = getPaint();
+        int curPosition = getCurPosition();
+        boolean hollowNormal = (hollowStyle & STYLE_HOLLOW_NORMAL) != 0;
+        boolean hollowSelected = (hollowStyle & STYLE_HOLLOW_SELECTED) != 0;
         for (int i = 0; i < getTotalCount(); i++) {
-            if (i == getCurPosition()) {
+            if (i == curPosition) {
                 radius = mSelectedPointRadius;
                 diameter = mSelectedPointDiameter;
-                getPaint().setColor(mSelectedPointColor);
+                paint.setColor(mSelectedPointColor);
+                paint.setStyle(hollowSelected ? Paint.Style.STROKE : strokeWidth > 0 ? Paint.Style.FILL_AND_STROKE : Paint.Style.FILL);
             } else {
                 radius = mPointRadius;
                 diameter = mNormalPointDiameter;
-                getPaint().setColor(mPointColor);
+                paint.setColor(mPointColor);
+                paint.setStyle(hollowNormal ? Paint.Style.STROKE : strokeWidth > 0 ? Paint.Style.FILL_AND_STROKE : Paint.Style.FILL);
             }
-            canvas.drawCircle(startX + radius, centerY, radius, getPaint());
+            canvas.drawCircle(startX + radius, centerY, radius, paint);
             startX += diameter + mPointSpacing;
         }
     }

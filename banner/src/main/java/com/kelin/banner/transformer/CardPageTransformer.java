@@ -2,7 +2,6 @@ package com.kelin.banner.transformer;
 
 import android.annotation.SuppressLint;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.CardView;
 import android.view.View;
 
 /**

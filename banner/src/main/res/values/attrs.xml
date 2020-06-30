@@ -50,6 +50,15 @@
         <attr name="pointColor" format="color"/>
         <!--选中时点的颜色-->
         <attr name="selectedPointColor" format="color"/>
+        <!--边框线条的粗细-->
+        <attr name="strokeSize" format="dimension"/>
+        <!--空心样式，支持多个选择，多个选择用 | 符号隔开。例如：normal|selected-->
+        <attr name="hollowStyle" format="integer">
+            <!--未被选择的点为空心-->
+            <flag name="normal" value="0x01" />
+            <!--已被选择的点为空心-->
+            <flag name="selected" value="0x02" />
+        </attr>
     </declare-styleable>
 
     <declare-styleable name="NumberIndicatorView">
