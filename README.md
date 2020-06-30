@@ -9,6 +9,28 @@
 
 配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
 
+## 更新
+#### 2.7.0 解决Issues。
+    1.原点指示器增加空心设置功能。
+        您可以在布局文件中使用```app:hollowStyle```属性进行设置。```normal```表示只有为选中的点为空心。
+        ```selected```表示只有选中的点为空心。```normal|selected```表示所有点都为空心。您还可以使用```app:strokeSize```属性设置空心时圆环的粗细，同时也会导致实心圆点变大。
+    2.将BannerEntry中的same方法更名为theSame并在SimpleBannerEntry做了默认实现，如果您觉得实现same方法比较麻烦可以直接继承SimpleBannerEntry但同时你要重写getImageUrl方法将你的url返回。
+    3.将demo中的转场动画效果转移到库中，从此依赖Banner库之后就可以直接使用了，无需再去demo中拷贝。
+
+#### 2.6.0 修复selectCenterPage之后indicatorView没有被同步设置的bug。
+    bannerView.selectCenterPage 方法有一个重载可以设置偏移值，这个值的作用是设置在选中第一页之后在向后偏移多少页。本次更新就是修复了在偏移之后indicatorView并没有更新到相应的页面指示的bug。
+
+#### 2.5.9 解决有可能导致清单文件merge出错的问题。
+    解决有可能导致清单文件merge出错，提示添加tools:replace="android:label"的问题。
+    
+#### 2.5.6 优化同时展示多页时的交互体验。
+
+#### 2.5.5 缓存机制优化。
+    修复Banner数据源数量发生变化时Banner刷新后依然会有之前的缓存的问题。
+
+#### 2.5.4 修复数据源变更后调用setEntries不能使BannerView刷新的bug。
+    真正做到了再调用BannerVeiw.setEntries()方法后如果数据源变更了(根据BannerEntry的same方法)则刷新View否则不刷新View。从而减少不必要的View绘制。
+
 ## 体验
 [点击下载](https://fir.im/rnam)或扫码下载DemoApk
 
