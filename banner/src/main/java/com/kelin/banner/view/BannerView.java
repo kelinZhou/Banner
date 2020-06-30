@@ -110,7 +110,7 @@ public class BannerView extends ViewPager {
     }
 
     /**
-     * 该方法进制调用，如果你非要调用将会导致Banner有严重的Bug。
+     * 该方法禁止调用，如果你非要调用将会导致Banner有严重的Bug。
      *
      * @param l {@link OnTouchListener}对象。
      */

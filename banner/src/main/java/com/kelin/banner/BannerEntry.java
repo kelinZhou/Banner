@@ -65,5 +65,5 @@ public interface BannerEntry<VALUE> {
      * @see com.kelin.banner.view.BannerView#setEntries(List) BannerView.setEntries(@NonNull List<? extends BannerEntry> items)
      * @see com.kelin.banner.view.BannerView#setEntries(List, boolean) BannerView.setEntries(@NonNull List<? extends BannerEntry> items, boolean start)
      */
-    boolean same(BannerEntry newEntry);
+    boolean theSame(BannerEntry newEntry);
 }

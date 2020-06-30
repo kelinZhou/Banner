@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.kelin.banner.BannerEntry;
+import com.kelin.banner.SimpleBannerEntry;
 
 /**
  * 创建人 kelin
@@ -17,7 +18,7 @@ import com.kelin.banner.BannerEntry;
  * 版本 v 1.0.0
  */
 
-public class TitleImageBannerEntry implements BannerEntry<String> {
+public class TitleImageBannerEntry extends SimpleBannerEntry<String> {
     private final String url;
     private String title;
     private String subTitle;
@@ -35,9 +36,15 @@ public class TitleImageBannerEntry implements BannerEntry<String> {
     @NonNull
     public View onCreateView(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_title_banner_item, parent, false);
-        ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
+        ImageView imageView = view.findViewById(R.id.iv_image);
         imageView.setImageResource(imgRes);
         return view;
+    }
+
+    @NonNull
+    @Override
+    public String getImageUrl() {
+        return url;
     }
 
     /**
@@ -68,11 +75,6 @@ public class TitleImageBannerEntry implements BannerEntry<String> {
      */
     @Override
     public String getValue() {
-        return url;
-    }
-
-    @Override
-    public boolean same(BannerEntry newEntry) {
-        return newEntry instanceof TitleImageBannerEntry && TextUtils.equals(title, newEntry.getTitle()) && TextUtils.equals(subTitle, newEntry.getSubTitle()) && imgRes == ((TitleImageBannerEntry)newEntry).imgRes;
+        return title;
     }
 }

@@ -139,7 +139,7 @@ public class GuideActivity extends AppCompatActivity {
     }
 
 
-    public class GuidePageEntry extends SimpleBannerEntry<String> {
+    public static class GuidePageEntry extends SimpleBannerEntry<String> {
         private int imageRes;
         private int wordsRes;
 
@@ -147,7 +147,6 @@ public class GuideActivity extends AppCompatActivity {
          * BannerEntry构造器。
          */
         GuidePageEntry(@DrawableRes int imageRes, @DrawableRes int wordsRes) {
-            super("");
             this.imageRes = imageRes;
             this.wordsRes = wordsRes;
         }
@@ -159,6 +158,12 @@ public class GuideActivity extends AppCompatActivity {
             ((ImageView) rootView.findViewById(R.id.ivImage)).setImageResource(imageRes);
             ((ImageView) rootView.findViewById(R.id.ivWords)).setImageResource(wordsRes);
             return rootView;
+        }
+
+        @NonNull
+        @Override
+        public String getImageUrl() {
+            return "";
         }
     }
 }

@@ -474,7 +474,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             setTitleView(mTitleView);
             setSubTitleView(mSubTitleView);
         } else {
-            throw new RuntimeException("You need called the setEntries method!");
+            throw new RuntimeException("You need to call the 'setEntries' method before calling the 'selectCenterPage' method!");
         }
     }
 
@@ -930,7 +930,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                     for (int i = 0; i < items.size(); i++) {
                         entry = mItems.get(i);
                         newEntry = items.get(i);
-                        if (!entry.same(newEntry)) {
+                        if (!entry.theSame(newEntry)) {
                             successful = true;
                             break;
                         }

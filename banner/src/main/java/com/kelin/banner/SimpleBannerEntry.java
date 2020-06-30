@@ -1,6 +1,8 @@
 package com.kelin.banner;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.List;
 
@@ -15,27 +17,13 @@ import java.util.List;
 
 public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
 
-    @Nullable private final D d;
-
     /**
-     * BannerEntry构造器。
+     * 获取图片的Url地址。
      *
-     * @param d 该BannerEntry容器中所要盛放的对象。
+     * @return 返回图片的Url地址的全路径。
      */
-    public SimpleBannerEntry(@Nullable D d) {
-        this.d = d;
-    }
-
-    /**
-     * 获取构造器中的您所传入的Object对象。
-     *
-     * @return 该类就像是一个容器，用来盛放你Banner中的当个页面的对象，而该方法的返回值就是返回这个容器中所盛放的对象。
-     */
-    @Override
-    @Nullable
-    public final D getValue() {
-        return d;
-    }
+    @NonNull
+    public abstract String getImageUrl();
 
     /**
      * 获取标题。
@@ -54,6 +42,12 @@ public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
     @Nullable
     @Override
     public CharSequence getSubTitle() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public D getValue() {
         return null;
     }
 
@@ -77,7 +71,7 @@ public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
      * @see com.kelin.banner.view.BannerView#setEntries(List, boolean) BannerView.setEntries(@NonNull List<? extends BannerEntry> items, boolean start)
      */
     @Override
-    public boolean same(BannerEntry newEntry) {
-        return equals(newEntry);
+    public boolean theSame(BannerEntry newEntry) {
+        return newEntry != null && TextUtils.equals(newEntry.getClass().getSimpleName(), getClass().getSimpleName()) && TextUtils.equals(getTitle(), newEntry.getTitle()) && TextUtils.equals(getSubTitle(), newEntry.getSubTitle()) && TextUtils.equals(getImageUrl(), ((SimpleBannerEntry) newEntry).getImageUrl());
     }
 }
