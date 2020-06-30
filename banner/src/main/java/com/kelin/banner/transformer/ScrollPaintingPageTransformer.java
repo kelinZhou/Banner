@@ -1,7 +1,7 @@
 package com.kelin.banner.transformer;
 
-import android.support.annotation.IntRange;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.IntRange;
+import androidx.viewpager.widget.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 

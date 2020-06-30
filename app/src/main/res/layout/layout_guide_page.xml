@@ -6,10 +6,10 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -23,7 +23,7 @@
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintWidth_percent="0.7" />
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivWords"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -35,6 +35,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivImage"
             app:layout_constraintWidth_percent="0.8" />
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>
