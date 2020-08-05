@@ -6,8 +6,10 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -62,6 +64,7 @@ public class NumberIndicatorView extends BannerIndicator {
         this(context, attrs, 0);
     }
 
+    @SuppressLint("Recycle")
     public NumberIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.NumberIndicatorView);
@@ -78,7 +81,7 @@ public class NumberIndicatorView extends BannerIndicator {
             mTotalPageTextColor = typedArray.getColor(R.styleable.NumberIndicatorView_totalPageTextColor, mTextColor);
             typedArray.recycle();
         }
-        MIN_SPACE_PADDING_TOP_OR_BOTTOM = 0x0000_0002 * (textSize / 15);
+        MIN_SPACE_PADDING_TOP_OR_BOTTOM = (int) (0x0000_0002 * (textSize / 15.0));
         if (mSeparatorTextColor == mCurrentPageTextColor && mTotalPageTextColor == mCurrentPageTextColor) {
             //如果这三个颜色相等则将这个颜色赋值给textColor。
             if (mSeparatorTextColor != mTextColor) {

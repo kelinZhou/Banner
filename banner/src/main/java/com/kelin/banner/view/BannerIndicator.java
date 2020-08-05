@@ -54,6 +54,7 @@ public abstract class BannerIndicator extends View implements Pageable {
         this(context, attrs, 0);
     }
 
+    @SuppressLint("Recycle")
     public BannerIndicator(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);

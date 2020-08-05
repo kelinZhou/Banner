@@ -657,10 +657,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     }
 
     private PageListenerInfo getPageListenerInfo() {
-        if (mListenerInfo != null) {
-            return mListenerInfo;
+        if (mListenerInfo == null) {
+            mListenerInfo = new PageListenerInfo();
         }
-        mListenerInfo = new PageListenerInfo();
         return mListenerInfo;
     }
 
@@ -797,7 +796,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    private class BannerInterpolator implements Interpolator {
+    private static class BannerInterpolator implements Interpolator {
         @Override
         public float getInterpolation(float t) {
             t -= 1.0f;
@@ -976,7 +975,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
     }
 
-    private class PageListenerInfo {
+    private static class PageListenerInfo {
         /**
          * Banner的页面点击事件监听。
          */

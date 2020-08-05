@@ -3,12 +3,12 @@ package com.kelin.banner.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.viewpager.widget.ViewPager;
+
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,10 +65,10 @@ public class BannerView extends ViewPager {
     public BannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray typedArray;
-        if (attrs == null || (typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView)) == null) {
+        if (attrs == null) {
             mBH = new BannerHelper(this, MULTI_MODE_INFINITE_LOOP);
         } else {
+            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.BannerView);
             int interpolatorId = typedArray.getResourceId(R.styleable.BannerView_pagingInterpolator, NO_ID);
             Interpolator interpolator = null;
             if (interpolatorId != NO_ID) {
@@ -223,7 +223,7 @@ public class BannerView extends ViewPager {
      */
     @Deprecated
     @Override
-    public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
+    public void addOnPageChangeListener(@NonNull ViewPager.OnPageChangeListener listener) {
         super.addOnPageChangeListener(listener);
     }
 
@@ -299,7 +299,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 选择中间页，如果你想移动到中间则需要调用这个方法。
-     *
+     * <p>
      * <br/><br/><br/><strong>必须在{@link #setEntries(List)}或{@link #setEntries(List, boolean)}方法之后调用。</strong>
      */
     public void selectCenterPage() {
@@ -310,8 +310,8 @@ public class BannerView extends ViewPager {
      * 选择中间页，如果你想移动到中间则需要调用这个方法。
      *
      * @param offset 向右偏移的页数。
-     *
-     * <br/><br/><br/><strong>必须在{@link #setEntries(List)}或{@link #setEntries(List, boolean)}方法之后调用。</strong>
+     *               <p>
+     *               <br/><br/><br/><strong>必须在{@link #setEntries(List)}或{@link #setEntries(List, boolean)}方法之后调用。</strong>
      */
     public void selectCenterPage(int offset) {
         mBH.selectCenterPage(offset);
@@ -363,9 +363,7 @@ public class BannerView extends ViewPager {
     @Override
     public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer, int pageLayerType) {
         super.setPageTransformer(reverseDrawingOrder, transformer, pageLayerType);
-        if (Build.VERSION.SDK_INT >= 11) {
-            mBH.updatePageTransformer(transformer);
-        }
+        mBH.updatePageTransformer(transformer);
     }
 
     int determineTargetPage(int currentPage, float pageOffset) {
@@ -388,14 +386,13 @@ public class BannerView extends ViewPager {
     }
 
     boolean isFirstLayout() {
-        Boolean isFirstLayout = true;
         try {
             Field mFirstLayout = BannerHelper.getField(ViewPager.class, "mFirstLayout");
-            isFirstLayout = mFirstLayout.getBoolean(this);
+            return mFirstLayout.getBoolean(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return isFirstLayout;
+        return true;
     }
 
     /**

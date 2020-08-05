@@ -86,6 +86,7 @@ public class PointIndicatorView extends BannerIndicator {
         this(context, attrs, 0);
     }
 
+    @SuppressLint("Recycle")
     public PointIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.PointIndicatorView);
