@@ -15,8 +15,8 @@
 
 #### 2.7.0 解决Issues。
 1.原点指示器增加空心设置功能。
-    您可以在布局文件中使用```app:hollowStyle```属性进行设置。```normal```表示只有为选中的点为空心。
-    ```selected```表示只有选中的点为空心。```normal|selected```表示所有点都为空心。您还可以使用```app:strokeSize```属性设置空心时圆环的粗细，同时也会导致实心圆点变大。
+    您可以在布局文件中使用```app:hollowStyle```属性进行设置。```normal```表示只有未选中的点为空心。
+    ```selected```表示只有选中的点为空心。```normal|selected```表示所有点都为空心。您还可以使用```app:strokeSize```属性设置空心时圆环的粗细，不过``app:strokeSize```属性会导致实心圆变大。
 
 2.将BannerEntry中的same方法更名为theSame并在SimpleBannerEntry做了默认实现，如果您觉得实现same方法比较麻烦可以直接继承SimpleBannerEntry但同时你要重写getImageUrl方法将你的url返回。
 
