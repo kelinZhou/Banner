@@ -13,7 +13,7 @@
 
 ## 更新
 
-#### 2.8.1 SimpleBannerEntry默认实现生命周期方法。
+#### 2.8.2 SimpleBannerEntry默认实现生命周期方法。
   SimpleBannerEntry默认实现```void onBindData(@NonNull View entryView);```方法和```void unbindData(@NonNull View entryView);```
 
 #### 2.8.0 为BannerEntry增加生命周期方法：

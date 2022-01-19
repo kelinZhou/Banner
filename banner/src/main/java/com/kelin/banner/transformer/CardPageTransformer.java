@@ -2,6 +2,8 @@ package com.kelin.banner.transformer;
 
 import android.annotation.SuppressLint;
 import androidx.viewpager.widget.ViewPager;
+
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -39,12 +41,15 @@ public class CardPageTransformer implements ViewPager.PageTransformer {
             //旋转角度 45° * -0.1 = -4.5°
             page.setRotation((45 * position));
             //X轴偏移 li: 300/3 * -0.1 = -10
-            page.setTranslationX((page.getWidth() / 3 * position));
+            page.setTranslationX((page.getWidth() / 3F * position));
         } else {
             //缩放比例
             page.setTranslationX(0);
             page.setRotation(0);
             float scale = (page.getWidth() - mScaleOffset * position) / (float) (page.getWidth());
+            if (scale < 0) {
+                scale = 0;
+            }
             page.setScaleX(scale);
             page.setScaleY(scale);
             page.setTranslationX((-page.getWidth() * position));

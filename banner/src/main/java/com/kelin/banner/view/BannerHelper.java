@@ -871,7 +871,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             int index = getIndex(position);
             View view = (View) object;
-            mItems.get(position).unbindData(view);
+            try {
+                mItems.get(index).unbindData(view);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (cacheAvailable) {
                 container.removeView(view);
                 if (itemViewCache.get(index) == null) {
