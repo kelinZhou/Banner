@@ -1,4 +1,6 @@
 # Banner
+[![](https://jitpack.io/v/kelinZhou/Banner.svg)](https://jitpack.io/#kelinZhou/Banner)
+
 ###### 基于ViewPager封装的轮播图，支持无限轮播、支持自定义动画、支持自定义时长。随意布局。用来做引导页也很方便哦。
 * * *
 
