@@ -13,6 +13,9 @@
 
 ## 更新
 
+#### 2.8.1 SimpleBannerEntry默认实现生命周期方法。
+  SimpleBannerEntry默认实现```void onBindData(@NonNull View entryView);```方法和```void unbindData(@NonNull View entryView);```
+
 #### 2.8.0 为BannerEntry增加生命周期方法：
   1. 增加```void onBindData(@NonNull View entryView);```方法，用于处理页面每次由不可见变为可见时的逻辑。
   2. 增加```void unbindData(@NonNull View entryView);```方法，用于处理页面每次需要释放资源的逻辑。
@@ -62,7 +65,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    implementation 'com.github.kelinZhou:Banner:2.8.0'
+    implementation 'com.github.kelinZhou:Banner:2.8.1'
 }
 ```
 
