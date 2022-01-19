@@ -3,6 +3,8 @@ package com.kelin.banner;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -16,6 +18,24 @@ import java.util.List;
  */
 
 public abstract class SimpleBannerEntry<D> implements BannerEntry<D> {
+
+    /**
+     * 当需要对页面中的组件绑定数据时调用，不同与{@link #onCreateView(ViewGroup)}的调用时机，
+     * 该方法在{@link androidx.viewpager.widget.PagerAdapter#instantiateItem(ViewGroup, int)}执行时就会调用，且一定是在{@link #onCreateView(ViewGroup)}执行之后调用。
+     *
+     * @param entryView 需要绑定数据的根View，其实entryView就是{@link #onCreateView(ViewGroup)}方法的返回值。
+     */
+    @Override
+    public void onBindData(@NonNull View entryView) {
+    }
+
+    /**
+     * 当需要对页面中的资源进行释放时调用，该方法在{@link androidx.viewpager.widget.PagerAdapter#destroyItem(ViewGroup, int, Object)}执行时就会调用
+     * @param entryView 需要释放资源的View，其实entryView就是{@link #onCreateView(ViewGroup)}方法的返回值。
+     */
+    @Override
+    public void unbindData(@NonNull View entryView) {
+    }
 
     /**
      * 获取图片的Url地址。
