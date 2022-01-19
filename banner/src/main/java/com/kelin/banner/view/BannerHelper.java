@@ -842,8 +842,8 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             }
             int index = getIndex(position);
             View entryView = itemViewCache.get(index);
+            BannerEntry bannerEntry = mItems.get(index);
             if (entryView == null) {
-                BannerEntry bannerEntry = mItems.get(index);
                 entryView = bannerEntry.onCreateView(container);
                 if (entryView.getParent() != null) {
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
@@ -855,6 +855,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             } else {
                 itemViewCache.remove(index);
             }
+            bannerEntry.onBindData(entryView);
             if (getPageListenerInfo().onClickListener != null) {
                 entryView.setOnClickListener(this);
             }
@@ -868,10 +869,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            int index = getIndex(position);
+            View view = (View) object;
+            mItems.get(position).unbindData(view);
             if (cacheAvailable) {
-                View view = (View) object;
                 container.removeView(view);
-                int index = getIndex(position);
                 if (itemViewCache.get(index) == null) {
                     itemViewCache.put(index, view);
                 }

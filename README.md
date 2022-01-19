@@ -10,6 +10,12 @@
 配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
 
 ## 更新
+
+#### 2.8.0 为BannerEntry增加生命周期方法：
+  1. 增加```void onBindData(@NonNull View entryView);```方法，用于处理页面每次由不可见变为可见时的逻辑。
+  2. 增加```void unbindData(@NonNull View entryView);```方法，用于处理页面每次需要释放资源的逻辑。
+    
+
 #### 2.7.1 迁移至Androidx。
 从2.7.1开始全面迁移至Androidx，如果您的项目还没有迁移请使用2.7.0或2.7.0之前的版本。
 
@@ -54,7 +60,7 @@ allprojects {
 ###### 第二步：添加这个依赖。
 ```
 dependencies {
-    implementation 'com.github.kelinZhou:Banner:2.7.1'
+    implementation 'com.github.kelinZhou:Banner:2.8.0'
 }
 ```
 

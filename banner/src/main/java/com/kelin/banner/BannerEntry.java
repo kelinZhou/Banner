@@ -2,6 +2,7 @@ package com.kelin.banner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,6 +21,7 @@ public interface BannerEntry<VALUE> {
      * 获取当前页面的布局视图。由于{@link com.kelin.banner.view.BannerHelper BannerHelper}对返回的View进行了
      * {@link View#setOnTouchListener(View.OnTouchListener)}监听触摸事件的操作，所以你不能再对返回的View进行此操作了。
      * 否者可能会出现手指在触摸时无法停止轮播的bug。
+     *
      * @param parent 当前的布局视图的父节点布局。
      * @return 返回当前页面所要显示的View。
      */
@@ -27,7 +29,22 @@ public interface BannerEntry<VALUE> {
     View onCreateView(ViewGroup parent);
 
     /**
+     * 当需要对页面中的组件绑定数据时调用，不同与{@link #onCreateView(ViewGroup)}的调用时机，
+     * 该方法在{@link androidx.viewpager.widget.PagerAdapter#instantiateItem(ViewGroup, int)}执行时就会调用，且一定是在{@link #onCreateView(ViewGroup)}执行之后调用。
+     *
+     * @param entryView 需要绑定数据的根View，其实entryView就是{@link #onCreateView(ViewGroup)}方法的返回值。
+     */
+    void onBindData(@NonNull View entryView);
+
+    /**
+     * 当需要对页面中的资源进行释放时调用，该方法在{@link androidx.viewpager.widget.PagerAdapter#destroyItem(ViewGroup, int, Object)}执行时就会调用
+     * @param entryView 需要释放资源的View，其实entryView就是{@link #onCreateView(ViewGroup)}方法的返回值。
+     */
+    void unbindData(@NonNull View entryView);
+
+    /**
      * 获取标题。
+     *
      * @return 返回当前条目的标题。
      */
     @Nullable
@@ -35,6 +52,7 @@ public interface BannerEntry<VALUE> {
 
     /**
      * 获取子标题。
+     *
      * @return 返回当前条目的子标题。
      */
     @Nullable
@@ -42,6 +60,7 @@ public interface BannerEntry<VALUE> {
 
     /**
      * 获取当前页面的数据。改方法为辅助方法，是为了方便使用者调用而提供的，Api本身并没有任何调用。如果你不需要该方法可以空实现。
+     *
      * @return 返回当前页面的数据。
      */
     @Nullable
@@ -56,12 +75,12 @@ public interface BannerEntry<VALUE> {
      * <p>该方法在 {@link com.kelin.banner.view.BannerView#setEntries(List) BannerView.setEntries(@NonNull List<? extends BannerEntry> items)}
      * 或者 {@link com.kelin.banner.view.BannerView#setEntries(List, boolean) BannerView.setEntries(@NonNull List<? extends BannerEntry> items, boolean start)}
      * 方法调用后执行，但也不一定就会执行，只有在不是第一次调用 setEntries 方法且上一次的数据源的长度与下一次数据源的长度相同时才会调用。
+     *
      * @param newEntry 要比较的对象。
      * @return 该返回值决定了参数中的对象是否与this中所有需要展示在UI视图上的字段一致，如果一致则返回true，否则返回false。如果返回了false则会在
-     *  {@link com.kelin.banner.view.BannerView#setEntries(List) BannerView.setEntries(@NonNull List<? extends BannerEntry> items)}
+     * {@link com.kelin.banner.view.BannerView#setEntries(List) BannerView.setEntries(@NonNull List<? extends BannerEntry> items)}
      * 或者 {@link com.kelin.banner.view.BannerView#setEntries(List, boolean) BannerView.setEntries(@NonNull List<? extends BannerEntry> items, boolean start)}
      * 执行后进行刷新UI视图，如果setEntries方法参数中的所有对象的该方法都返回了true则setEntries方法无效（在该方法被执行的前提下）。
-     *
      * @see com.kelin.banner.view.BannerView#setEntries(List) BannerView.setEntries(@NonNull List<? extends BannerEntry> items)
      * @see com.kelin.banner.view.BannerView#setEntries(List, boolean) BannerView.setEntries(@NonNull List<? extends BannerEntry> items, boolean start)
      */
