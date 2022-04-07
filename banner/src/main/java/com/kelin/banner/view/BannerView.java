@@ -161,6 +161,13 @@ public class BannerView extends ViewPager {
     }
 
     /**
+     * 数据源发生改变后通知刷新所有View。
+     */
+    public void notifyRefresh() {
+        mBH.notifyRefresh();
+    }
+
+    /**
      * 获取数据源集合。
      *
      * @return 返回上一次调用 {@link #setEntries(List)} 或 {@link #setEntries(List, boolean)} 方法成功时的参数。

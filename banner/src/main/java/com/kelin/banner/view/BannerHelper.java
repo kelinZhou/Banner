@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -319,6 +321,10 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                 selectCenterPage(0);
             }
         }
+    }
+
+    void notifyRefresh() {
+        mAdapter.notifyDataSetChanged();
     }
 
     List<? extends BannerEntry> getEntries() {
