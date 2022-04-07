@@ -259,6 +259,18 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         getPageListenerInfo().onChangedListener = onPageChangedListener;
     }
 
+    void doOnPageSelected(BannerView.DoOnPageSelectedListener listener) {
+        getPageListenerInfo().doOnPageSelectedListener = listener;
+    }
+
+    void doOnPageScrolled(BannerView.DoOnPageScrolledListener listener) {
+        getPageListenerInfo().doOnPageScrolledListener = listener;
+    }
+
+    void doOnPageScrollStateChanged(BannerView.DoOnPageScrollStateChangedListener listener) {
+        getPageListenerInfo().doOnPageScrollStateChangedListener = listener;
+    }
+
     /**
      * 设置页面指示器控件。
      *
@@ -581,6 +593,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (getPageListenerInfo().onChangedListener != null) {
             getPageListenerInfo().onChangedListener.onPageSelected(mAdapter.getItem(position), index);
         }
+        if (getPageListenerInfo().doOnPageSelectedListener != null) {
+            getPageListenerInfo().doOnPageSelectedListener.onPageSelected(mAdapter.getItem(position), index);
+        }
     }
 
     @Override
@@ -589,6 +604,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         mCurrentTouchingPage = position;
         if (getPageListenerInfo().onChangedListener != null) {
             getPageListenerInfo().onChangedListener.onPageScrolled(mAdapter.getIndex(position), positionOffset, positionOffsetPixels);
+        }
+        if (getPageListenerInfo().doOnPageScrolledListener != null) {
+            getPageListenerInfo().doOnPageScrolledListener.onPageScrolled(mAdapter.getIndex(position), positionOffset, positionOffsetPixels);
         }
     }
 
@@ -624,6 +642,9 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         }
         if (getPageListenerInfo().onChangedListener != null) {
             getPageListenerInfo().onChangedListener.onPageScrollStateChanged(state);
+        }
+        if (getPageListenerInfo().doOnPageScrollStateChangedListener != null) {
+            getPageListenerInfo().doOnPageScrollStateChangedListener.onPageScrollStateChanged(state);
         }
     }
 
@@ -1005,5 +1026,17 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
          * Banner的页面改变事件监听。
          */
         private BannerView.OnPageChangeListener onChangedListener;
+        /**
+         * 页面选中的监听。
+         */
+        BannerView.DoOnPageSelectedListener doOnPageSelectedListener;
+        /**
+         * 页面滚动的监听。
+         */
+        BannerView.DoOnPageScrolledListener doOnPageScrolledListener;
+        /**
+         * 页面滚动状态的监听。
+         */
+        BannerView.DoOnPageScrollStateChangedListener doOnPageScrollStateChangedListener;
     }
 }

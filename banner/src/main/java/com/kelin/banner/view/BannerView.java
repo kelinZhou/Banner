@@ -222,6 +222,31 @@ public class BannerView extends ViewPager {
     }
 
     /**
+     * 监听页面被选中。
+     *
+     * @param listener 监听对象。
+     */
+    public void doOnPageSelected(DoOnPageSelectedListener listener) {
+        mBH.doOnPageSelected(listener);
+    }
+
+    /**
+     * 监听页面滚动。
+     * @param listener 监听对象。
+     */
+    public void doOnPageScrolled(DoOnPageScrolledListener listener) {
+        mBH.doOnPageScrolled(listener);
+    }
+
+    /**
+     * 监听页面滚动状态的改变。
+     * @param listener 监听对象。
+     */
+    public void doOnPageScrollStateChanged(DoOnPageScrollStateChangedListener listener) {
+        mBH.doOnPageScrollStateChanged(listener);
+    }
+
+    /**
      * 如果你想监听页面的改变，应当使用 {@link #setOnPageChangedListener(OnPageChangeListener)} 方法，
      * 因为 {@link OnPageChangeListener} 的回调方法中会把页面中的数据模型回调给你。
      *
@@ -427,6 +452,42 @@ public class BannerView extends ViewPager {
          * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
          */
         void onPageLongClick(BannerEntry entry, int index);
+    }
+
+    public interface DoOnPageSelectedListener {
+
+        /**
+         * 当页面被选中的时候调用。
+         *
+         * @param entry 当前页面的 {@link BannerEntry} 对象。
+         * @param index 当前页面的索引。这个索引永远会在你的集合的size范围内。
+         */
+        void onPageSelected(BannerEntry entry, int index);
+    }
+
+    public interface DoOnPageScrolledListener {
+
+        /**
+         * 当页面正在滚动中的时候执行。
+         *
+         * @param index                当前页面的索引。这个索引永远会在你的集合的size范围内。
+         * @param positionOffset       值为(0,1)表示页面位置的偏移。
+         * @param positionOffsetPixels 页面偏移的像素值。
+         */
+        void onPageScrolled(int index, float positionOffset, int positionOffsetPixels);
+    }
+
+    public interface DoOnPageScrollStateChangedListener {
+
+        /**
+         * 当Banner中的页面的滚动状态改变的时候被执行。
+         *
+         * @param state 当前的滚动状态。
+         * @see BannerView#SCROLL_STATE_IDLE
+         * @see BannerView#SCROLL_STATE_DRAGGING
+         * @see BannerView#SCROLL_STATE_SETTLING
+         */
+        void onPageScrollStateChanged(int state);
     }
 
     /**

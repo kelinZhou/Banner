@@ -13,7 +13,7 @@
 
 ## 更新
 
-#### 2.8.3 对外暴露notifyRefresh()方法。
+#### 2.8.4 对外暴露notifyRefresh()方法，并支持对页面滚动选中事件的单独监听。
 
 #### 2.8.2 SimpleBannerEntry默认实现生命周期方法。
   SimpleBannerEntry默认实现```void onBindData(@NonNull View entryView);```方法和```void unbindData(@NonNull View entryView);```
