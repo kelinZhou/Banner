@@ -915,6 +915,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
             }
         }
 
+        @Override
+        public int getItemPosition(@NonNull Object object) {
+            return POSITION_NONE;
+        }
+
         /**
          * 根据position计算出真正的 index 值。
          *
