@@ -17,19 +17,19 @@
         android:id="@+id/pivIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:visibility="gone"
+        app:hollowStyle="selected"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.79"
         app:pointColor="#30000000"
-        app:hollowStyle="selected"
-        android:gravity="end"
         app:pointRadius="4dp"
+        app:selectedPointColor="#EB6F5A"
         app:selectedPointRadius="5dp"
         app:strokeSize="2.5dp"
-        app:selectedPointColor="#EB6F5A"
         tools:totalCount="3" />
 
 
@@ -39,10 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="10dp"
-        app:totalCount="3"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pivIndicator"/>
+        app:layout_constraintTop_toBottomOf="@id/pivIndicator"
+        app:totalCount="3" />
 
     <Button
         android:id="@+id/btnExperienceNow"

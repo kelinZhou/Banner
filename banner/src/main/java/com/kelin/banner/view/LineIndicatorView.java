@@ -97,17 +97,20 @@ public class LineIndicatorView extends BannerIndicator {
         int measureHeight = getContentHeight();
         int startY;
 
-        if (haveGravityFlag(Gravity.END)) {
+        if (haveGravityFlag(Gravity.LEFT)) {
+            startX = paddingLeft;
+        }else if (haveGravityFlag(Gravity.RIGHT)) {
             startX = width - measureWidth + paddingLeft;
         } else if (haveGravityFlag(Gravity.CENTER_HORIZONTAL)) {
             startX = ((width - measureWidth) >>> 1) - getPaddingRight() + paddingLeft;
         } else {
-            //默认按照Gravity.START算。
             startX = paddingLeft;
         }
 
         int paddingTop = getPaddingTop();
-        if (haveGravityFlag(Gravity.BOTTOM)) {
+        if (haveGravityFlag(Gravity.TOP)) {
+            startY = paddingTop;
+        }else if (haveGravityFlag(Gravity.BOTTOM)) {
             startY = height - measureHeight - getPaddingBottom();
         } else if (haveGravityFlag(Gravity.CENTER_VERTICAL)) {
             startY = (height >>> 1) - (measureHeight >>> 1) - getPaddingBottom() + paddingTop;
