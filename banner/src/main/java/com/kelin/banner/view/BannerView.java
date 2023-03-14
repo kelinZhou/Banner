@@ -177,6 +177,16 @@ public class BannerView extends ViewPager {
     }
 
     /**
+     * 根据位置获取BannerEntry。
+     * @param position 要获取的索引。
+     * @param <E> BannerEntry的具体类型。
+     * @return 返回对应索引的BannerEntry。
+     */
+    public<E extends BannerEntry> E getEntry(int position) {
+        return mBH.getEntry(position);
+    }
+
+    /**
      * 设置翻页的间隔时间，单位：毫秒。
      *
      * @param pagingIntervalTime 要设置的时长。

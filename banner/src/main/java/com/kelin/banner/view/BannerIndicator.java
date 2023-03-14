@@ -68,6 +68,10 @@ public abstract class BannerIndicator extends View implements Pageable {
         setGravity(gravity);
     }
 
+    protected float getDensityDpi() {
+        return getResources().getDisplayMetrics().densityDpi / 160F;
+    }
+
     /**
      * 设置点的个数，如果你是配合 {@link BannerView } 使用的话，这不需要进行设置。只需要调用
      * {@link BannerView#setIndicatorView(View)} 方法或者为{@link BannerView}

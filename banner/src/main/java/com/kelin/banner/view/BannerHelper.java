@@ -343,6 +343,11 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         return mAdapter.getItems();
     }
 
+    @SuppressWarnings("unchecked")
+    <E extends BannerEntry> E getEntry(int position) {
+        return (E) mAdapter.getItem(position);
+    }
+
     private void checkIndicatorEnable(List<? extends BannerEntry> items) {
         if (mIndicatorView != null) {
             if (items != null && !items.isEmpty() && indicatorEnable(items)) {

@@ -9,7 +9,7 @@
         android:id="@+id/bvGuide"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:bannerIndicator="@+id/pivIndicator"
+        app:bannerIndicator="@+id/livIndicator"
         app:loopMode="fromCoverToCover" />
 
 
@@ -31,6 +31,18 @@
         app:strokeSize="2.5dp"
         app:selectedPointColor="#EB6F5A"
         tools:totalCount="3" />
+
+
+    <com.kelin.banner.view.LineIndicatorView
+        android:id="@+id/livIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        app:totalCount="3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pivIndicator"/>
 
     <Button
         android:id="@+id/btnExperienceNow"

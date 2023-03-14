@@ -2,23 +2,23 @@
 <resources>
     <declare-styleable name="BannerView">
         <!--翻页间隔时长-->
-        <attr name="pagingIntervalTime" format="integer"/>
+        <attr name="pagingIntervalTime" format="integer" />
         <!--翻页动画减速倍数-->
-        <attr name="decelerateMultiple" format="integer"/>
+        <attr name="decelerateMultiple" format="integer" />
         <!--指示器控件的ViewId-->
-        <attr name="bannerIndicator" format="reference"/>
+        <attr name="bannerIndicator" format="reference" />
         <!--标题控件-->
-        <attr name="titleView" format="reference"/>
+        <attr name="titleView" format="reference" />
         <!--子标题控件-->
-        <attr name="subTitleView" format="reference"/>
+        <attr name="subTitleView" format="reference" />
         <!--翻页动画差值器-->
-        <attr name="pagingInterpolator" format="reference"/>
+        <attr name="pagingInterpolator" format="reference" />
         <!--只有一张图片时的显示模式-->
         <attr name="singlePageMode" format="integer">
             <!--没有(不显示)指示器-->
-            <flag name="noIndicator" value="0x01"/>
+            <flag name="noIndicator" value="0x01" />
             <!--不可以也不能翻页-->
-            <flag name="canNotPaging" value="0x02"/>
+            <flag name="canNotPaging" value="0x02" />
         </attr>
         <!--拥有多张图片时的显示模式-->
         <attr name="loopMode" format="enum">
@@ -35,23 +35,23 @@
 
     <declare-styleable name="BannerIndicator">
         <!--总页数，如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以看到效果。-->
-        <attr name="totalCount" format="integer"/>
-        <attr name="android:gravity"/>
+        <attr name="totalCount" format="integer" />
+        <attr name="android:gravity" />
     </declare-styleable>
 
     <declare-styleable name="PointIndicatorView">
         <!--点的半径-->
-        <attr name="pointRadius" format="dimension"/>
+        <attr name="pointRadius" format="dimension" />
         <!--选中的点的半径-->
-        <attr name="selectedPointRadius" format="dimension"/>
+        <attr name="selectedPointRadius" format="dimension" />
         <!--点与点之间的间距，默认为最小的点的直径。-->
-        <attr name="pointSpacing" format="dimension"/>
+        <attr name="pointSpacing" format="dimension" />
         <!--点的颜色-->
-        <attr name="pointColor" format="color"/>
+        <attr name="pointColor" format="color" />
         <!--选中时点的颜色-->
-        <attr name="selectedPointColor" format="color"/>
+        <attr name="selectedPointColor" format="color" />
         <!--边框线条的粗细-->
-        <attr name="strokeSize" format="dimension"/>
+        <attr name="strokeSize" format="dimension" />
         <!--空心样式，支持多个选择，多个选择用 | 符号隔开。例如：normal|selected-->
         <attr name="hollowStyle" format="integer">
             <!--未被选择的点为空心-->
@@ -63,16 +63,29 @@
 
     <declare-styleable name="NumberIndicatorView">
         <!--字体大小-->
-        <attr name="android:textSize"/>
+        <attr name="android:textSize" />
         <!--所有的字体颜色-->
-        <attr name="android:textColor"/>
+        <attr name="android:textColor" />
         <!--分割符号文本-->
-        <attr name="separator" format="string"/>
+        <attr name="separator" format="string" />
         <!--分隔符文本颜色-->
-        <attr name="separatorTextColor" format="color"/>
+        <attr name="separatorTextColor" format="color" />
         <!--当前页面码字体颜色-->
-        <attr name="currentPageTextColor" format="color"/>
+        <attr name="currentPageTextColor" format="color" />
         <!--总页数字体颜色-->
-        <attr name="totalPageTextColor" format="color"/>
+        <attr name="totalPageTextColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="LineIndicatorView">
+        <!--线条的高度-->
+        <attr name="lineHeight" format="dimension" />
+        <!--线条的宽度-->
+        <attr name="lineWidth" format="dimension" />
+        <!--点与点之间的间距，默认为最小的点的直径。-->
+        <attr name="lineSpacing" format="dimension" />
+        <!--点的颜色-->
+        <attr name="lineColor" format="color" />
+        <!--选中时点的颜色-->
+        <attr name="selectedLineColor" format="color" />
     </declare-styleable>
 </resources>

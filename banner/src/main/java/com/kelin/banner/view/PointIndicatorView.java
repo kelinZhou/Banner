@@ -90,8 +90,8 @@ public class PointIndicatorView extends BannerIndicator {
     public PointIndicatorView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray typedArray = attrs == null ? null : context.obtainStyledAttributes(attrs, R.styleable.PointIndicatorView);
-        float scale = getResources().getDisplayMetrics().densityDpi;
-        float defaultPointRadius = (int) (3 * (scale / 160) + 0.5f);
+        float scale = getDensityDpi();
+        float defaultPointRadius = (int) (3 * scale + 0.5f);
         float selectedPointRadius = 0;
         int normalPointDiameter = 0;
         int selectedPointDiameter = 0;
