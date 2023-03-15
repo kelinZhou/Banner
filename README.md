@@ -13,6 +13,43 @@
 
 ## 更新
 
+#### 2.9.0 新增SlideShowMoreLayout组件，使Banner支持左滑加载更多。
+布局中使用
+```xml
+<com.kelin.banner.view.SlideShowMoreLayout
+    android:id="@+id/ssmLoadMore"
+    android:layout_width="match_parent"
+    android:layout_height="175dp"
+    android:background="#FFF"
+    android:orientation="horizontal"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp"
+    app:arrowIcon="@drawable/ic_test_arrow"
+    app:releaseLoadMoreText="赶快松手吧"
+    app:slideLoadMoreText="你再滑一点">
+
+    <com.kelin.banner.view.BannerView
+        android:id="@+id/vp_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:decelerateMultiple="4"
+        app:loopMode="infiniteLoop"
+        app:pagingIntervalTime="3000"
+        app:singlePageMode="canNotPaging|noIndicator" />
+</com.kelin.banner.view.SlideShowMoreLayout>
+```
+在代码中设置监听。
+```java
+((SlideShowMoreLayout) findViewById(R.id.ssmLoadMore)).setOnLoadMoreListener(() => {
+    Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show();
+});
+```
+```kotlin
+ssmLoadMore.setOnLoadMoreListener{
+    Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show()
+}
+```
+
 #### 2.8.4 对外暴露notifyRefresh()方法，并支持对页面滚动选中事件的单独监听。
 
 #### 2.8.2 SimpleBannerEntry默认实现生命周期方法。
