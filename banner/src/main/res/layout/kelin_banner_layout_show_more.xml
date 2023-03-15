@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="160dp"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="10dp"
+    android:paddingLeft="10dp"
+    android:paddingEnd="30dp"
+    android:paddingRight="30dp"
+    tools:ignore="RtlSymmetry">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivBannerShowMoreArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotationX="0.5"
+        android:rotationY="0.5"
+        app:srcCompat="@drawable/kelin_banner_load_more_ic_arrow_left_circle"
+        tools:ignore="VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/tvBannerShowMoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:ems="1"
+        android:gravity="center"
+        tools:text="滑动查看详情"
+        android:textColor="#333333" />
+</LinearLayout>

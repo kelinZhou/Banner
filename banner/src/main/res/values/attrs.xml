@@ -88,4 +88,12 @@
         <!--选中时点的颜色-->
         <attr name="selectedLineColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="SlideShowMoreLayout">
+        <attr name="arrowIcon" format="reference" />
+        <!--滑动加载更多的提示文字-->
+        <attr name="slideLoadMoreText" format="string" localization="suggested" />
+        <!--释放加载更多的提示文字-->
+        <attr name="releaseLoadMoreText" format="string" localization="suggested" />
+    </declare-styleable>
 </resources>

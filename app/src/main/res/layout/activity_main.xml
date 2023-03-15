@@ -5,11 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <com.kelin.banner.view.SlideShowMoreLayout
+        android:id="@+id/ssmLoadMore"
         android:layout_width="match_parent"
         android:layout_height="175dp"
         android:background="#FFF"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingTop="6dp"
         android:paddingBottom="6dp">
 
@@ -21,7 +22,7 @@
             app:loopMode="infiniteLoop"
             app:pagingIntervalTime="3000"
             app:singlePageMode="canNotPaging|noIndicator" />
-    </RelativeLayout>
+    </com.kelin.banner.view.SlideShowMoreLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

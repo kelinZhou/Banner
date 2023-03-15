@@ -1,3 +1,5 @@
 <resources>
     <string name="banner_app_name">Banner</string>
+    <string name="kelin_banner_def_slide_load_more_text">滑动查看详情</string>
+    <string name="kelin_banner_def_release_load_more_text">释放查看详情</string>
 </resources>

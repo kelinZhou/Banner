@@ -191,12 +191,16 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         replaceScroller(viewPager, mScroller);
         mAdapter = new ViewBannerAdapter();
         mTouchPauseEnable = touchPauseEnable;
-        if (mTouchPauseEnable) {
-            viewPager.listenerOnTouch(this);
+        if (touchPauseEnable) {
+            mBannerView.listenerOnTouch(BannerHelper.this);
         }
         viewPager.addPageChangeListener(this);
         setPagingIntervalTime(pagingIntervalTime);
         setMultiple(decelerateMultiple);
+    }
+
+    private boolean isTouchPauseEnable() {
+        return mTouchPauseEnable && !(mBannerView.isSlideShowMode());
     }
 
 
@@ -405,14 +409,14 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
      * 获取单页面的显示模式标识。
      */
     private int getSinglePageModeFlags() {
-        return mPageModeFlags & 0x0f;
+        return mBannerView.isSlideShowMode() ? MULTI_MODE_FROM_COVER_TO_COVER : (mPageModeFlags & 0x0f);
     }
 
     /**
      * 获取多页面的轮播模式标识。
      */
     private int getMultiPageMode() {
-        return mPageModeFlags & 0xf0;
+        return mBannerView.isSlideShowMode() ? MULTI_MODE_FROM_COVER_TO_COVER : (mPageModeFlags & 0xf0);
     }
 
     /**
@@ -531,7 +535,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
         if (pagerBox == null) {
             throw new RuntimeException("BannerView cannot be a root layout!");
         }
-        if (mTouchPauseEnable) {
+        if (isTouchPauseEnable()) {
             pagerBox.setOnTouchListener(this);
         }
         pagerBox.setClipChildren(false);
@@ -552,21 +556,25 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        int action = motionEvent.getAction();
-        int parseAction = parseAction(action);
-        if (mLastAction != parseAction) {
-            mLastAction = parseAction;
-            switch (action) {
-                case MotionEvent.ACTION_DOWN:
-                case MotionEvent.ACTION_MOVE:
-                    pause();
-                    break;
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_CANCEL:
-                    reStart();
+        if (mBannerView.isUserInputEnable()) {
+            int action = motionEvent.getAction();
+            int parseAction = parseAction(action);
+            if (mLastAction != parseAction) {
+                mLastAction = parseAction;
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        pause();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        reStart();
+                }
             }
+            return view == mBannerView ? mBannerView.onTouchEvent(motionEvent) : view == mBannerView.getParent() ? mBannerView.dispatchTouchEvent(motionEvent) : view.onTouchEvent(motionEvent);
+        } else {
+            return false;
         }
-        return view == mBannerView ? mBannerView.onTouchEvent(motionEvent) : view == mBannerView.getParent() ? mBannerView.dispatchTouchEvent(motionEvent) : view.onTouchEvent(motionEvent);
     }
 
     private int parseAction(int action) {
@@ -881,7 +889,7 @@ final class BannerHelper implements View.OnTouchListener, ViewPager.OnPageChange
                     throw new IllegalStateException("The specified child already has a parent. You must call removeView() on the child's parent first.");
                 }
                 entryView.setTag(KEY_INDEX_TAG, index);
-                if (mTouchPauseEnable) {
+                if (isTouchPauseEnable()) {
                     entryView.setOnTouchListener(BannerHelper.this);
                 }
             } else {

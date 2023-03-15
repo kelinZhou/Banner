@@ -10,6 +10,7 @@ import androidx.annotation.Size;
 import androidx.viewpager.widget.ViewPager;
 
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -56,7 +57,10 @@ public class BannerView extends ViewPager {
 
     @NonNull
     private final BannerHelper mBH;
-
+    /**
+     * 用来记录是否要禁止用户滑动。
+     */
+    private boolean mIsUserInputEnable = true;
 
     public BannerView(Context context) {
         this(context, null);
@@ -64,7 +68,7 @@ public class BannerView extends ViewPager {
 
     public BannerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        //TODO支持加载更多！
         if (attrs == null) {
             mBH = new BannerHelper(this, MULTI_MODE_INFINITE_LOOP);
         } else {
@@ -140,6 +144,38 @@ public class BannerView extends ViewPager {
         }
     }
 
+    public boolean isSlideShowMode() {
+        return getParent() instanceof SlideShowMoreLayout;
+    }
+
+    /**
+     * 设置禁止用户滑动。
+     *
+     * @param enable 是否要禁止用户滑动。
+     */
+    public void setIsUserInputEnable(boolean enable) {
+        mIsUserInputEnable = enable;
+    }
+
+    /**
+     * 获取当前用户是否可以滑动。
+     *
+     * @return 可以滑动返回true，不可以滑动返回false。
+     */
+    public boolean isUserInputEnable() {
+        return mIsUserInputEnable;
+    }
+
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (isSlideShowMode()) {
+            return !((SlideShowMoreLayout) getParent()).needInterceptSlide;
+        } else {
+            return mIsUserInputEnable && super.onInterceptTouchEvent(ev);
+        }
+    }
+
     /**
      * 设置条目数据并开始轮播。如果不希望启动轮播则调用两个参数的方法{@link #setEntries(List, boolean)}。
      *
@@ -157,7 +193,7 @@ public class BannerView extends ViewPager {
      * @param start 是否开始轮播。
      */
     public void setEntries(@NonNull List<? extends BannerEntry> items, boolean start) {
-        mBH.setEntries(items, start);
+        mBH.setEntries(items, !isSlideShowMode() && start);
     }
 
     /**
@@ -178,11 +214,12 @@ public class BannerView extends ViewPager {
 
     /**
      * 根据位置获取BannerEntry。
+     *
      * @param position 要获取的索引。
-     * @param <E> BannerEntry的具体类型。
+     * @param <E>      BannerEntry的具体类型。
      * @return 返回对应索引的BannerEntry。
      */
-    public<E extends BannerEntry> E getEntry(int position) {
+    public <E extends BannerEntry> E getEntry(int position) {
         return mBH.getEntry(position);
     }
 
@@ -242,6 +279,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 监听页面滚动。
+     *
      * @param listener 监听对象。
      */
     public void doOnPageScrolled(DoOnPageScrolledListener listener) {
@@ -250,6 +288,7 @@ public class BannerView extends ViewPager {
 
     /**
      * 监听页面滚动状态的改变。
+     *
      * @param listener 监听对象。
      */
     public void doOnPageScrollStateChanged(DoOnPageScrollStateChangedListener listener) {

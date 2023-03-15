@@ -4,14 +4,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.kelin.banner.BannerEntry;
 import com.kelin.banner.view.BannerView;
+import com.kelin.banner.view.SlideShowMoreLayout;
 import com.kelin.recycleradapter.ItemAdapter;
 import com.kelin.recycleradapter.MultiTypeAdapter;
 import com.kelin.recycleradapter.interfaces.EventBindInterceptor;
@@ -22,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
 
     private EventBindInterceptor mEventInterceptor;
     private BannerView.OnPageClickListener mOnBannerEventListener;
@@ -36,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ((SlideShowMoreLayout) findViewById(R.id.ssmLoadMore)).setOnLoadMoreListener(new SlideShowMoreLayout.OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show();
+            }
+        });
         bannerView = findViewById(R.id.vp_view_pager);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             bannerView.setShowLeftAndRightPage(30, true, new GalleryTransformer());
@@ -104,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         bannerView.setEntries(getImageBannerEntries());
-        bannerView.selectCenterPage(2);
     }
 
     @NonNull
