@@ -14,10 +14,11 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivBannerShowMoreArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:rotationX="0.5"
         android:rotationY="0.5"
+        android:scaleType="fitXY"
         app:srcCompat="@drawable/kelin_banner_load_more_ic_arrow_left_circle"
         tools:ignore="VectorDrawableCompat" />
 
