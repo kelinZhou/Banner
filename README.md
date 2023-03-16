@@ -12,12 +12,19 @@
 配合RecyclerView使用时当BannerView所在的ViewHolder被移除屏幕后轮播会自动停止，重新出现后轮播会自动开始，无需用代码进行任何操作。
 
 ## 更新
+#### 2.9.1 为SlideShowMoreLayout组件增加setEnable方法及属性，使其可以动态禁用及启用。
+```xml
+android:enabled="false"
+```
+```kotlin
+ssmShowMore.isEnable = false  //默认为true
+```
 
 #### 2.9.0 新增SlideShowMoreLayout组件，使Banner支持左滑加载更多。
 布局中使用
 ```xml
 <com.kelin.banner.view.SlideShowMoreLayout
-    android:id="@+id/ssmLoadMore"
+    android:id="@+id/ssmShowMore"
     android:layout_width="match_parent"
     android:layout_height="175dp"
     android:background="#FFF"
@@ -25,8 +32,8 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp"
     app:arrowIcon="@drawable/ic_test_arrow"
-    app:releaseLoadMoreText="赶快松手吧"
-    app:slideLoadMoreText="你再滑一点">
+    app:releaseShowMoreText="赶快松手吧"
+    app:slideShowMoreText="你再滑一点">
 
     <com.kelin.banner.view.BannerView
         android:id="@+id/vp_view_pager"
@@ -39,13 +46,15 @@
 </com.kelin.banner.view.SlideShowMoreLayout>
 ```
 在代码中设置监听。
+java
 ```java
-((SlideShowMoreLayout) findViewById(R.id.ssmLoadMore)).setOnLoadMoreListener(() => {
+((SlideShowMoreLayout) findViewById(R.id.ssmShowMore)).setOnShowMoreListener(() => {
     Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show();
 });
 ```
+kotlin
 ```kotlin
-ssmLoadMore.setOnLoadMoreListener{
+ssmShowMore.setOnShowMoreListener{
     Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show()
 }
 ```

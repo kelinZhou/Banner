@@ -90,10 +90,11 @@
     </declare-styleable>
 
     <declare-styleable name="SlideShowMoreLayout">
+        <attr name="android:enabled" />
         <attr name="arrowIcon" format="reference" />
         <!--滑动加载更多的提示文字-->
-        <attr name="slideLoadMoreText" format="string" localization="suggested" />
+        <attr name="slideShowMoreText" format="string" localization="suggested" />
         <!--释放加载更多的提示文字-->
-        <attr name="releaseLoadMoreText" format="string" localization="suggested" />
+        <attr name="releaseShowMoreText" format="string" localization="suggested" />
     </declare-styleable>
 </resources>

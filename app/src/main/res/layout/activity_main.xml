@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <com.kelin.banner.view.SlideShowMoreLayout
-        android:id="@+id/ssmLoadMore"
+        android:id="@+id/ssmShowMore"
         android:layout_width="match_parent"
         android:layout_height="175dp"
         android:background="#FFF"
@@ -14,8 +14,8 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         app:arrowIcon="@drawable/ic_test_arrow"
-        app:releaseLoadMoreText="赶快松手吧"
-        app:slideLoadMoreText="你再滑一点">
+        app:releaseShowMoreText="赶快松手吧"
+        app:slideShowMoreText="你再滑一点">
 
         <com.kelin.banner.view.BannerView
             android:id="@+id/vp_view_pager"

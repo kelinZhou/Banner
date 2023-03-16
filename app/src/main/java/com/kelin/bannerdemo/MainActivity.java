@@ -38,9 +38,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((SlideShowMoreLayout) findViewById(R.id.ssmLoadMore)).setOnLoadMoreListener(new SlideShowMoreLayout.OnLoadMoreListener() {
+        SlideShowMoreLayout showMoreLayout = (SlideShowMoreLayout) findViewById(R.id.ssmShowMore);
+        showMoreLayout.setOnShowMoreListener(new SlideShowMoreLayout.OnShowMoreListener() {
             @Override
-            public void onLoadMore() {
+            public void onShowMore() {
                 Toast.makeText(MainActivity.this, "加载更多", Toast.LENGTH_SHORT).show();
             }
         });

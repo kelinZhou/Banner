@@ -34,7 +34,7 @@ public class SlideShowMoreLayout extends LinearLayout {
     /**
      * 用来记录上一次处理的加载更多的状态，方式重复调用。
      */
-    private boolean lastLoadMoreState = false;
+    private boolean lastShowMoreState = false;
     /**
      * 加载更多布局最小漏出多少认为可以加载更多。
      */
@@ -46,11 +46,11 @@ public class SlideShowMoreLayout extends LinearLayout {
     /**
      * 滑动加载更多的提示文字。
      */
-    private String slideLoadMoreText;
+    private String slideShowMoreText;
     /**
      * 释放加载更多的提示文字。
      */
-    private String releaseLoadMoreText;
+    private String releaseShowMoreText;
     /**
      * 上一次按下的X轴坐标。
      */
@@ -59,6 +59,10 @@ public class SlideShowMoreLayout extends LinearLayout {
      * 用来记录当前是否拦截滑动事件。
      */
     boolean needInterceptSlide;
+    /**
+     * 滑动显示更多是否可用。
+     */
+    private boolean isSlideShowMoreEnable;
     /**
      * 加载更多的箭头图标。
      */
@@ -74,7 +78,7 @@ public class SlideShowMoreLayout extends LinearLayout {
     /**
      * 加载更多的监听。
      */
-    private OnLoadMoreListener onLoadMoreListener;
+    private OnShowMoreListener onShowMoreListener;
 
     public SlideShowMoreLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
@@ -83,14 +87,15 @@ public class SlideShowMoreLayout extends LinearLayout {
     public SlideShowMoreLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.SlideShowMoreLayout);
+        setEnabled(typedArray.getBoolean(R.styleable.SlideShowMoreLayout_android_enabled, true));
         showMoreArrowIcon = typedArray.getResourceId(R.styleable.SlideShowMoreLayout_arrowIcon, R.drawable.kelin_banner_load_more_ic_arrow_left_circle);
-        slideLoadMoreText = typedArray.getString(R.styleable.SlideShowMoreLayout_slideLoadMoreText);
-        if (TextUtils.isEmpty(slideLoadMoreText)) {
-            slideLoadMoreText = getResources().getString(R.string.kelin_banner_def_slide_load_more_text);
+        slideShowMoreText = typedArray.getString(R.styleable.SlideShowMoreLayout_slideShowMoreText);
+        if (TextUtils.isEmpty(slideShowMoreText)) {
+            slideShowMoreText = getResources().getString(R.string.kelin_banner_def_slide_load_more_text);
         }
-        releaseLoadMoreText = typedArray.getString(R.styleable.SlideShowMoreLayout_releaseLoadMoreText);
-        if (TextUtils.isEmpty(releaseLoadMoreText)) {
-            releaseLoadMoreText = getResources().getString(R.string.kelin_banner_def_release_load_more_text);
+        releaseShowMoreText = typedArray.getString(R.styleable.SlideShowMoreLayout_releaseShowMoreText);
+        if (TextUtils.isEmpty(releaseShowMoreText)) {
+            releaseShowMoreText = getResources().getString(R.string.kelin_banner_def_release_load_more_text);
         }
         typedArray.recycle();
     }
@@ -99,8 +104,19 @@ public class SlideShowMoreLayout extends LinearLayout {
      * 设置加载更多的监听。
      * @param l 监听对象。
      */
-    public void setOnLoadMoreListener(OnLoadMoreListener l) {
-        this.onLoadMoreListener = l;
+    public void setOnShowMoreListener(OnShowMoreListener l) {
+        this.onShowMoreListener = l;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isSlideShowMoreEnable && super.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        isSlideShowMoreEnable = enabled;
     }
 
     @Override
@@ -118,7 +134,7 @@ public class SlideShowMoreLayout extends LinearLayout {
         arrowIconView = findViewById(R.id.ivBannerShowMoreArrow);
         arrowIconView.setImageResource(showMoreArrowIcon);
         showMoreTextView = findViewById(R.id.tvBannerShowMoreText);
-        showMoreTextView.setText(slideLoadMoreText);
+        showMoreTextView.setText(slideShowMoreText);
     }
 
     @Override
@@ -139,7 +155,7 @@ public class SlideShowMoreLayout extends LinearLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_MOVE) {
-            return needInterceptSlide;
+            return isSlideShowMoreEnable && needInterceptSlide;
         } else {
             return false;
         }
@@ -164,15 +180,15 @@ public class SlideShowMoreLayout extends LinearLayout {
                         }
                     }
                 }
-                checkLoadMoreState(getScrollX() + dx);
+                checkShowMoreState(getScrollX() + dx);
                 scrollBy((int) dx, 0);
                 lastX = event.getX();
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 smoothToNormal();
-                if (onLoadMoreListener != null && lastLoadMoreState) {
-                    onLoadMoreListener.onLoadMore();
+                if (onShowMoreListener != null && lastShowMoreState) {
+                    onShowMoreListener.onShowMore();
                 }
                 needInterceptSlide = false;
         }
@@ -182,7 +198,7 @@ public class SlideShowMoreLayout extends LinearLayout {
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-            checkLoadMoreState(0);
+            checkShowMoreState(0);
             scrollTo(mScroller.getCurrX(), mScroller.getCurrY());
             invalidate();
         }
@@ -194,18 +210,18 @@ public class SlideShowMoreLayout extends LinearLayout {
         invalidate();
     }
 
-    private void checkLoadMoreState(float scrollX) {
-        boolean showLoadMore = scrollX >= minShowMoreWidth;
-        if (lastLoadMoreState != showLoadMore) {
-            lastLoadMoreState = showLoadMore;
+    private void checkShowMoreState(float scrollX) {
+        boolean showShowMore = scrollX >= minShowMoreWidth;
+        if (lastShowMoreState != showShowMore) {
+            lastShowMoreState = showShowMore;
             ObjectAnimator animation;
-            if (showLoadMore) {
+            if (showShowMore) {
                 //释放查看详情
-                showMoreTextView.setText(releaseLoadMoreText);
+                showMoreTextView.setText(releaseShowMoreText);
                 animation = ObjectAnimator.ofFloat(arrowIconView, "rotation", 0, 180);
             } else {
                 //滑动查看详情
-                showMoreTextView.setText(slideLoadMoreText);
+                showMoreTextView.setText(slideShowMoreText);
                 animation = ObjectAnimator.ofFloat(arrowIconView, "rotation", 180, 0);
             }
             animation.setDuration(500);
@@ -213,7 +229,7 @@ public class SlideShowMoreLayout extends LinearLayout {
         }
     }
 
-    public interface OnLoadMoreListener {
-        void onLoadMore();
+    public interface OnShowMoreListener {
+        void onShowMore();
     }
 }
