@@ -81,9 +81,9 @@
         <attr name="lineHeight" format="dimension" />
         <!--线条的宽度-->
         <attr name="lineWidth" format="dimension" />
-        <!--点与点之间的间距，默认为最小的点的直径。-->
+        <!--线条与线条之间的间距，默认为线条的高度。-->
         <attr name="lineSpacing" format="dimension" />
-        <!--点的颜色-->
+        <!--线条的颜色-->
         <attr name="lineColor" format="color" />
         <!--选中时点的颜色-->
         <attr name="selectedLineColor" format="color" />

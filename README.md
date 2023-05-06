@@ -226,7 +226,7 @@ Banner中每一页的数据模型都必须是```BannerEntry```接口的子类，
 
 ```android:gravity``` 设置偏移。只支持以下值的单一配置及合理组合:
 
-Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT、View.NO_IDGravity#START、View.NO_IDGravity#END、View.NO_IDGravity#CENTER、View.NO_IDGravity#CENTER_VERTICAL、View.NO_IDGravity#CENTER_HORIZONTAL。
+    Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT、View.NO_IDGravity#START、View.NO_IDGravity#END、View.NO_IDGravity#CENTER、View.NO_IDGravity#CENTER_VERTICAL、View.NO_IDGravity#CENTER_HORIZONTAL。
 
 *可以同时配置多个值，多个值之间用"|"(或)符号连接。但是不支持View.NO_IDGravity#FILL、View.NO_IDGravity#FILL_VERTICAL、View.NO_IDGravity#RELATIVE_HORIZONTAL_GRAVITY_MASK、以及View.NO_IDGravity#FILL_HORIZONTAL等类似配置。*
 
@@ -249,6 +249,10 @@ Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT�
 
 ```android:gravity``` 设置偏移。只支持以下值的单一配置及合理组合:
 
+    Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT、View.NO_IDGravity#START、View.NO_IDGravity#END、View.NO_IDGravity#CENTER、View.NO_IDGravity#CENTER_VERTICAL、View.NO_IDGravity#CENTER_HORIZONTAL。
+
+*可以同时配置多个值，多个值之间用"|"(或)符号连接。但是不支持View.NO_IDGravity#FILL、View.NO_IDGravity#FILL_VERTICAL、View.NO_IDGravity#RELATIVE_HORIZONTAL_GRAVITY_MASK、以及View.NO_IDGravity#FILL_HORIZONTAL等类似配置。*
+
 ```android:textSize``` 字体大小。
 
 ```android:textColor``` 字体颜色。
@@ -260,6 +264,34 @@ Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT�
 ```app:currentPageTextColor``` 当前页码文本颜色。
 
 ```app:totalPageTextColor``` 总页码文本颜色。
+
+#### LineIndicatorView 的自定义属性
+```app:totalCount``` 一共有多少个点（也就是总页数），如果是配合BannerView使用的则以BannerView的页数为准。这个属性最大的用途就是在写布局文件时可以及时看到效果，方便调试UI。
+
+```android:gravity``` 设置偏移。只支持以下值的单一配置及合理组合:
+
+    Gravity#TOP、Gravity#BOTTOM、View.NO_IDGravity#LEFT、View.NO_IDGravity#RIGHT、View.NO_IDGravity#START、View.NO_IDGravity#END、View.NO_IDGravity#CENTER、View.NO_IDGravity#CENTER_VERTICAL、View.NO_IDGravity#CENTER_HORIZONTAL。
+
+*可以同时配置多个值，多个值之间用"|"(或)符号连接。但是不支持View.NO_IDGravity#FILL、View.NO_IDGravity#FILL_VERTICAL、View.NO_IDGravity#RELATIVE_HORIZONTAL_GRAVITY_MASK、以及View.NO_IDGravity#FILL_HORIZONTAL等类似配置。*
+
+```app:lineHeight``` 线条的高度。
+
+```app:lineWidth``` 线段的宽度。
+
+```app:lineSpacing``` 线条与线条之间的间距，默认为线条的高度。
+
+```app:lineColor``` 线条的颜色。
+
+```app:selectedLineColor``` 被选中线条的颜色。
+
+#### SlideShowMoreLayout 的自定义属性
+```android:enabled``` 滑动加载更多是否可用。
+
+```app:arrowIcon``` 加载更多内容中的箭头图标。
+
+```app:slideShowMoreText``` 滑动加载更多的提示文字。
+
+```app:releaseShowMoreText``` 释放加载更多的提示文字。
 
 
 #### 代码中使用。
